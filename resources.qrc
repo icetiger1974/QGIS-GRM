@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/plugins/GRM">
+    <file>icon.png</file>
+    <!--<file>image/settings.png</file>-->
+  </qresource>
+</RCC>
