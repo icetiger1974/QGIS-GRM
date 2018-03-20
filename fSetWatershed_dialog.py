@@ -62,11 +62,13 @@ class FSetWatershedDialog(QtGui.QDialog, FORM_CLASS):
         self.chkChannelWidthLayer.stateChanged.connect(self.chkChannelWidthLayer_CheckedChanged)
         self.chkIniFlow.stateChanged.connect(self.chkIniFlow_CheckedChanged)
 
+
         # OK 버튼 처리 이벤트
         self.btnOK.clicked.connect(self.ClickOK)
 
         # 폼 종료 버튼 이벤트 처리
         self.btnCancel.clicked.connect(self.Close_Form)
+
 
     def SetComboxLayerList(self):
         # QGIS 레이어 목록 받아오기
@@ -101,10 +103,16 @@ class FSetWatershedDialog(QtGui.QDialog, FORM_CLASS):
 
     # chkChannelWidthLayer 체크 박스 이벤트
     def chkChannelWidthLayer_CheckedChanged(self):
-        self.cmbChannelWidthLayer.setEnabled(self.chkChannelWidthLayer.checkState())
+        if self.chkChannelWidthLayer.isChecked():
+            self.cmbChannelWidthLayer.setEnabled(True)
+        else:
+            self.cmbChannelWidthLayer.setEnabled(False)
 
     def chkiniSoilRatioLayer_CheckedChanged(self):
-        self.cmbiniSoilRatioLayer.setEnabled(self.chkiniSoilRatioLayer.checkState())
+        if self.chkiniSoilRatioLayer.isChecked():
+            self.cmbiniSoilRatioLayer.setEnabled(True)
+        else:
+            self.cmbiniSoilRatioLayer.setEnabled(False)
 
 
     def chkIniFlow_CheckedChanged(self):
@@ -147,10 +155,10 @@ class FSetWatershedDialog(QtGui.QDialog, FORM_CLASS):
         #  파싱 방법을 바꿔야 하는데 임시로 처리 흠 흠.....
         # 프로젝트 파일에서 null 처리
         self.mGridChannelWidthFPN = GRM._xmltodict['GRMProject']['ProjectSettings']['ChannelWidthFile']
-        if self.mGridChannelWidthFPN is None:
+
+        if self.mGridChannelWidthFPN is None or self.mGridChannelWidthFPN=="" :
             self.chkChannelWidthLayer.setChecked(False)
             self.cmbChannelWidthLayer.setEnabled(False)
-            pass
         else :
             self.chkChannelWidthLayer.setChecked(True)
             self.cmbChannelWidthLayer.setEnabled(True)
@@ -158,7 +166,7 @@ class FSetWatershedDialog(QtGui.QDialog, FORM_CLASS):
             self.Setcombobox(self.cmbChannelWidthLayer, mGridNameChannelWidth, self.mGridChannelWidthFPN)
 
         self.miniSoilRatio = GRM._xmltodict['GRMProject']['ProjectSettings']['InitialSoilSaturationRatioFile']
-        if self.miniSoilRatio is not None:
+        if self.miniSoilRatio is not None and self.miniSoilRatio !="":
             self.chkiniSoilRatioLayer.setChecked(True)
             self.cmbiniSoilRatioLayer.setEnabled(True)
             name = _util.GetFilename(self.miniSoilRatio)
@@ -168,7 +176,7 @@ class FSetWatershedDialog(QtGui.QDialog, FORM_CLASS):
             self.cmbiniSoilRatioLayer.setEnabled(False)
 
         self.InitialChannelFlowFile = GRM._xmltodict['GRMProject']['ProjectSettings']['InitialChannelFlowFile']
-        if self.InitialChannelFlowFile is not None:
+        if self.InitialChannelFlowFile is not None and  self.InitialChannelFlowFile !="":
             self.chkIniFlow.setChecked(True)
             self.cmbiniFlowLayer.setEnabled(True)
             name = _util.GetFilename(self.InitialChannelFlowFile)
@@ -201,7 +209,9 @@ class FSetWatershedDialog(QtGui.QDialog, FORM_CLASS):
     # OK 버튼 이벤트
     def ClickOK(self):
         # 콤보 박스와 체크 박스등 기본적인 선택 내용 확인 하여 오류 메시지 출력
+
         try:
+
             flag=self.ValidateInputs()
             if flag :
                 raise Exception
@@ -220,17 +230,30 @@ class FSetWatershedDialog(QtGui.QDialog, FORM_CLASS):
             else:
                 self.mFDType = "StartsFromE_TauDEM"
 
-
             if self.chkiniSoilRatioLayer.checkState() :
-                self.miniSoilRatio =  _util.GetcomboSelectedLayerPath(self.cmbiniSoilRatioLayer)
+                if self.cmbiniSoilRatioLayer.currentIndex() != 0:
+                    self.miniSoilRatio =  _util.GetcomboSelectedLayerPath(self.cmbiniSoilRatioLayer)
+                else:
+                    self.miniSoilRatio=""
+
             if self.chkStreamLayer.checkState() :
                 self.mGridStreamFPN = _util.GetcomboSelectedLayerPath(self.cmbStream)
                 if self.chkChannelWidthLayer.checkState() :
-                    self.mGridChannelWidthFPN = _util.GetcomboSelectedLayerPath(self.cmbChannelWidthLayer)
+                    if self.cmbChannelWidthLayer.currentIndex()!=0:
+                        self.mGridChannelWidthFPN = _util.GetcomboSelectedLayerPath(self.cmbChannelWidthLayer)
+                    else :
+                        self.mGridChannelWidthFPN =""
+
+
+
             if self.chkIniFlow.checkState():
-                self.InitialChannelFlowFile = _util.GetcomboSelectedLayerPath(self.cmbiniFlowLayer)
+                if self.cmbiniFlowLayer.currentIndex()!=0:
+                    self.InitialChannelFlowFile = _util.GetcomboSelectedLayerPath(self.cmbiniFlowLayer)
+                else:
+                    self.InitialChannelFlowFile=""
 
             self.SetXML()
+
         except Exception :
             pass
         else:
@@ -281,6 +304,7 @@ class FSetWatershedDialog(QtGui.QDialog, FORM_CLASS):
         # FDType
         GRM._xmltodict['GRMProject']['ProjectSettings']['FlowDirectionType'] = self.mFDType
         # Stream
+
         if self.chkIniFlow.checkState():
             GRM._xmltodict['GRMProject']['ProjectSettings']['InitialChannelFlowFile']= self.InitialChannelFlowFile
         else:
@@ -293,6 +317,7 @@ class FSetWatershedDialog(QtGui.QDialog, FORM_CLASS):
             GRM._xmltodict['GRMProject']['ProjectSettings']['StreamFile'] = ""
 
         # ChannelWidthFile
+
         if self.chkChannelWidthLayer.checkState() and self.chkStreamLayer.checkState():
             GRM._xmltodict['GRMProject']['ProjectSettings']['ChannelWidthFile'] = self.mGridChannelWidthFPN
         else:
@@ -303,6 +328,7 @@ class FSetWatershedDialog(QtGui.QDialog, FORM_CLASS):
             GRM._xmltodict['GRMProject']['ProjectSettings']['InitialSoilSaturationRatioFile']= self.miniSoilRatio
         else :
             GRM._xmltodict['GRMProject']['ProjectSettings']['InitialSoilSaturationRatioFile'] = ""
+
 
         CellSize=GRM._xmltodict['GRMProject']['ProjectSettings']['GridCellSize']
         if CellSize == None or CellSize=="":

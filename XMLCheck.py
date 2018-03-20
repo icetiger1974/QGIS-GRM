@@ -23,7 +23,7 @@ class xmls:
     def __init__(self):
         self.ProjectFile = ""
 
-    def Check_Gmp_xml(self,filepath):
+    def  Check_Gmp_xml(self,filepath):
         self.ProjectFile = filepath
         # xml 요소 값을 배열에 넣음
         self.Set_XML_element()
@@ -33,11 +33,15 @@ class xmls:
         self.Set_XML_element_GreenAmptParameter()
         self.Set_XML_element_SoilDepth()
         self.Set_XML_element_LandCover()
+
         # xml 파싱
         doc = ET.parse(self.ProjectFile)
         root = doc.getroot()
+
+
         GRMProject = ET.Element("GRMProject")
         GRMProject.set("xmlns", "http://tempuri.org/GRMProject.xsd")
+
         ProjectSettings = ET.SubElement(GRMProject, "ProjectSettings")
         for i in range(0, len(self.XML_element)):
             for element in root.findall('{http://tempuri.org/GRMProject.xsd}ProjectSettings'):
@@ -102,27 +106,31 @@ class xmls:
                 Datavalue = element.findtext("{http://tempuri.org/GRMProject.xsd}" + self.XML_element_SubWatershed[i])
                 if self.XML_element_SubWatershed[i] == "IniSaturation" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "1"
-                if self.XML_element_SubWatershed[i] == "MinSlopeOF" and (Datavalue == "" or Datavalue == None):
+                elif self.XML_element_SubWatershed[i] == "MinSlopeOF" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "0.0001"
-                if self.XML_element_SubWatershed[i] == "MinSlopeChBed" and (Datavalue == "" or Datavalue == None):
+                elif self.XML_element_SubWatershed[i] == "MinSlopeChBed" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "0.0001"
-                if self.XML_element_SubWatershed[i] == "MinChBaseWidth" and (Datavalue == "" or Datavalue == None):
-                    Datavalue = "test"
-                if self.XML_element_SubWatershed[i] == "ChRoughness" and (Datavalue == "" or Datavalue == None):
+                elif self.XML_element_SubWatershed[i] == "MinChBaseWidth" and (Datavalue == "" or Datavalue == None):
+                    Datavalue = "00"
+                elif self.XML_element_SubWatershed[i] == "ChRoughness" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "0.045"
-                if self.XML_element_SubWatershed[i] == "DryStreamOrder" and (Datavalue == "" or Datavalue == None):
+                elif self.XML_element_SubWatershed[i] == "DryStreamOrder" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "0"
-                if self.XML_element_SubWatershed[i] == "IniFlow" and (Datavalue == "" or Datavalue == None):
+                elif self.XML_element_SubWatershed[i] == "IniFlow" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "0"
-                if self.XML_element_SubWatershed[i] == "CalCoefLCRoughness" and (Datavalue == "" or Datavalue == None):
+                elif self.XML_element_SubWatershed[i] == "UnsaturatedKType" and (Datavalue == "" or Datavalue == None):
+                    Datavalue = "Linear"
+                elif self.XML_element_SubWatershed[i] == "CoefUnsaturatedK" and (Datavalue == "" or Datavalue == None):
+                    Datavalue = "0.2"
+                elif self.XML_element_SubWatershed[i] == "CalCoefLCRoughness" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "1"
-                if self.XML_element_SubWatershed[i] == "CalCoefPorosity" and (Datavalue == "" or Datavalue == None):
+                elif self.XML_element_SubWatershed[i] == "CalCoefPorosity" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "1"
-                if self.XML_element_SubWatershed[i] == "CalCoefWFSuctionHead" and (Datavalue == "" or Datavalue == None):
+                elif self.XML_element_SubWatershed[i] == "CalCoefWFSuctionHead" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "1"
-                if self.XML_element_SubWatershed[i] == "CalCoefHydraulicK" and (Datavalue == "" or Datavalue == None):
+                elif self.XML_element_SubWatershed[i] == "CalCoefHydraulicK" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "1"
-                if self.XML_element_SubWatershed[i] == "CalCoefSoilDepth" and (Datavalue == "" or Datavalue == None):
+                elif self.XML_element_SubWatershed[i] == "CalCoefSoilDepth" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "1"
                 if self.XML_element_SubWatershed[i] == "UserSet" and (Datavalue == "" or Datavalue == None):
                     Datavalue = "false"
@@ -245,7 +253,6 @@ class xmls:
 
         ET.ElementTree(GRMProject).write(self.ProjectFile, encoding="utf-8", xml_declaration=True)
 
-        # _util.MessageboxShowInfo("1","1")
         with open(self.ProjectFile, 'r') as f:
             content = f.read()
             result = content.replace("SoilDeptht","SoilDepth")
@@ -254,33 +261,30 @@ class xmls:
         f.write(result)
         f.close()
 
+        ## 줄바꿈과 뛰어쓰기 부분
+        #def indent(elem, level=0):
+        #    i = "\n" + level * "  "
+        #    j = "\n" + (level - 1) * "  "
+        #    if len(elem):
+        #        if not elem.text or not elem.text.strip():
+        #            elem.text = i + "  "
+        #        if not elem.tail or not elem.tail.strip():
+        #            elem.tail = i
+        #        for subelem in elem:
+        #            indent(subelem, level + 1)
+        #        if not elem.tail or not elem.tail.strip():
+        #            elem.tail = i
+        #    else:
+        #        if level and (not elem.tail or not elem.tail.strip()):
+        #            elem.tail = i
+        #    return elem
 
-
-        # 줄바꿈과 뛰어쓰기 부분
-        def indent(elem, level=0):
-            i = "\n" + level * "  "
-            j = "\n" + (level - 1) * "  "
-            if len(elem):
-                if not elem.text or not elem.text.strip():
-                    elem.text = i + "  "
-                if not elem.tail or not elem.tail.strip():
-                    elem.tail = i
-                for subelem in elem:
-                    indent(subelem, level + 1)
-                if not elem.tail or not elem.tail.strip():
-                    elem.tail = i
-            else:
-                if level and (not elem.tail or not elem.tail.strip()):
-                    elem.tail = i
-            return elem
-
-        # 저장된 파일 다시 불러와서 줄바꿈과 정렬 하기
-        doc = ET.parse(self.ProjectFile)
-        root = doc.getroot()
-        ET.register_namespace("", "http://tempuri.org/GRMProject.xsd")
-        indent(root)
-        doc.write(self.ProjectFile, encoding="utf-8", xml_declaration=True)
-
+        ## 저장된 파일 다시 불러와서 줄바꿈과 정렬 하기
+        #doc = ET.parse(self.ProjectFile)
+        #root = doc.getroot()
+        #ET.register_namespace("", "http://tempuri.org/GRMProject.xsd")
+        #indent(root)
+        #doc.write(self.ProjectFile, encoding="utf-8", xml_declaration=True)
         ds = GRMCore.GRMProject()
         ds.ReadXml(self.ProjectFile)
         ds.WriteXml(self.ProjectFile)
@@ -372,6 +376,8 @@ class xmls:
         self.XML_element_SubWatershed.append('ChRoughness')
         self.XML_element_SubWatershed.append('DryStreamOrder')
         self.XML_element_SubWatershed.append('IniFlow')
+        self.XML_element_SubWatershed.append('UnsaturatedKType')
+        self.XML_element_SubWatershed.append('CoefUnsaturatedK')
         self.XML_element_SubWatershed.append('CalCoefLCRoughness')
         self.XML_element_SubWatershed.append('CalCoefPorosity')
         self.XML_element_SubWatershed.append('CalCoefWFSuctionHead')

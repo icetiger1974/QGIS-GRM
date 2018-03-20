@@ -23,3 +23,7 @@ help(GRMCore)
 
 from GRMCore import cGetWatershedInfo
 aa=cGetWatershedInfo("aa","aa","aa","aa")
+  _wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(0,0.001,0.001,"Linear",0.2,0.001,50,1,1,1,1,1,1,1, True, 0)
+
+
+

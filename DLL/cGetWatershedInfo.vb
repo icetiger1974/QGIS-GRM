@@ -6,6 +6,7 @@
     Public msoilDepthFPN As String
     Public miniSoilSaturationFPN As String
     Public miniChannelFlowFPN As String
+
     Sub New(watershedFPN As String,
                 slopeFPN As String,
                 fdirFPN As String,
@@ -16,8 +17,26 @@
             Optional soilDepthFPN As String = "",
             Optional iniSoilSaturationFPN As String = "",
             Optional iniChannelFlowFPN As String = "")
-
-
+        'Console.WriteLine(watershedFPN + " watershedFPN instancing argument file")
+        'Console.WriteLine(File.Exists(watershedFPN).ToString)
+        'Console.WriteLine(slopeFPN + " slopeFPN instancing argument file")
+        'Console.WriteLine(File.Exists(slopeFPN).ToString)
+        'Console.WriteLine(fdirFPN + " fdirFPN instancing argument file")
+        'Console.WriteLine(File.Exists(fdirFPN).ToString)
+        'Console.WriteLine(facFPN + " facFPN instancing argument file")
+        'Console.WriteLine(File.Exists(facFPN).ToString)
+        'Console.WriteLine(streamFPN + " streamFPN instancing argument file")
+        'Console.WriteLine(File.Exists(streamFPN).ToString)
+        'Console.WriteLine(landCoverFPN + " landCoverFPN instancing argument file")
+        'Console.WriteLine(File.Exists(landCoverFPN).ToString)
+        'Console.WriteLine(soilTextureFPN + " soilTextureFPN instancing argument file")
+        'Console.WriteLine(File.Exists(soilTextureFPN).ToString)
+        'Console.WriteLine(soilDepthFPN + " soilDepthFPN instancing argument file")
+        'Console.WriteLine(File.Exists(soilDepthFPN).ToString)
+        'Console.WriteLine(iniSoilSaturationFPN + " iniSoilSaturationFPN instancing argument file")
+        'Console.WriteLine(File.Exists(iniSoilSaturationFPN).ToString)
+        'Console.WriteLine(iniChannelFlowFPN + " iniChannelFlowFPN instancing argument file")
+        'Console.WriteLine(File.Exists(iniChannelFlowFPN).ToString)
         grmPrj.ReadLayerWSandSetBasicInfo(watershedFPN, True)
         grmPrj.ReadLayerSlope(slopeFPN, True)
         grmPrj.ReadLayerFdir(fdirFPN, True)
@@ -33,7 +52,6 @@
         If soilTextureFPN <> "" AndAlso File.Exists(soilTextureFPN) Then
             grmPrj.ReadSoilTextureFile(soilTextureFPN, True)
             msoilTextureFPN = soilTextureFPN
-            Console.WriteLine(msoilTextureFPN + " instancing")
         End If
         If soilDepthFPN <> "" AndAlso File.Exists(soilDepthFPN) Then
             grmPrj.ReadSoilDepthFile(soilDepthFPN, True)
@@ -87,8 +105,8 @@
     ''' Watershed ID list.
     ''' </summary>
     ''' <returns></returns>
-    Public Function WSIDsAll() As List(Of Integer)
-        Return grmPrj.WSNetwork.WSIDsAll
+    Public Function WSIDsAll() As Integer()
+        Return grmPrj.WSNetwork.WSIDsAll.ToArray
     End Function
 
     ''' <summary>
@@ -180,54 +198,21 @@
         End If
     End Function
 
-    Public Function soiltexturevalue(colXArrayIdx As Integer, rowYArrayIdx As Integer) As Integer
-        Console.WriteLine(msoilTextureFPN)
+    Public Function soilTextureValue(colXArrayIdx As Integer, rowYArrayIdx As Integer) As Integer
         If IsInWatershedArea(colXArrayIdx, rowYArrayIdx) = True Then
-            Console.WriteLine("in")
             Return grmPrj.WSCells(colXArrayIdx, rowYArrayIdx).SoilTextureValue
         Else
-            Console.WriteLine("nothing")
             Return Nothing
         End If
-        Console.WriteLine("End")
     End Function
 
-    'Public Property STextureValue(colXArrayIdx As Integer, rowYArrayIdx As Integer) As Integer
-    '    Get
-    '        If IsInWatershedArea(colXArrayIdx, rowYArrayIdx) = True Then
-    '            Return grmPrj.WSCells(colXArrayIdx, rowYArrayIdx).SoilTextureValue
-    '        Else
-    '            Return Nothing
-    '        End If
-    '    End Get
-    '    Set(value As Integer)
-
-    '    End Set
-    'End Property
-
-
-    Public Function soildepthvalue(colXArrayIdx As Integer, rowYArrayIdx As Integer) As Integer
+    Public Function soilDepthValue(colXArrayIdx As Integer, rowYArrayIdx As Integer) As Integer
         If IsInWatershedArea(colXArrayIdx, rowYArrayIdx) = True Then
             Return grmPrj.WSCells(colXArrayIdx, rowYArrayIdx).SoilDepthTypeValue
         Else
             Return Nothing
         End If
     End Function
-
-    'Public Property SDepthValue(colXArrayIdx As Integer, rowYArrayIdx As Integer) As Integer
-    '    Get
-    '        If IsInWatershedArea(colXArrayIdx, rowYArrayIdx) = True Then
-    '            Return grmPrj.WSCells(colXArrayIdx, rowYArrayIdx).SoilDepthTypeValue
-    '        Else
-    '            Return Nothing
-    '        End If
-    '    End Get
-    '    Set(value As Integer)
-
-    '    End Set
-    'End Property
-
-
 
     ''' <summary>
     '''  Select all cells in upstream area of a input cell position. Return string array of cell positions - "column, row".
@@ -260,23 +245,27 @@
     End Function
 
     Public Function SetOneSWSParametersAndUpdateAllSWSUsingNetwork(wsid As Integer,
-                                                iniSat As Single,
-                                                minSlopeLandSurface As Single,
-                                                minSlopeChannel As Single,
-                                                minChannelBaseWidth As Single,
-                                                roughnessChannel As Single,
-                                                dryStreamOrder As Integer,
-                                                ccLCRoughness As Single,
-                                                ccSoilDepth As Single,
-                                                ccPorosity As Single,
-                                                ccWFSuctionHead As Single,
+                                                iniSat As Single, minSlopeLandSurface As Single,
+                                                UnsKType As String, coefUnsK As Single,
+                                                minSlopeChannel As Single, minChannelBaseWidth As Single,
+                                                roughnessChannel As Single, dryStreamOrder As Integer,
+                                                ccLCRoughness As Single, ccSoilDepth As Single,
+                                                ccPorosity As Single, ccWFSuctionHead As Single,
                                                 ccSoilHydraulicCond As Single,
-                                                applyIniFlow As Boolean,
                                                 Optional iniFlow As Single = 0) As Boolean
         Try
             With grmPrj.SubWSPar.userPars(wsid)
                 .iniSaturation = iniSat
                 .minSlopeOF = minSlopeLandSurface
+                Select Case UnsKType.ToLower
+                    Case cGRM.UnSaturatedKType.Linear.ToString.ToLower
+                        .UKType = cGRM.UnSaturatedKType.Linear.ToString
+                    Case cGRM.UnSaturatedKType.Exponential.ToString.ToLower
+                        .UKType = cGRM.UnSaturatedKType.Exponential.ToString
+                    Case Else
+                        .UKType = cGRM.UnSaturatedKType.Linear.ToString
+                End Select
+                .coefUK = coefUnsK
                 .minSlopeChBed = minSlopeChannel
                 .minChBaseWidth = minChannelBaseWidth
                 .chRoughness = roughnessChannel
@@ -286,11 +275,7 @@
                 .ccPorosity = ccPorosity
                 .ccWFSuctionHead = ccWFSuctionHead
                 .ccHydraulicK = ccSoilHydraulicCond
-                If applyIniFlow = True AndAlso iniFlow > 0 Then
-                    .iniFlow = iniFlow
-                Else
-                    .iniFlow = Nothing
-                End If
+                .iniFlow = iniFlow
                 .isUserSet = True
             End With
             cSetSubWatershedParameter.UpdateSubWSParametersForWSNetwork(grmPrj)
@@ -314,6 +299,16 @@
 
     Public Function subwatershedPars(wsid As Integer) As cUserParameters
         Return grmPrj.SubWSPar.userPars(wsid)
+    End Function
+
+    Public Function RemoveUserParametersSetting(wsid As Integer) As Boolean
+        Try
+            grmPrj.SubWSPar.userPars(wsid).isUserSet = False
+            cSetSubWatershedParameter.UpdateSubWSParametersForWSNetwork(grmPrj)
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
     End Function
 
     '여기에 필요한 내용 계속 추가

@@ -77,14 +77,17 @@
      <string>Rainfall time step[min] :</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="txtRainfallTimeStep">
+   <widget class="QSpinBox" name="spbtimestep">
     <property name="geometry">
      <rect>
       <x>180</x>
-      <y>22</y>
-      <width>113</width>
-      <height>20</height>
+      <y>20</y>
+      <width>90</width>
+      <height>22</height>
      </rect>
+    </property>
+    <property name="maximum">
+     <number>100000</number>
     </property>
    </widget>
   </widget>

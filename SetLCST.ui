@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>839</width>
-    <height>730</height>
+    <width>849</width>
+    <height>688</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,10 +16,10 @@
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
     <rect>
-     <x>1</x>
-     <y>2</y>
+     <x>10</x>
+     <y>10</y>
      <width>830</width>
-     <height>210</height>
+     <height>192</height>
     </rect>
    </property>
    <property name="title">
@@ -111,17 +111,17 @@
     <property name="geometry">
      <rect>
       <x>12</x>
-      <y>130</y>
+      <y>123</y>
       <width>351</width>
-      <height>71</height>
+      <height>60</height>
      </rect>
     </property>
     <widget class="QLineEdit" name="txtCoefficient">
      <property name="geometry">
       <rect>
-       <x>252</x>
+       <x>258</x>
        <y>10</y>
-       <width>81</width>
+       <width>82</width>
        <height>20</height>
       </rect>
      </property>
@@ -129,9 +129,9 @@
     <widget class="QLineEdit" name="txtImpervious">
      <property name="geometry">
       <rect>
-       <x>252</x>
-       <y>40</y>
-       <width>81</width>
+       <x>258</x>
+       <y>32</y>
+       <width>82</width>
        <height>20</height>
       </rect>
      </property>
@@ -139,7 +139,7 @@
     <widget class="QLabel" name="label_2">
      <property name="geometry">
       <rect>
-       <x>105</x>
+       <x>124</x>
        <y>12</y>
        <width>141</width>
        <height>16</height>
@@ -152,8 +152,8 @@
     <widget class="QLabel" name="label_3">
      <property name="geometry">
       <rect>
-       <x>137</x>
-       <y>42</y>
+       <x>157</x>
+       <y>34</y>
        <width>111</width>
        <height>16</height>
       </rect>
@@ -166,10 +166,10 @@
    <widget class="QTableWidget" name="tlbLandCover">
     <property name="geometry">
      <rect>
-      <x>374</x>
-      <y>10</y>
-      <width>446</width>
-      <height>190</height>
+      <x>372</x>
+      <y>18</y>
+      <width>443</width>
+      <height>162</height>
      </rect>
     </property>
     <property name="editTriggers">
@@ -191,10 +191,10 @@
   <widget class="QGroupBox" name="groupBox_2">
    <property name="geometry">
     <rect>
-     <x>1</x>
-     <y>213</y>
+     <x>8</x>
+     <y>217</y>
      <width>830</width>
-     <height>271</height>
+     <height>240</height>
     </rect>
    </property>
    <property name="title">
@@ -204,17 +204,17 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>126</y>
+      <y>120</y>
       <width>351</width>
-      <height>131</height>
+      <height>105</height>
      </rect>
     </property>
     <widget class="QLineEdit" name="txtPorosity">
      <property name="geometry">
       <rect>
-       <x>219</x>
+       <x>260</x>
        <y>10</y>
-       <width>81</width>
+       <width>82</width>
        <height>20</height>
       </rect>
      </property>
@@ -222,9 +222,9 @@
     <widget class="QLineEdit" name="txtEffective_porosity">
      <property name="geometry">
       <rect>
-       <x>219</x>
-       <y>40</y>
-       <width>81</width>
+       <x>260</x>
+       <y>32</y>
+       <width>82</width>
        <height>20</height>
       </rect>
      </property>
@@ -232,9 +232,9 @@
     <widget class="QLabel" name="label_5">
      <property name="geometry">
       <rect>
-       <x>153</x>
+       <x>206</x>
        <y>13</y>
-       <width>61</width>
+       <width>59</width>
        <height>16</height>
       </rect>
      </property>
@@ -245,9 +245,9 @@
     <widget class="QLabel" name="label_6">
      <property name="geometry">
       <rect>
-       <x>104</x>
-       <y>42</y>
-       <width>111</width>
+       <x>156</x>
+       <y>34</y>
+       <width>109</width>
        <height>16</height>
       </rect>
      </property>
@@ -258,9 +258,9 @@
     <widget class="QLineEdit" name="txtSuction_head">
      <property name="geometry">
       <rect>
-       <x>220</x>
-       <y>70</y>
-       <width>81</width>
+       <x>260</x>
+       <y>54</y>
+       <width>82</width>
        <height>20</height>
       </rect>
      </property>
@@ -268,9 +268,9 @@
     <widget class="QLabel" name="label_24">
      <property name="geometry">
       <rect>
-       <x>53</x>
-       <y>72</y>
-       <width>160</width>
+       <x>105</x>
+       <y>56</y>
+       <width>158</width>
        <height>16</height>
       </rect>
      </property>
@@ -281,9 +281,9 @@
     <widget class="QLineEdit" name="txtConductiovity">
      <property name="geometry">
       <rect>
-       <x>220</x>
-       <y>101</y>
-       <width>81</width>
+       <x>260</x>
+       <y>76</y>
+       <width>82</width>
        <height>20</height>
       </rect>
      </property>
@@ -291,9 +291,9 @@
     <widget class="QLabel" name="label_25">
      <property name="geometry">
       <rect>
-       <x>75</x>
-       <y>103</y>
-       <width>131</width>
+       <x>129</x>
+       <y>78</y>
+       <width>129</width>
        <height>16</height>
       </rect>
      </property>
@@ -390,7 +390,7 @@
       <x>372</x>
       <y>12</y>
       <width>448</width>
-      <height>250</height>
+      <height>213</height>
      </rect>
     </property>
     <property name="selectionBehavior">
@@ -409,10 +409,10 @@
   <widget class="QGroupBox" name="groupBox_3">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>500</y>
+     <x>9</x>
+     <y>470</y>
      <width>830</width>
-     <height>181</height>
+     <height>180</height>
     </rect>
    </property>
    <property name="title">
@@ -421,16 +421,16 @@
    <widget class="QGroupBox" name="groupBox_5">
     <property name="geometry">
      <rect>
-      <x>7</x>
+      <x>10</x>
       <y>127</y>
       <width>351</width>
-      <height>41</height>
+      <height>40</height>
      </rect>
     </property>
     <widget class="QLineEdit" name="txtSoil_depth">
      <property name="geometry">
       <rect>
-       <x>224</x>
+       <x>261</x>
        <y>10</y>
        <width>81</width>
        <height>20</height>
@@ -440,7 +440,7 @@
     <widget class="QLabel" name="label_21">
      <property name="geometry">
       <rect>
-       <x>154</x>
+       <x>197</x>
        <y>12</y>
        <width>61</width>
        <height>16</height>
@@ -513,7 +513,7 @@
       <x>372</x>
       <y>10</y>
       <width>449</width>
-      <height>151</height>
+      <height>158</height>
      </rect>
     </property>
     <property name="selectionBehavior">
@@ -558,8 +558,8 @@
   <widget class="QPushButton" name="btnOK">
    <property name="geometry">
     <rect>
-     <x>660</x>
-     <y>690</y>
+     <x>670</x>
+     <y>660</y>
      <width>75</width>
      <height>23</height>
     </rect>
@@ -571,8 +571,8 @@
   <widget class="QPushButton" name="btnCancel">
    <property name="geometry">
     <rect>
-     <x>750</x>
-     <y>690</y>
+     <x>760</x>
+     <y>660</y>
      <width>75</width>
      <height>23</height>
     </rect>

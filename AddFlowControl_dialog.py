@@ -22,9 +22,11 @@
 """
 
 import os
+
+# from PyQt4.QtGui import QFileDialog
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
 from PyQt4 import QtGui, uic
-from PyQt4.QtGui import QFileDialog
-from PyQt4.QtCore import QFileInfo
 from FileFormat_dialog import FileFormat
 import GRM_Plugin_dockwidget as GRM
 import Watershed_Stetup_dialog as ws
@@ -47,7 +49,7 @@ class AddFlowControl(QtGui.QDialog, FORM_CLASS):
         super(AddFlowControl, self).__init__(parent)
 
         self.setupUi(self)
-        combolist = ['Select control type', 'Reservoir outlfow', 'Inlet', 'Reservoir Operation', 'Sink flow','Source flow']
+        combolist = ['Reservoir outflow', 'Inlet', 'Reservoir operation', 'Sink flow','Source flow']
         self.cmb_ControlType.addItems(combolist)
         self.cmb_ControlType.currentIndexChanged.connect(
             lambda: self.SelectControtype(self.cmb_ControlType, self.txt_TimeInterval, self.btnLoadFile,
@@ -58,7 +60,7 @@ class AddFlowControl(QtGui.QDialog, FORM_CLASS):
         self.txt_cms.setEnabled(False)
         self.txt_hours.setEnabled(False)
         self.txt_Constant_discharge.setEnabled(False)
-
+        self.SelectControtype(self.cmb_ControlType, self.txt_TimeInterval, self.btnLoadFile,self.btnFileFormat, self.txtFilePath)
         self.rdoAutomatic.setChecked(True)
 
         self.rdoRigid.clicked.connect(self.ClickRdoRigid)
@@ -70,15 +72,41 @@ class AddFlowControl(QtGui.QDialog, FORM_CLASS):
             self.SetControlData()
 
 
+
+
     def SelectControtype(self, combox, txtinterval, btnLoadFile, btnFileFormat, txtFilePath):
-        if combox.currentText() == "Reservoir Operation":
-            txtinterval.setEnabled(False)
+        if combox.currentText() == "Reservoir operation":
+            txtinterval.setEnabled(True)
             btnLoadFile.setEnabled(False)
             btnFileFormat.setEnabled(False)
             txtFilePath.setEnabled(False)
             self.txtIniStorage.setEnabled(True)
             self.txtMaxStorage.setEnabled(True)
             self.txtMaxStorageRatio.setEnabled(True)
+            self.rdoAutomatic.setEnabled(True)
+            self.rdoRigid.setEnabled(True)
+            self.rdoUsingConstant.setEnabled(True)
+            # self.txt_cms.setEnabled(True)
+            # self.txt_Constant_discharge.setEnabled(True)
+            # self.txt_hours.setEnabled(True)
+
+
+            if self.rdoAutomatic.isChecked():
+                self.txt_cms.setEnabled(False)
+                self.txt_Constant_discharge.setEnabled(False)
+                self.txt_hours.setEnabled(False)
+            elif self.rdoRigid.isChecked():
+                self.txt_cms.setText(ws._EditFlowROConstQ)
+                self.ClickRdoRigid()
+            elif self.rdoUsingConstant.isChecked():
+                self.rdoUsingConstant.setChecked(True)
+                self.txt_Constant_discharge.setText(ws._EditFlowROConstQ)
+                self.txt_hours.setText(ws._EditFlowROConstQDuration)
+                self.ClickRdoUsingConstant()
+
+
+
+
         else:
             txtinterval.setEnabled(True)
             btnLoadFile.setEnabled(True)
@@ -87,6 +115,12 @@ class AddFlowControl(QtGui.QDialog, FORM_CLASS):
             self.txtIniStorage.setEnabled(False)
             self.txtMaxStorage.setEnabled(False)
             self.txtMaxStorageRatio.setEnabled(False)
+            self.rdoAutomatic.setEnabled(False)
+            self.rdoRigid.setEnabled(False)
+            self.rdoUsingConstant.setEnabled(False)
+            self.txt_cms.setEnabled(False)
+            self.txt_Constant_discharge.setEnabled(False)
+            self.txt_hours.setEnabled(False)
 
     def FileSelectDialog(self, txtpath):
         txtpath.clear();
@@ -117,55 +151,197 @@ class AddFlowControl(QtGui.QDialog, FORM_CLASS):
         self.close()
 
     def Ok_click(self):
-        if self.txt_Name.text() =="" :
-            _util.MessageboxShowInfo("Add Flow Control"," Input name, please")
-            self.txt_Name.setFocus()
-            return
-        else:
-            ws._AddFlowcontrolName = self.txt_Name.text()
+        if ws._AddFlowcontrol_Edit_or_Insert_type == "Insert":
+            if self.txt_Name.text() =="" :
+                _util.MessageboxShowInfo("Add Flow Control"," Input name, please")
+                self.txt_Name.setFocus()
+                return
+            else:
+                ws._AddFlowcontrolName = self.txt_Name.text()
 
-        if self.cmb_ControlType.currentIndex() == 0:
-            _util.MessageboxShowInfo("Add Flow Control", " Please select control type")
-            return
-        else:
             ws._AddFlowcontrolType = self.cmb_ControlType.currentText()
+            if self.txt_TimeInterval.text() == "":
+                _util.MessageboxShowInfo("Add Flow Control", " Please enter a time interval")
+                self.txt_TimeInterval.setFocus()
+                return
+            else:
+                ws._AddFlowcontrolTimeInterval = self.txt_TimeInterval.text()
+            if self.cmb_ControlType.currentText() != "Reservoir operation":
+                if self.txtFilePath.text()=="":
+                    _util.MessageboxShowInfo("Add Flow Control", " Please set file path")
+                    self.txtFilePath.setFocus()
+                    return
+                else:
+                    ws._AddFlowcontrolFilePath = self.txtFilePath.text()
+            else :
+                ws._EditFlowFlowDataFile = "ResurvoirOperation"
+            if self.cmb_ControlType.currentText() == "Reservoir operation":
+                if self.txtIniStorage.text() !="":
+                    ws._AddFlowcontrol_IniStorage = self.txtIniStorage.text()
+                if self.txtMaxStorage.text()!="":
+                    ws._AddFlowcontrol_MaxStorage = self.txtMaxStorage.text()
+                if self.txtMaxStorageRatio.text()!="":
+                    ws._AddFlowcontrol_MaxStorageR = self.txtMaxStorageRatio.text()
+                if self.rdoAutomatic.isChecked():
+                    ws._AddFlowcontrol_ROType = "AutoROM"
 
-        if self.txt_TimeInterval.text() == "":
-            _util.MessageboxShowInfo("Add Flow Control", " Please enter a time interval")
-            self.txt_TimeInterval.setFocus()
-            return
+                elif self.rdoRigid.isChecked():
+                    ws._AddFlowcontrol_ROType = "RigidROM"
+                    ws._AddFlowcontrol_ROConstQ = self.txt_cms.text()
+
+                elif self.rdoUsingConstant.isChecked():
+                    ws._AddFlowcontrol_ROType = "ConstantQ"
+                    ws._AddFlowcontrol_ROConstQ = self.txt_Constant_discharge.text()
+                    ws._AddFlowcontrol_ROConstQDuration = self.txt_hours.text()
+                ws._Flowcontrolgrid_flag_Insert = True
+            else:
+                ws._AddFlowcontrol_IniStorage = ""
+                ws._AddFlowcontrol_MaxStorage = ""
+                ws._AddFlowcontrol_MaxStorageR = ""
+                ws._AddFlowcontrol_ROType = ""
+                ws._AddFlowcontrol_ROConstQ = ""
+                ws._AddFlowcontrol_ROConstQDuration = ""
+                ws._Flowcontrolgrid_flag_Insert = True
+            self.Close_Form()
+
         else:
-            ws._AddFlowcontrolTimeInterval = self.txt_TimeInterval.text()
+            if self.txt_Name.text() == "":
+                _util.MessageboxShowInfo("Add Flow Control", " Input name, please")
+                self.txt_Name.setFocus()
+                return
+            else:
+                ws._EditFlowName = self.txt_Name.text()
 
-        if self.txtFilePath.text()=="":
-            _util.MessageboxShowInfo("Add Flow Control", " Please set file path")
-            self.txtFilePath.setFocus()
-            return
-        else:
-            ws._AddFlowcontrolFilePath = self.txtFilePath.text()
+            ws._EditFlowControlType = self.cmb_ControlType.currentText()
 
-        ws._Flowcontrolgrid_flag_Insert = True
-        self.Close_Form()
+            if self.txt_TimeInterval.text() == "":
+                _util.MessageboxShowInfo("Add Flow Control", " Please enter a time interval")
+                self.txt_TimeInterval.setFocus()
+                return
+            else:
+                ws._EditFlowDT = self.txt_TimeInterval.text()
+
+            if self.cmb_ControlType.currentText() != "Reservoir operation":
+                if self.txtFilePath.text() == "":
+                    _util.MessageboxShowInfo("Add Flow Control", " Please set file path")
+                    self.txtFilePath.setFocus()
+                    return
+                else:
+                    ws._EditFlowFlowDataFile = self.txtFilePath.text()
+            else:
+                ws._EditFlowFlowDataFile = "ResurvoirOperation"
+
+            if self.cmb_ControlType.currentText() == "Reservoir operation":
+                if self.txtIniStorage.text() != "":
+                    ws._EditFlowIniStorage = self.txtIniStorage.text()
+
+                if self.txtMaxStorage.text() != "":
+                    ws._EditFlowMaxStorage = self.txtMaxStorage.text()
+
+                if self.txtMaxStorageRatio.text() != "":
+                    ws._EditFlowMaxStorageR = self.txtMaxStorageRatio.text()
+
+                if self.rdoAutomatic.isChecked():
+                    ws._EditFlowROType = "AutoROM"
+
+                elif self.rdoRigid.isChecked():
+                    ws._EditFlowROType = "RigidROM"
+                    ws._EditFlowROConstQ = self.txt_cms.text()
+
+                elif self.rdoUsingConstant.isChecked():
+                    ws._EditFlowROType = "ConstantQ"
+                    ws._EditFlowROConstQ = self.txt_Constant_discharge.text()
+                    ws._EditFlowROConstQDuration = self.txt_hours.text()
+            else:
+                ws._EditFlowIniStorage = ""
+                ws._EditFlowMaxStorage = ""
+                ws._EditFlowMaxStorageR = ""
+                ws._EditFlowROType = ""
+                ws._EditFlowROConstQ = ""
+                ws._EditFlowROConstQDuration = self.txt_hours.text()
+
+            self.UpdateEditTable()
+            self.Close_Form()
+
 
     def SetControlData(self):
-        count  = _util.FlowControlGrid_XmlCount()
-        if ws._Flowcontrolgrid_xmlCount==1:
-            # self.txt_TimeInterval.setText(GRM._xmltodict['GRMProject']['FlowControlGrid']['ColX'])
-            # self.txt_TimeInterval.setText(GRM._xmltodict['GRMProject']['FlowControlGrid']['RowY'])
-            self.txt_Name.setText(GRM._xmltodict['GRMProject']['FlowControlGrid']['Name'])
-            controltype =GRM._xmltodict['GRMProject']['FlowControlGrid']['ControlType']
-            self.txt_TimeInterval.setText(GRM._xmltodict['GRMProject']['FlowControlGrid']['DT'])
-            self.txtFilePath.setText(GRM._xmltodict['GRMProject']['FlowControlGrid']['FlowDataFile'])
+        self.txt_Name.setText(ws._EditFlowName)
+        controltype =ws._EditFlowControlType
+        index = self.cmb_ControlType.findText(str(controltype), Qt.MatchFixedString)
+        if index >= 0:
+            self.cmb_ControlType.setCurrentIndex(index)
+        self.txt_TimeInterval.setText(ws._EditFlowDT)
+        self.txtFilePath.setText(ws._EditFlowFlowDataFile)
+        self.txtIniStorage.setText(ws._EditFlowIniStorage)
+        self.txtMaxStorage.setText(ws._EditFlowMaxStorage)
+        self.txtMaxStorageRatio.setText(ws._EditFlowMaxStorageR)
 
-        elif ws._Flowcontrolgrid_xmlCount>1:
-            for flowitem in GRM._xmltodict['GRMProject']['FlowControlGrid']:
-                if flowitem['ColX']==ws._ClickX and flowitem['RowY'] == ws._ClickY :
-                    self.txt_Name.setText(flowitem['Name'])
-                    controltype = flowitem['ControlType']
-                    self.txt_TimeInterval.setText(flowitem['DT'])
-                    self.txtFilePath.setText(flowitem['FlowDataFile'])
-                    return
+        if ws._EditFlowROType == "AutoROM":
+            self.rdoAutomatic.setChecked(True)
+        elif ws._EditFlowROType == "RigidROM":
+            self.rdoRigid.setChecked(True)
+            self.txt_cms.setText(ws._EditFlowROConstQ)
+            self.ClickRdoRigid()
+        elif ws._EditFlowROType == "ConstantQ":
+            self.rdoUsingConstant.setChecked(True)
+            self.txt_Constant_discharge.setText(ws._EditFlowROConstQ )
+            self.txt_hours.setText(ws._EditFlowROConstQDuration)
+            self.ClickRdoUsingConstant()
+        self.SelectControtype(self.cmb_ControlType, self.txt_TimeInterval, self.btnLoadFile,
+                              self.btnFileFormat, self.txtFilePath)
 
+    def UpdateEditTable(self):
+        ws._FlowControlTable.setItem(ws._EditFlowCurrentRow, 2, QTableWidgetItem(ws._EditFlowName))
+        ws._FlowControlTable.setItem(ws._EditFlowCurrentRow, 3, QTableWidgetItem(ws._EditFlowDT))
+        ws._FlowControlTable.setItem(ws._EditFlowCurrentRow, 4, QTableWidgetItem(ws._EditFlowControlType))
+        ws._FlowControlTable.setItem(ws._EditFlowCurrentRow, 5, QTableWidgetItem(ws._EditFlowFlowDataFile))
+        ws._FlowControlTable.setItem(ws._EditFlowCurrentRow, 6, QTableWidgetItem(ws._EditFlowIniStorage))
+        ws._FlowControlTable.setItem(ws._EditFlowCurrentRow, 7, QTableWidgetItem(ws._EditFlowMaxStorage))
+        ws._FlowControlTable.setItem(ws._EditFlowCurrentRow, 8, QTableWidgetItem(ws._EditFlowMaxStorageR))
+        ws._FlowControlTable.setItem(ws._EditFlowCurrentRow, 9, QTableWidgetItem(ws._EditFlowROType))
+        ws._FlowControlTable.setItem(ws._EditFlowCurrentRow, 10, QTableWidgetItem(ws._EditFlowROConstQ))
+        ws._FlowControlTable.setItem(ws._EditFlowCurrentRow, 11, QTableWidgetItem(ws._EditFlowROConstQDuration))
+
+
+
+
+        # if self.rdoAutomatic.isChecked():
+        #     ws._AddFlowcontrol_ROType = "AutoROM"
+        #
+        # elif self.rdoRigid.isChecked():
+        #     ws._AddFlowcontrol_ROType = "RigidROM"
+        #     ws._AddFlowcontrol_ROConstQ = self.txt_cms.text()
+        #
+        # elif self.rdoUsingConstant.isChecked():
+        #     ws._AddFlowcontrol_ROType = "ConstantQ"
+        #     ws._AddFlowcontrol_ROConstQ = self.txt_Constant_discharge.text()
+        #     ws._AddFlowcontrol_ROConstQDuration = self.txt_hours.text()
+
+
+
+        # self.txt_cms(ws._Edit)
+        #
+        # rdoAutomatic
+        # rdoRigid
+        # rdoUsingConstant
+
+
+        # count  = _util.FlowControlGrid_XmlCount()
+        # if ws._Flowcontrolgrid_xmlCount==1:
+        #     self.txt_Name.setText(GRM._xmltodict['GRMProject']['FlowControlGrid']['Name'])
+        #     controltype =GRM._xmltodict['GRMProject']['FlowControlGrid']['ControlType']
+        #     self.txt_TimeInterval.setText(GRM._xmltodict['GRMProject']['FlowControlGrid']['DT'])
+        #     self.txtFilePath.setText(GRM._xmltodict['GRMProject']['FlowControlGrid']['FlowDataFile'])
+        #
+        # elif ws._Flowcontrolgrid_xmlCount>1:
+        #     for flowitem in GRM._xmltodict['GRMProject']['FlowControlGrid']:
+        #         if flowitem['ColX']==ws._ClickX and flowitem['RowY'] == ws._ClickY :
+        #             self.txt_Name.setText(flowitem['Name'])
+        #             controltype = flowitem['ControlType']
+        #             self.txt_TimeInterval.setText(flowitem['DT'])
+        #             self.txtFilePath.setText(flowitem['FlowDataFile'])
+        #             return
+        #
 
 
 

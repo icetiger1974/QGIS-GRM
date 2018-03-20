@@ -41,8 +41,10 @@ import GRM_Plugin_dockwidget as GRM
 from plugin.dict2xml import dict2xml
 import xmltodict
 import tempfile
-
-
+import time
+import io
+import chardet
+import tempfile
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -64,41 +66,42 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
 
         # 초기 모든 변수값 셋팅
         self.SetProjectValue()
+        #_util.MessageboxShowError("1", "1")
 
         # 초기에 각각의 컨트롤 들의 기본값을 셋팅
         self.InitControls()
-
+        #_util.MessageboxShowError("1", "2")
         # 각각의 테이블에 데이터 값 읽어서 넣기
         # 1순위 - 프로젝트 파일 데이터
         # 2순위 - 프로젝트 파일 내에 Vat 파일 경로
         self.SetTableData()
+        #_util.MessageboxShowError("1", "3")
         # 테이블 더블 클릭 이벤트(더블 클릭시 사용자가 선택 할수 있는 테이블 메시지 창이 뜨게 됨)
         self.tlbLandCover.itemDoubleClicked.connect(lambda: self.aboutApp("LandCover", self.tlbLandCover.currentRow()))
         self.tblGreenAmpt.itemDoubleClicked.connect(lambda: self.aboutApp("GreenAmpt", self.tblGreenAmpt.currentRow()))
         self.tblSoilDepth.itemDoubleClicked.connect(lambda: self.aboutApp("SoilDepth", self.tblSoilDepth.currentRow()))
+        #_util.MessageboxShowError("1", "4")
 
-# 
+#
         #-------- 2017/10/11 CHO 여기부터----------
         self.btnCancel.clicked.connect(self.closeForm)
  
         # 확인버튼을 눌렀을 때
         self.btnOK.clicked.connect(self.OKForm)
- 
- 
+        #_util.MessageboxShowError("1", "5")
+
         # Vat 선택 버튼 클릭 이벤트(서택된 파일로 테이블값이 변경 됨)
         self.btnVatLand.clicked.connect(lambda :self.SelectVat("btnVatLand",self.txtLandCover))
         self.btnVatAmpt.clicked.connect(lambda :self.SelectVat("btnVatAmpt",self.txtSoilTexture))
         self.btnVatDepth.clicked.connect(lambda :self.SelectVat("btnVatDepth",self.txtSoilDepth))
- 
+        # time.sleep(0.1)
  
         # 콤보 박스 변경시 선택된 콤보 박스 레이어 목록으로 Table 셋팅
         self.cmbLandCover.activated.connect(lambda :self.Get_ComboBox_LayerPath(self.cmbLandCover,self.tlbLandCover,self.txtLandCover,"LandCover"))
         self.cmbSoilTexture.activated.connect(lambda :self.Get_ComboBox_LayerPath(self.cmbSoilTexture,self.tblGreenAmpt,self.txtSoilTexture,"GreenAmpt"))
         self.cmbSoilDepth.activated.connect(lambda :self.Get_ComboBox_LayerPath(self.cmbSoilDepth,self.tblSoilDepth,self.txtSoilDepth,"SoilDepth"))
-
-
-
-
+        # time.sleep(0.2)
+        #_util.MessageboxShowError("1", "6")
 
     # 초기 모든 변수값 셋팅 (프로젝트 파일에서 값을 읽어서 초기 셋팅 값을 결정함)
     def SetProjectValue(self):
@@ -113,13 +116,15 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
     def InitControls(self):
         # 콤보 박스에 레이어 목록 적용 값 셋팅
         self.SetLayerListCombobox()
-        
+
         #이 부분이 현재 문제임.. 나중에 해결하겠음
         # 라디오 버튼 셋팅
         self.SetRadio()
-        
-#         # 테이블 헤더 설정
+
+        # 테이블 헤더 설정
         self.SetTableHeader()
+
+
         
     # 콤보 박스에 레이어 목록 넣어 두기
     def SetLayerListCombobox(self):
@@ -167,28 +172,27 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
     def SetRadio(self):
         # Lanccover 첫번째 라디오 버튼 클릭 이벤트 처리
         self.rbtUseLCLayer.clicked.connect(self.LCLaye_CheckedChanged)
-        
+
         # Lanccover 두번째 라디오 버튼 클릭 이벤트 처리
         self.rbtUseConstLCAtt.clicked.connect(self.ConstLCAtt_CheckedChanged)
-         
+
         # SoilTexture 첫번째 라디오 버튼 클릭 이벤트 처리
         self.rbtUseSoilTextureLayer.clicked.connect(self.SoilTextureLayer_CheckedChanged)
-         
+
         # SoilTexture 두번째 라디오 버튼 클릭 이벤트 처리
         self.rbtUseConstTextureAtt.clicked.connect(self.TextureAtt_CheckedChanged)
-         
+
         # SoilDepth  첫번째 라디오 버튼 클릭 이벤트 처리
         self.rbtUseSoilDepthLayer.clicked.connect(self.SoilDepthLayer_CheckedChanged)
-         
+
         # SoilDepth  두번째 라디오 버튼 클릭 이벤트 처리
         self.rbtUseConstDepth.clicked.connect(self.ConstDepth_CheckedChanged)
-        
+
 
         # ------------------------Lndcover 라디오 버튼 셋팅 시작---------------------------------
         #2017/11/27 =====
         
         if self.LandCoverType == "File":
-            
             # 라디오 버튼 클릭시 활성, 비활성 컨트롤 함수
             self.LCLaye_CheckedChanged()
 
@@ -200,9 +204,10 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
 
             # 콤보 박스의 선택 레이어를 프로젝트 파일에 있는 것으로 셋팅
             LandCoverFile = GRM._xmltodict['GRMProject']['ProjectSettings']['LandCoverFile']
-            if self.txtLandCover.text() != "":
+            if LandCoverFile != "" and LandCoverFile is not None:
                 LandCoverName = self.GetFilename(LandCoverFile)
                 self.Setcombobox(self.cmbLandCover, LandCoverName, LandCoverFile)
+
         else :
             # 2번째 라디오 버튼 클릭시 이벤트 함수
             self.ConstLCAtt_CheckedChanged()
@@ -232,9 +237,8 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
             
             # layer 콤보 박스 항목을 프로젝트 파일의 데이터 내용에 해당되는 콤보 박스 항목으로 셋팅
             SoilTextureFile = GRM._xmltodict['GRMProject']['ProjectSettings']['SoilTextureFile']
-            if self.txtSoilTexture.text() != "":
+            if SoilTextureFile != "" and SoilTextureFile is not None:
                 SoilTextureName = self.GetFilename(SoilTextureFile)
-                
                 self.Setcombobox(self.cmbSoilTexture, SoilTextureName, SoilTextureFile)
   
         else:
@@ -272,7 +276,7 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
   
             # layer 콤보 박스 항목을 프로젝트 파일의 데이터 내용에 해당되는 콤보 박스 항목으로 셋팅
             SoilDepthFile = GRM._xmltodict['GRMProject']['ProjectSettings']['SoilDepthFile']
-            if self.txtSoilDepth.text() != "":
+            if SoilDepthFile != "" and SoilDepthFile is not None:
                 SoilDepthName = self.GetFilename(SoilDepthFile)
                 self.Setcombobox(self.cmbSoilDepth, SoilDepthName, SoilDepthFile)
         else :
@@ -308,7 +312,6 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
         self.tlbLandCover.setEnabled(False)
         self.txtCoefficient.setEnabled(True)
         self.txtImpervious.setEnabled(True)
-
 
     # =========================================================
     # SoilTexture 첫번째 라디오 버튼 클릭 이벤트 처리
@@ -358,13 +361,16 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
         # 2순위 Vat 파일 셋팅
         
         #2017/11/27 =====
-        
+        #_util.MessageboxShowError("in", "1")
         if self.LandCoverType =="File" and GRM._LandCoverCount!= 0:
             self.SetLandCoverTalbe()
+        #_util.MessageboxShowError("in", "2")
         if self.SoilTextureType=="File" and GRM._GreenAmptCount!=0:
             self.SetGreenAmptTalbe()
+        #_util.MessageboxShowError("in", "3")
         if self.SoilDepthType=="File" and GRM._SoilDepthCount!= 0:
             self.SetSoilDepthTalbe()
+        #_util.MessageboxShowError("in", "4")
 
 
     def SetLandCoverTalbe(self):
@@ -722,22 +728,60 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
         #     _util.MessageboxShowInfo("GRM", "Land covers and soil attributes setup are completed.")
         #
 
+        if self.rbtUseLCLayer.isChecked():
+            if self.cmbLandCover.currentIndex()==0:
+                _util.MessageboxShowInfo(" GRM " , " layer is not selected ")
+                self.cmbLandCover.setFocus()
+                return
+            if self.txtLandCover.text() =="":
+                _util.MessageboxShowInfo(" GRM ", "The VAT file is not selected.")
+                self.txtLandCover.setFocus()
+                return
+
+        if self.rbtUseSoilTextureLayer.isChecked():
+            if self.cmbSoilTexture.currentIndex() == 0:
+                _util.MessageboxShowInfo(" GRM ", " layer is not selected ")
+                self.cmbSoilTexture.setFocus()
+                return
+            if self.txtSoilTexture.text() == "":
+                _util.MessageboxShowInfo(" GRM ", "The VAT file is not selected.")
+                self.txtSoilTexture.setFocus()
+                return
+
+
+        if self.rbtUseSoilDepthLayer.isChecked():
+            if self.cmbSoilDepth.currentIndex() == 0:
+                _util.MessageboxShowInfo(" GRM ", " layer is not selected ")
+                self.cmbSoilDepth.setFocus()
+                return
+            if self.txtSoilDepth.text() == "":
+                _util.MessageboxShowInfo(" GRM ", "The VAT file is not selected.")
+                self.txtSoilDepth.setFocus()
+                return
+
+
+
+
+
+
+
+
         # 1. 라디오 rbtUseConstLCAtt
         if self.rbtUseConstLCAtt.isChecked():
             if True:
                 if self.Checktxtbox(self.txtCoefficient):
-                    if float(self.txtCoefficient.text()) < 0.0015 or 1.5 < float(self.txtCoefficient.text()):
+                    if float(self.txtCoefficient.text()) < 0.0015 or 1.5 > float(self.txtCoefficient.text()):
                         _util.MessageboxShowError("GRM", "{0}\n{1}".format(
                             "[Land cover roughness coefficient] is invalid.",
-                            "0.0015<=Land cover roughness coefficient<=to1.5"))
+                            "0.0015<=Land cover roughness coefficient<=1.5"))
                         self.txtCoefficient.setFocus()
                         return
-                else:
-                    _util.MessageboxShowError("GRM", "{0}\n{1}".format(
-                        "[Land cover roughness coefficient] is invalid.",
-                        "0.0015<=Land cover roughness coefficient<=to1.5"))
-                    self.txtCoefficient.setFocus()
-                    return
+                # else:
+                #     _util.MessageboxShowError("GRM", "{0}\n{1}".format(
+                #         "[Land cover roughness coefficient] is invalid.",
+                #         "0.0015<=Land cover roughness coefficient<=1.5"))
+                #     self.txtCoefficient.setFocus()
+                #     return
 
                 if self.Checktxtbox(self.txtImpervious):
                     if float(self.txtImpervious.text()) < 0 or 1 < float(self.txtImpervious.text()):
@@ -832,23 +876,32 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
 
     def DataSave(self):
         #  타입 설정
-        if self.rbtUseSoilTextureLayer.isChecked():
+        #_util.MessageboxShowError("save", "1")
+        if self.rbtUseLCLayer.isChecked():
             GRM._xmltodict['GRMProject']['ProjectSettings']['LandCoverDataType'] ="File"
-            LandCoverLayerPath = _util.GetcomboSelectedLayerPath(self.cmbLandCover)
+            if self.cmbLandCover.currentIndex()!=0:
+                LandCoverLayerPath = _util.GetcomboSelectedLayerPath(self.cmbLandCover)
+            else :
+                LandCoverLayerPath=""
             GRM._xmltodict['GRMProject']['ProjectSettings']['LandCoverFile'] =LandCoverLayerPath
             GRM._xmltodict['GRMProject']['ProjectSettings']['LandCoverVATFile'] = self.txtLandCover.text()
             # Landcover table 데이터 저장
+            #_util.MessageboxShowError("save", "1-1")
             self.dataSeve_Landcover()
+            #_util.MessageboxShowError("save", "1-2")
         else :
             GRM._xmltodict['GRMProject']['ProjectSettings']['LandCoverDataType'] = "Constant"
             GRM._xmltodict['GRMProject']['ProjectSettings']['ConstantRoughnessCoeff'] = self.txtCoefficient.text()
             GRM._xmltodict['GRMProject']['ProjectSettings']['ConstantImperviousRatio'] = self.txtImpervious.text()
-
+        #_util.MessageboxShowError("save", "2")
 
         #  타입 설정
         if self.rbtUseSoilTextureLayer.isChecked():
             GRM._xmltodict['GRMProject']['ProjectSettings']['SoilTextureDataType'] ="File"
-            SoilTextureLayerPath = _util.GetcomboSelectedLayerPath(self.cmbSoilTexture)
+            if self.cmbSoilTexture.currentIndex()!=0:
+                SoilTextureLayerPath = _util.GetcomboSelectedLayerPath(self.cmbSoilTexture)
+            else:
+                SoilTextureLayerPath=""
             GRM._xmltodict['GRMProject']['ProjectSettings']['SoilTextureFile'] =SoilTextureLayerPath
             GRM._xmltodict['GRMProject']['ProjectSettings']['SoilTextureVATFile']=self.txtSoilTexture.text()
             self.dataSeve_SoilTexture()
@@ -858,18 +911,22 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
             GRM._xmltodict['GRMProject']['ProjectSettings']['ConstantSoilEffPorosity'] = self.txtEffective_porosity.text()
             GRM._xmltodict['GRMProject']['ProjectSettings']['ConstantSoilWettingFrontSuctionHead'] = self.txtSuction_head.text()
             GRM._xmltodict['GRMProject']['ProjectSettings']['ConstantSoilHydraulicConductivity'] = self.txtConductiovity.text()
-
+        #_util.MessageboxShowError("save", "3")
         #  타입 설정
         if self.rbtUseSoilDepthLayer.isChecked():
             GRM._xmltodict['GRMProject']['ProjectSettings']['SoilDepthDataType'] ="File"
-            SoilDepthLayerPath = _util.GetcomboSelectedLayerPath(self.cmbSoilDepth)
+
+            if self.cmbSoilDepth.currentIndex() != 0:
+                SoilDepthLayerPath = _util.GetcomboSelectedLayerPath(self.cmbSoilDepth)
+            else:
+                SoilDepthLayerPath = ""
             GRM._xmltodict['GRMProject']['ProjectSettings']['SoilDepthFile']  = SoilDepthLayerPath
             GRM._xmltodict['GRMProject']['ProjectSettings']['SoilDepthVATFile'] = self.txtSoilDepth.text()
             self.dataSeve_SoilDepth()
         else :
             GRM._xmltodict['GRMProject']['ProjectSettings']['SoilDepthDataType'] = "Constant"
             GRM._xmltodict['GRMProject']['ProjectSettings']['ConstantSoilDepth'] = self.txtSoil_depth.text()
-
+        #_util.MessageboxShowError("save", "4")
 
     def dataSeve_Landcover(self):
         try:
@@ -888,56 +945,58 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
         root = xmltree.getroot()
         count =self.tlbLandCover.rowCount()
         GRM._LandCoverCount = count
+        #_util.MessageboxShowError("save", "2-1")
+        #_util.MessageboxShowError("count", str(count))
+        try:
+            for row in range(0, count):
+                child = ET.Element("LandCover")
+                root.append(child)
 
-        for row in range(0, count):
-            child = ET.Element("LandCover")
-            root.append(child)
+                GridValue = ET.Element("GridValue")
+                GridValue.text = self.tlbLandCover.item(row, 0).text()
+                child.append(GridValue)
 
-            GridValue = ET.Element("GridValue")
-            GridValue.text = self.tlbLandCover.item(row, 0).text()
-            child.append(GridValue)
+                UserLandCover = ET.Element("UserLandCover")
+                UserLandCover.text = self.tlbLandCover.item(row, 1).text()
+                child.append(UserLandCover)
 
-            UserLandCover = ET.Element("UserLandCover")
-            UserLandCover.text = self.tlbLandCover.item(row, 1).text()
-            child.append(UserLandCover)
+    #             GRMLandCoverCode = ET.Element("GRMLandCoverCode")
+                GRMLandCoverCode = ET.Element("GRMCode")
+                GRMLandCoverCode.text = self.tlbLandCover.item(row, 2).text()
+                child.append(GRMLandCoverCode)
 
-#             GRMLandCoverCode = ET.Element("GRMLandCoverCode")
-            GRMLandCoverCode = ET.Element("GRMCode")
-            GRMLandCoverCode.text = self.tlbLandCover.item(row, 2).text()
-            child.append(GRMLandCoverCode)
+                GRMLandCoverE = ET.Element("GRMLandCoverE")
+                GRMLandCoverE.text = self.tlbLandCover.item(row, 3).text()
+                child.append(GRMLandCoverE)
 
-            GRMLandCoverE = ET.Element("GRMLandCoverE")
-            GRMLandCoverE.text = self.tlbLandCover.item(row, 3).text()
-            child.append(GRMLandCoverE)
+                GRMLandCoverK = ET.Element("GRMLandCoverK")
+                GRMLandCoverK.text = self.tlbLandCover.item(row, 4).text()
+                child.append(GRMLandCoverK)
 
-            GRMLandCoverK = ET.Element("GRMLandCoverK")
-            GRMLandCoverK.text = self.tlbLandCover.item(row, 4).text()
-            child.append(GRMLandCoverK)
+                RoughnessCoefficient = ET.Element("RoughnessCoefficient")
+                RoughnessCoefficient.text = self.tlbLandCover.item(row, 5).text()
+                child.append(RoughnessCoefficient)
 
-            RoughnessCoefficient = ET.Element("RoughnessCoefficient")
-            RoughnessCoefficient.text = self.tlbLandCover.item(row, 5).text()
-            child.append(RoughnessCoefficient)
+                ImperviousRatio = ET.Element("ImperviousRatio")
+                ImperviousRatio.text = self.tlbLandCover.item(row, 6).text()
+                child.append(ImperviousRatio)
+            #_util.MessageboxShowError("save", "2-2")
 
-            ImperviousRatio = ET.Element("ImperviousRatio")
-            ImperviousRatio.text = self.tlbLandCover.item(row, 6).text()
-            child.append(ImperviousRatio)
-
-
-        filepath = tempfile.mktemp()
-        xmltree.write(filepath)
-
-        # Dictionary 초기화
-        GRM._xmltodict.clear()
-
-        # 파일 읽어 오기
-        Projectfile = open(filepath, 'r')
-        data = Projectfile.read()
-        Projectfile.close()
-        # 읽어온 파일 내용(XML)을 dictionary 로 변경
-        docs = dict(xmltodict.parse(data))
-        GRM._xmltodict.update(docs)
-
-
+            filepath = tempfile.mktemp()
+            xmltree.write(filepath)
+            #_util.MessageboxShowError("save", "2-3")
+            # Dictionary 초기화
+            GRM._xmltodict.clear()
+            #_util.MessageboxShowError("save", "2-4")
+            # 파일 읽어 오기
+            Projectfile = open(filepath, 'r')
+            data = Projectfile.read()
+            Projectfile.close()
+            # 읽어온 파일 내용(XML)을 dictionary 로 변경
+            docs = dict(xmltodict.parse(data))
+            GRM._xmltodict.update(docs)
+        except :
+            pass
 
     def dataSeve_SoilTexture(self):
         # dictionary 에서 GreenAmptParameter 항목을 모두 제거
@@ -1072,29 +1131,6 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
         GRM._xmltodict.update(docs)
 
 
-
-
-
-            # def SetProjectToCombox(self):
-    #     LandCoverFile = GRM._xmltodict['GRMProject']['ProjectSettings']['LandCoverFile']
-    #     SoilTextureFile = GRM._xmltodict['GRMProject']['ProjectSettings']['SoilTextureFile']
-    #     SoilDepthFile = GRM._xmltodict['GRMProject']['ProjectSettings']['SoilDepthFile']
-    #
-    #     if LandCoverFile != "":
-    #         LandCoverName = self.GetFilename(LandCoverFile)
-    #         self.Setcombobox(self.cmbLandCover, LandCoverName, LandCoverFile)
-    #
-    #     # 프로젝트 파일에 문제가 있는건지 잘 되지 않음 추후에 확인 의심이 많이감
-    #     if SoilTextureFile != "":
-    #         SoilTextureName = self.GetFilename(SoilTextureFile)
-    #         self.Setcombobox(self.cmbSoilTexture, SoilTextureName, SoilTextureFile)
-    #
-    #
-    #     if SoilDepthFile != "":
-    #         SoilDepthName = self.GetFilename(SoilDepthFile)
-    #         self.Setcombobox(self.cmbSoilDepth, SoilDepthName, SoilDepthFile)
-
-
     # 콤보 박스에 있는 목록중에 프로젝트 상에 있는 레이어 비교 하여 있으면 콤보박스에 선택
     def Setcombobox(self,commboxs,layername,filepath):
         index = commboxs.findText(str(layername))
@@ -1114,8 +1150,10 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
     def SelectVat(self,button,txtbox):
         dir = os.path.dirname(txtbox.text())
         filename = QFileDialog.getOpenFileName(self, "select output file ", dir, "*.vat")
-        txtbox.clear()
-        txtbox.setText(filename)
+        # if filename:
+        #     txtbox.clear()
+        if filename:
+            txtbox.setText(filename)
         if button=="btnVatLand":
             self.SetVATValue(self.txtLandCover.text(), self.tlbLandCover,"LandCover")
         elif button=="btnVatAmpt":
@@ -1141,42 +1179,70 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
 
     # Vat 파일에서 읽어 와서 테이블에 값셋팅 하기
     def SetVATValue(self,path,table,type):
-        with open(path) as fp:
-            lines = fp.read().split("\n")
-            
+        if path!="":
+
+            temOutput = tempfile.mktemp() + ".txt"
+            with open(path) as fp:
+                lines = fp.read()
+            self.convertEncoding(chardet.detect(lines)['encoding'], "cp949", path, temOutput)
+            with open(temOutput) as fp:
+                lines2 = fp.read().split("\n")
+                lines = filter(None,lines2)
+
+
         # 테이블 초기화
         table.clear()
         if type == "LandCover":
             table.setColumnCount(7)
             table.setHorizontalHeaderLabels(['GridValue', 'UserLandCover', 'GRMCode', 'LandCoverE', 'LandCoverK', 'RoughnessCoefficient','ImperviousRatio'])
+
         elif type == "GreenAmpt":
             table.setColumnCount(9)
             table.setHorizontalHeaderLabels(['GridValue', 'USERSoil', 'GRMCode', 'GRMTextureE', 'GRMTextureK', 'Porosity', 'EffectivePorosity','WFSoilSuctionHead', 'HydraulicConductivity'])
         elif type == "SoilDepth":
             table.setColumnCount(6)
             table.setHorizontalHeaderLabels(['GridValue', 'UserDepthClass', 'GRMCode', 'SoilDepthClassE', 'SoilDepthClassK', 'SoilDepth'])
-#
-        table.setRowCount(int(lines[0]))
-        
+        table.setRowCount(int(len(lines)))
+
         try:
             # Table에 데이터 값 대입
-            for i in range(1, len(lines)):
-                splitsdata = lines[i].split(",")
-                table.setItem(i - 1, 0, QTableWidgetItem(splitsdata[0].decode('cp949')))
-                table.setItem(i - 1, 1, QTableWidgetItem(splitsdata[1].decode('cp949')))
-                
-                #이 함수가 문제가 있음.. 2017/11/28
-                #From 박 : staticDB는 임시로 넣어서 사용
-                #VAT 파일 안에 띄어쓰기가 있는 경우 값을 완전 다른 값으로 받아들여서 strip()으로 띄어쓰기 제거함
-                self.SetMainTableValue(splitsdata[1].decode('cp949').strip(),table,(i-1),type)
-        except:
-#             _util.MessageboxShowError("No GRM Static DB","No GRM Static DB")
 
-            for i in range(1, len(lines)):
-                splitsdata = lines[i].split(",")
-                table.setItem(i - 1, 0, QTableWidgetItem(splitsdata[0].decode('cp949')))
-                table.setItem(i - 1, 1, QTableWidgetItem(splitsdata[1].decode('cp949')))
+            for i in range(0, len(lines)):
+                if lines[i] is not None and lines[i]!="":
+                    splitsdata = lines[i].split(",")
+                    item1 = QtGui.QTableWidgetItem(splitsdata[0].decode('cp949'))
+                    item1.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    table.setItem(i, 0, QTableWidgetItem(item1))
+                    item2 = QtGui.QTableWidgetItem(splitsdata[1].decode('cp949'))
+                    item2.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    table.setItem(i, 1, QTableWidgetItem(item2))
+                    self.SetMainTableValue(splitsdata[1].decode('cp949').strip(),table,(i),type)
+        except Exception as es:
+           _util.MessageboxShowError("GRM",str(es))
+            #for i in range(0, len(lines)):
+            #    splitsdata = lines[i].split(",")
+            #    table.setItem(i - 1, 0, QTableWidgetItem(splitsdata[0].decode('cp949')))
+            #    table.setItem(i - 1, 1, QTableWidgetItem(splitsdata[1].decode('cp949')))
             
+
+
+
+
+
+
+    def convertEncoding(self,from_encode,to_encode,old_filepath,target_file):
+        f1=file(old_filepath)
+        content2=[]
+        while True:
+            line=f1.readline()
+            content2.append(line.decode(from_encode).encode(to_encode))
+            if len(line) ==0:
+                break
+
+        f1.close()
+        f2=file(target_file,'w')
+        f2.writelines(content2)
+        f2.close()
 
     # 메인창 Land cover tablewidget 테이블에 데이터 셋팅 (3~ 이후 컬럼의 데이터 값을 StaticDB 셋팅)
     def SetMainTableValue(self, value, widget, row, type):
@@ -1188,47 +1254,62 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
         if type == "LandCover":
             for element in root.findall("{http://tempuri.org/DataSet1.xsd}LandCoverParameter"):
                 if element.findtext("{http://tempuri.org/DataSet1.xsd}LandCoverK") == value :
-                    widget.setItem(row, 2, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}LandCoverCode")))
-                    widget.setItem(row, 3, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}LandCoverE")))
-                    widget.setItem(row, 4, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}LandCoverK")))
-                    widget.setItem(row, 5, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}RoughnessCoefficient")))
-                    widget.setItem(row, 6, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}ImperviousRatio")))
+
+                    item1 = QtGui.QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}GRMCode"))
+                    item1.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    widget.setItem(row, 2, QTableWidgetItem(item1))
+
+                    item2 = QtGui.QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}LandCoverE"))
+                    item2.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    widget.setItem(row, 3, QTableWidgetItem(item2))
+
+                    item3 = QtGui.QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}LandCoverK"))
+                    item3.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    widget.setItem(row, 4, QTableWidgetItem(item3))
+
+
+                    widget.setItem(row, 5, QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}RoughnessCoefficient")))
+                    widget.setItem(row, 6, QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}ImperviousRatio")))
                     break                    
 
         elif type == "GreenAmpt":
             for element in root.findall("{http://tempuri.org/DataSet1.xsd}GreenAmptSoilParameter"):
                 if element.findtext("{http://tempuri.org/DataSet1.xsd}SoilTextureK") == value :
-                    widget.setItem(row, 2, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}SoilTextureCode")))
-                    widget.setItem(row, 3, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}SoilTextureE")))
-                    widget.setItem(row, 4, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}SoilTextureK")))
-                    widget.setItem(row, 5, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}PorosityDefault")))
-                    widget.setItem(row, 6, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}EffectivePorosityDefault")))
-                    widget.setItem(row, 7, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}WFSoilSuctionHeadDefault")))
-                    widget.setItem(row, 8, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}HydraulicConductivity")))
+
+                    item1 = QtGui.QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}GRMCode"))
+                    item1.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    widget.setItem(row, 2, QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}GRMCode")))
+
+                    item2 = QtGui.QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}SoilTextureE"))
+                    item2.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    widget.setItem(row, 3, QTableWidgetItem(item2))
+
+                    item3 = QtGui.QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}SoilTextureK"))
+                    item3.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    widget.setItem(row, 4, QTableWidgetItem(item3))
+
+
+                    widget.setItem(row, 5, QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}PorosityDefault")))
+                    widget.setItem(row, 6, QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}EffectivePorosityDefault")))
+                    widget.setItem(row, 7, QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}WFSoilSuctionHeadDefault")))
+                    widget.setItem(row, 8, QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}HydraulicConductivity")))
                     break
         elif type == "SoilDepth":
             for element in root.findall("{http://tempuri.org/DataSet1.xsd}SoilDepthParameter"):
                 if element.findtext("{http://tempuri.org/DataSet1.xsd}SoilDepthClassK") == value :
-                    widget.setItem(row, 2,
-                                   QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}GRMCode")))
-                    widget.setItem(row, 3, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}SoilDepthClassE")))
-                    widget.setItem(row, 4, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}SoilDepthClassK")))
-                    widget.setItem(row, 5, QTableWidgetItem(
-                        element.findtext("{http://tempuri.org/DataSet1.xsd}SoilDepthDefault")))
+
+                    item1 = QtGui.QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}GRMCode"))
+                    item1.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    widget.setItem(row, 2,QTableWidgetItem(item1))
+
+                    item2 = QtGui.QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}SoilDepthClassE"))
+                    item2.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    widget.setItem(row, 3, QTableWidgetItem(item2))
+
+                    item3 = QtGui.QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}SoilDepthClassK"))
+                    item3.setFlags(QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable)
+                    widget.setItem(row, 4, QTableWidgetItem(item3))
+                    widget.setItem(row, 5, QTableWidgetItem(element.findtext("{http://tempuri.org/DataSet1.xsd}SoilDepthDefault")))
                     break
 
     # # Qdilog 창에 Qtablewidget 셋팅
@@ -1307,7 +1388,7 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
 
             list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}LandCoverE"))
             list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}LandCoverK"))
-            list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}LandCoverCode"))
+            list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}GRMCode"))
             list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}RoughnessCoefficient"))
             list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}ImperviousRatio"))
  
@@ -1340,7 +1421,7 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
             
             list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}SoilTextureE"))
             list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}SoilTextureK"))
-            list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}SoilTextureCode"))
+            list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}GRMCode"))
             list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}PorosityMin"))
             list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}PorosityMax"))
             list.append(element.findtext("{http://tempuri.org/DataSet1.xsd}PorosityDefault"))
@@ -1359,7 +1440,7 @@ class SetLCST_StetupDialog(QtGui.QDialog, FORM_CLASS):
         tableWidget.setColumnCount(14)
         tableWidget.setRowCount(len(list) / 14)
         tableWidget.setHorizontalHeaderLabels(
-            ['SoilTextureE', 'SoilTextureK', 'SoilTextureCode', 'PorosityMin', 'PorosityMax', 'PorosityDefault', 'EffectivePorosityMin',
+            ['SoilTextureE', 'SoilTextureK', 'GRMCode', 'PorosityMin', 'PorosityMax', 'PorosityDefault', 'EffectivePorosityMin',
              'EffectivePorosityMax', 'EffectivePorosityDefault','ResidualMoistureContent','WFSoilSuctionHeadMin',
              'WFSoilSuctionHeadMax','WFSoilSuctionHeadDefault','HydraulicConductivity'])
  

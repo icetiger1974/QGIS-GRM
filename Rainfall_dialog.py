@@ -28,6 +28,12 @@ from PyQt4.QtCore import *
 from PyQt4 import QtGui, uic
 import GRM_Plugin_dockwidget as GRM
 from PyQt4.QtGui import QFileDialog
+# # import math
+# sys.path.append("C:/Program Files/QGIS 2.18/apps/Python27/Lib/site-packages/pygments/lexers")
+# import math.py
+
+
+
 
 sys.path.insert(0, 'C:/Program Files/QGIS 2.18/apps/Python27\lib\site-packages/future/backports')
 import datetime
@@ -59,12 +65,21 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
 
     # 프로젝트 파일 내용을 받아서 초기 폼 셋팅
     def SettingForm(self):
+        # 사용자가 time step 값을 변경시 테이블에 적용
+        self.spbtimestep.valueChanged.connect(self.RefreshTable)
+
+        # 폴더 경로 처리
+        self.txtFolderPath.textChanged.connect(self.Chage_textFolderpath)
+
 
          # 시간 인터벌 없으면 기본 10분
         if self.RainfallInterval is not None:
-            self.txtRainfallTimeStep.setText(self.RainfallInterval)
+            self.spbtimestep.setValue(int(self.RainfallInterval))
+            # self.txtRainfallTimeStep.setText(self.RainfallInterval)
         else:
-            self.txtRainfallTimeStep.setText("10")
+            self.spbtimestep.setValue(10)
+            # self.txtRainfallTimeStep.setText("10")
+
 
         #Open Project 시행시 처리
         if self.RainfallDataFile is not None:
@@ -93,6 +108,16 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
             dirname = os.path.dirname(self.projectPath)
             self.txtSaveFileName.setText( dirname + "\\"+filename + "_RF.txt")
 
+
+    def Chage_textFolderpath(self):
+        FolderPath =self.txtFolderPath.text()
+        if _util.CheckFolder(FolderPath.rstrip()):
+            self.txtFolderPath.setText(FolderPath.rstrip())
+            if self.rbUseASCgirdLayer.isChecked:
+                self.rbUseASCgirdLayer_click()
+            if self.rbUseTextFileMRF.isChecked:
+                self.rbUseTextFileMRF_click()
+
     def SetbtnEvent(self):
         self.btOpenRfFolder.clicked.connect(self.SelectFolder)
         # self.btApplyNewFloder.clicked.connect(self.ApplyFolderFile)
@@ -110,7 +135,6 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
 
         #리스트 박스 이벤트 처리
         self.lstRFfiles.itemClicked.connect(self.SetSelectFilePath)
-
 
         self.btnSaveFile.clicked.connect(self.SeaveFilepath)
 
@@ -138,17 +162,23 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
             self.SetTableData_To_Text()
         self.txtSaveFileName.setText("")
 
-
-
+    # spin box 값이 변경 될때 Table에 변경된 값 적용
+    def RefreshTable(self):
+        if self.dgvRainfallList.rowCount()>0:
+            for i in range(self.dgvRainfallList.rowCount()):
+                self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.spbtimestep.value()) * i)))
 
     def rbUseTextFileMRF_click(self):
         self.ReomveAll()
         self.rdoUseTextFile()
+
         if self.txtFolderPath.text()!="" :
             filelsit = self.search(self.txtFolderPath.text())
             self.SettingListWidget(filelsit)
             self.SettingTable(self.RainfallDataFile)
         self.txtSaveFileName.setText("")
+        self.label_4.setText("     File name : ")
+
 
     #첫번째 라디오 버튼 선택 이벤트 하위
     def UseASCgirdLayer(self):
@@ -161,6 +191,7 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
         self.btnSaveFile.setEnabled(True)
         # 다중 파일 선택 가능
         self.lstRFfiles.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.label_4.setText("Save file name : ")
 
     #두번째 라디오 버튼 선택 이벤트
     def rdoUseTextFile(self):
@@ -175,30 +206,40 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
 
     # 테이블에 데이터 셋팅
     def SettingTable(self,Datafile):
-        if Datafile !="":
-            self.dgvRainfallList.clear()
-            file_open = open(Datafile).readlines()
-            datalist = []
-            for line in file_open[0:]:
-                splitsdata = line.strip().split()
-                datalist.append(splitsdata)
-            if len(datalist) >= 0:
-                stylesheet = "::section{Background-color : rgb(255,255,255)}"
-                self.dgvRainfallList.horizontalHeader().setStyleSheet(stylesheet)
-                self.dgvRainfallList.setColumnCount(3)
-                self.dgvRainfallList.setHorizontalHeaderLabels(['Order', 'DataTime', 'Rainfall'])
-                self.dgvRainfallList.setRowCount(len(datalist))
-                self.ListCount = len(datalist)
-                for i in range(len(datalist)):
-                    self.dgvRainfallList.setItem(i, 0, QTableWidgetItem(str(i+1)))
-                    self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.txtRainfallTimeStep.text())*i)))
-                    self.dgvRainfallList.setItem(i, 2, QTableWidgetItem(datalist[i][0]))
-            else :
-                stylesheet = "::section{Background-color : rgb(255,255,255)}"
-                self.dgvRainfallList.horizontalHeader().setStyleSheet(stylesheet)
-                self.dgvRainfallList.setColumnCount(3)
-                self.dgvRainfallList.setHorizontalHeaderLabels(['Order', 'DataTime', 'Rainfall'])
+
+        if Datafile !="" and Datafile is not None:
+            if _util.CheckFile(Datafile):
+                self.dgvRainfallList.clear()
+                file_open = open(Datafile).readlines()
+                datalist = []
+
+                for line in file_open[0:]:
+                    splitsdata = line.strip().split()
+                    datalist.append(splitsdata)
+
+                if len(datalist) >= 0:
+
+                    stylesheet = "::section{Background-color : rgb(255,255,255)}"
+                    self.dgvRainfallList.horizontalHeader().setStyleSheet(stylesheet)
+                    self.dgvRainfallList.setColumnCount(3)
+
+                    self.dgvRainfallList.setHorizontalHeaderLabels(['Order', 'DataTime', 'Rainfall'])
+                    self.dgvRainfallList.setRowCount(len(datalist))
+
+                    self.ListCount = len(datalist)
+                    for i in range(len(datalist)):
+                        self.dgvRainfallList.setItem(i, 0, QTableWidgetItem(str(i+1)))
+                        self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.spbtimestep.value())*i)))
+                        self.dgvRainfallList.setItem(i, 2, QTableWidgetItem(datalist[i][0]))
+                else :
+
+                    stylesheet = "::section{Background-color : rgb(255,255,255)}"
+                    self.dgvRainfallList.horizontalHeader().setStyleSheet(stylesheet)
+                    self.dgvRainfallList.setColumnCount(3)
+                    self.dgvRainfallList.setHorizontalHeaderLabels(['Order', 'DataTime', 'Rainfall'])
+
         else:
+
             stylesheet = "::section{Background-color : rgb(255,255,255)}"
             self.dgvRainfallList.horizontalHeader().setStyleSheet(stylesheet)
             self.dgvRainfallList.setColumnCount(3)
@@ -270,8 +311,8 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
                 self.txtFolderPath.setFocus()
                 raise Exception("\n Folder path is required for data generation. \n")
 
-            if self.txtRainfallTimeStep.text() == "":
-                self.txtRainfallTimeStep.setFocus()
+            if self.spbtimestep.value() == 0:
+                self.spbtimestep.setFocus()
                 raise Exception("\n Rainfall time step must be valid. \n")
 
             if self.txtSaveFileName.text() == "":
@@ -292,20 +333,23 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
             _util.MessageboxShowInfo("RainFall", "Rainfall setup is completed.   ")
             # 저장이 완료 되면 다시 로드
             self.ProjectSetting()
+            self.close()
 
     def UpdateMenuStatus(self):
         GRM._xmltodict['GRMProject']['ProjectSettings']['RainfallDataFile'] = self.txtSaveFileName.text()
-        GRM._xmltodict['GRMProject']['ProjectSettings']['RainfallInterval'] = self.txtRainfallTimeStep.text()
+        GRM._xmltodict['GRMProject']['ProjectSettings']['RainfallInterval'] = str(self.spbtimestep.value())
 
         OutputTimeStep=GRM._xmltodict['GRMProject']['ProjectSettings']['OutputTimeStep']
-        if OutputTimeStep == None or OutputTimeStep=="":
-            GRM._xmltodict['GRMProject']['ProjectSettings']['OutputTimeStep'] ==self.txtRainfallTimeStep.text()
+        if self.spbtimestep.value()!=0:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['OutputTimeStep'] =str(self.spbtimestep.value())
 
         SimulationDuration = GRM._xmltodict['GRMProject']['ProjectSettings']['SimulationDuration']
-        if SimulationDuration == None or SimulationDuration == "":
+        if self.dgvRainfallList.rowCount()>0 and self.spbtimestep.value()!=0:
             Rcount = self.dgvRainfallList.rowCount()
-            timestep = int(self.txtRainfallTimeStep.text())
-            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulationDuration'] = str(Rcount * timestep)
+            timestep = int((self.spbtimestep.value()))
+            cal_result = float((Rcount * timestep)/60)
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulationDuration'] = str(int(cal_result)+1)
+
 
         if self.rbUseTextFileMRF.isChecked():
             GRM._xmltodict['GRMProject']['ProjectSettings']['RainfallDataType'] = 'TextFileMAP'
@@ -332,7 +376,8 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
             for i in range(len(items)):
                 Datafile = self.txtFolderPath.text() + "\\" + items[i]
                 self.dgvRainfallList.setItem(i, 0, QTableWidgetItem(str(i + 1)))
-                self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.txtRainfallTimeStep.text()) * i)))
+                # self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.txtRainfallTimeStep.text()) * i)))
+                self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.spbtimestep.value()) * i)))
                 self.dgvRainfallList.setItem(i, 2, QTableWidgetItem(items[i]))
 
     # view file data 버튼을 눌렀을때 선택된 파일이 없으면 현재 파일리스트에 표시된 모두를 tablewiget에 표출
@@ -347,7 +392,8 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
             for i in range(len(itemsList)):
                 # Datafile = self.txtFolderPath.text() + "\\" + itemsList[i].text()
                 self.dgvRainfallList.setItem(i, 0, QTableWidgetItem(str(i + 1)))
-                self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.txtRainfallTimeStep.text()) * i)))
+                # self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.txtRainfallTimeStep.text()) * i)))
+                self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.spbtimestep.value()) * i)))
                 self.dgvRainfallList.setItem(i, 2, QTableWidgetItem(itemsList[i].text()))
         elif len(itemsList)==0 and self.lstRFfiles.count()>0 :
             self.dgvRainfallList.setColumnCount(3)
@@ -355,7 +401,8 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
             self.dgvRainfallList.setHorizontalHeaderLabels(['Order', 'DataTime', 'Rainfall'])
             for i in range(self.lstRFfiles.count()):
                 self.dgvRainfallList.setItem(i, 0, QTableWidgetItem(str(i + 1)))
-                self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.txtRainfallTimeStep.text()) * i)))
+                # self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.txtRainfallTimeStep.text()) * i)))
+                self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.spbtimestep.value()) * i)))
                 self.dgvRainfallList.setItem(i, 2, QTableWidgetItem(str(self.lstRFfiles.item(i).text())))
 
     # 폼 종료

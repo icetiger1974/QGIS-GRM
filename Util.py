@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 
-from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QFileInfo
-from PyQt4.QtGui import QAction, QIcon, QFileDialog, QLineEdit, QMessageBox , QComboBox,QLabel,QLineEdit
+# from PyQt4.QtCore import QSettings, QTranslator, qVersion, QCoreApplication, QFileInfo
+
+# from PyQt4.QtGui import QAction, QIcon, QFileDialog, QLineEdit, QMessageBox , QComboBox,QLabel,QLineEdit
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 from qgis.core import QgsMapLayerRegistry
 from subprocess import call
 import sys
@@ -14,6 +17,9 @@ import tempfile
 from subprocess import Popen
 import GRM_Plugin_dockwidget as GRM
 import ElementTree as ET
+
+
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -44,8 +50,6 @@ class util:
         value = call(arg)
         return value
 
-
-
     def FlowControlGrid_XmlCount(self):
         FlowNameCount = []
         ProjectFile = GRM._xmltodict['GRMProject']['ProjectSettings']['ProjectFile']
@@ -70,6 +74,8 @@ class util:
                     return 0
         else:
             return 0
+
+
 
 
 
@@ -288,14 +294,15 @@ class util:
             self.edit.setText(mess)
 
     # Cell info 정보 넣기
-    def GlobalControl(self,Celltype,StreamValue,FD,FA,Slope):
+    def GlobalControl(self,Celltype,StreamValue,FD,FA,Slope,watershed):
         self.txtCelltype = Celltype
         self.txtStreamValue=StreamValue
         self.txtFD=FD
         self.txtFA=FA
         self.txtSlope=Slope
+        self.txtWatershedID = watershed
 
-    def GlobalControl_SetValue(self, Celltype, StreamValue, FD, FA, Slope):
+    def GlobalControl_SetValue(self, Celltype, StreamValue, FD, FA, Slope,watershed):
         self.txtCelltype.setText(Celltype)
         self.txtCelltype.setCursorPosition(0)
         self.txtStreamValue.setText(StreamValue)
@@ -303,6 +310,7 @@ class util:
         self.txtFA.setText(FA)
         self.txtSlope.setText(Slope)
         self.txtSlope.setCursorPosition(0)
+        self.txtWatershedID.setText(watershed)
 
     def GlobalControl_Landcover(self,txtLandGridValue, txtLandType, txtRoughness, txtratio):
         self.txtLandGridValue=txtLandGridValue
@@ -347,10 +355,7 @@ class util:
         self.HydraulicConductivity.setText(HydraulicConductivity)
 
 
-
-
-
-
+   
 
     def Opewn_ViewFile(self,path):
         _notpad = "C:/Windows/System32/notepad.exe"
@@ -385,7 +390,7 @@ class util:
 			     #   index_heder= numpy.reshape(header.split(),(5,-1))   
         #return header,index_heder
 
-        
+
 
 
 

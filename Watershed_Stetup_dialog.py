@@ -79,8 +79,8 @@ _YROW =0
 _XCOL =0
 _Flowcontrolgrid_xmlCount=0
 _wsinfo = {}
-
-
+_new_wsinfo={}
+_FlowControlTable = {}
 _FYROW =0
 _FXCOL =0
 _ClickX=""
@@ -90,10 +90,33 @@ _AddFlowcontrolType=""
 _AddFlowcontrolTimeInterval = ""
 _AddFlowcontrolName = ""
 _AddFlowcontrol_Edit_or_Insert_type=""
+_AddFlowcontrol_DT=""
+_AddFlowcontrol_IniStorage =""
+_AddFlowcontrol_MaxStorage=""
+_AddFlowcontrol_MaxStorageR =""
+_AddFlowcontrol_ROType=""
+_AddFlowcontrol_ROConstQ=""
+_AddFlowcontrol_ROConstQDuration=""
+_EditFlowCurrentRow = 0
 
 _Flowcontrolgrid_flag = False
 _Flowcontrolgrid_flag_Insert = False
 
+_EditFlowColX=""
+_EditFlowRowY =""
+_EditFlowName=""
+_EditFlowDT=""
+# _EditFlowTimeInterval=""
+_EditFlowControlType=""
+_EditFlowFlowDataFile =""
+_EditFlowIniStorage =""
+_EditFlowMaxStorage=""
+_EditFlowMaxStorageR =""
+_EditFlowROType=""
+_EditFlowROConstQ=""
+_EditFlowROConstQDuration=""
+_EditFlowCurrentRow = 0
+_StreamWSID=0
 
 class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
     def __init__(self, parent=None):
@@ -101,82 +124,123 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         self.setupUi(self)
 
         # 프로젝트 파일의 내용 및 Default 값을 설정
-        self.Set_ProjectDataInit()
+        try:
+            self.Set_ProjectDataInit()
 
-        # 캔버스 상위 버튼 아이콘 설정(Zoom , Pan.....)
-        self.Set_Canvas_btn_icon()
+            # 캔버스 상위 버튼 아이콘 설정(Zoom , Pan.....)
+            self.Set_Canvas_btn_icon()
+            # 캔버스 툴 셋팅
+            self.Set_Cavas_tool_btn()
 
-        # 캔버스 툴 셋팅
-        self.Set_Cavas_tool_btn()
+            # 캔버스에 레이어 올리기
+            self.Set_Canvas_Layer_default()
 
-        # 캔버스에 레이어 올리기
-        self.Set_Canvas_Layer_default()
+            # 시뮬레이션 탭 기능 기본값 셋팅
+            self.Set_simulation_tab_default()
 
-        # 시뮬레이션 탭 기능 기본값 셋팅
-        self.Set_simulation_tab_default()
-        # ---------------위치 이동 할 목록 -------------------
-        # default 설정이지만 프로그램 흐름상 나중에 처리 해야 하는 목록
-        # Watchpoint 체크박스 선택 상태로 처리
-        self.chkWatch_Point.setChecked(True)
-        # 무슨 기능인지 모르지만 기본 체크 상태
-        self.chkFlowContorGird.setChecked(True)
-        # ----------------위치 이동 할 목록 끝--------------------
+            # default 설정이지만 프로그램 흐름상 나중에 처리 해야 하는 목록
+            # Watchpoint 체크박스 선택 상태로 처리
+            self.chkWatch_Point.setChecked(True)
+            self.chkFlowContorGird.setChecked(True)
 
+            # WatchPoint 탭 기능 기본값 셋팅
+            # 프로젝트 파일을 읽고 테이블에 셋팅(watch point)
+            self.Set_Wathpoint_tab_default()
 
-        # WatchPoint 탭 기능 기본값 셋팅
-        # 프로젝트 파일을 읽고 테이블에 셋팅(watch point)
-        self.Set_Wathpoint_tab_default()
-
-        # Channel CS 탭 기능 기본값 셋팅
-        self.Set_ChannelCS_tab_default()
-
-        # Watershed 탭 기능 기본값 셋팅
-        self.Set_Watershed_Parameter_tab_default()
-
-        # Flow Control 탭 기능 기본값 셋팅
-        self.Set_FlowControl_tab_default()
-
-        # # color picker 이벤트 연동
-        # self.Set_ColorPicker_event()
-        #
-        # 프로그램 종료
-        self.btnClose.clicked.connect(self.Close_Form)
+            # Channel CS 탭 기능 기본값 셋팅
+            self.Set_ChannelCS_tab_default()
+            # Watershed 탭 기능 기본값 셋팅
+            self.Set_Watershed_Parameter_tab_default()
+            # Flow Control 탭 기능 기본값 셋팅
+            self.Set_FlowControl_tab_default()
+            # # color picker 이벤트 연동
+            # self.Set_ColorPicker_event()
+            #
+            # 프로그램 종료
+            self.btnClose.clicked.connect(self.Close_Form)
 
 
-        # # 시뮬레이션 버튼 이벤트  임시위치
-        # self.btnStart_Simulation.clicked.connect(self.Click_StartSimulation)
-        #
-        # # 시뮬레이션 시행 종료 기능 비활성화 처리
-        # self.btnStop_simulation.setEnabled(False)
-        #_util에서 self.lblColRow 라벨
-        _util.GlobalLabel(self.lblColRow,type="colrow")
+            # 시뮬레이션 버튼 이벤트  임시위치
+            self.btnStart_Simulation.clicked.connect(self.Click_StartSimulation)
+            #
+            # 시뮬레이션 시행 종료 기능 비활성화 처리
+
+            # self.btnStop_simulation.clicked.connect(self.Click_Stop_simulation)
+            #_util에서 self.lblColRow 라벨
+            _util.GlobalLabel(self.lblColRow,type="colrow")
+
+            # Cell info Flow 텍스트 박스에 값 셋팅에 사용 하기 위해 유틸에 텍스트 박스 넘김
+            _util.GlobalControl(self.txtCelltype,self.txtStreamValue,self.txtFD,self.txtFA,self.txtSlope,self.txtWatershedID)
+            #_util.GlobalControl(self.txtCelltype,self.txtStreamValue,self.txtFD,self.txtFA,self.txtSlope)
+
+            # Cell info Land cover
+            _util.GlobalControl_Landcover(self.txtLandGridValue, self.txtLandType, self.txtRoughness, self.txtratio)
+
+            # Cell info Depth
+            _util.GlobalControl_Depth(self.txtDepthValue,self.txtSoilDepthClass, self.txtSoilDepth)
 
 
+            # Cell info Texture
+            _util.GlobalControl_texture(self.txtTextureGridValue, self.txtSoilTexture, self.txtPorosity, self.txtEffectivePorosity, self.txtSuctionhead,self.txtcondcutivity)
 
-        # Cell info Flow 텍스트 박스에 값 셋팅에 사용 하기 위해 유틸에 텍스트 박스 넘김
-        _util.GlobalControl(self.txtCelltype,self.txtStreamValue,self.txtFD,self.txtFA,self.txtSlope)
+            #_util.GlobalEdit(self.txtChannel_width, "cw")
+            # Discharge 파일 열기 이벤트
+            self.btnViewResult.clicked.connect(self.Open_ViewResult)
 
-        # Cell info Land cover
-        _util.GlobalControl_Landcover(self.txtLandGridValue, self.txtLandType, self.txtRoughness, self.txtratio)
+            self.btnSaveproject.clicked.connect(self.SaveProject)
 
-        # Cell info Depth
-        _util.GlobalControl_Depth(self.txtDepthValue,self.txtSoilDepthClass, self.txtSoilDepth)
+            # 임시 처리
+            self.RubberBand = []
+        except Exception as e:
+            _util.MessageboxShowError("Error", str(e))
+            pass
 
 
-        # Cell info Texture
-        _util.GlobalControl_texture(self.txtTextureGridValue, self.txtSoilTexture, self.txtPorosity, self.txtEffectivePorosity, self.txtSuctionhead,self.txtcondcutivity)
+    def SaveProject(self):
+        self.InputDictionary()
+        DictoXml = xmltodict.unparse(GRM._xmltodict)
+        fw = open(self.ProjectFile, 'w+')
+        fw.write(DictoXml)
+        time.sleep(0.1)
+        fw.close()
 
-        #_util.GlobalEdit(self.txtChannel_width, "cw")
-        # Discharge 파일 열기 이벤트
-        self.btnViewResult.clicked.connect(self.Open_ViewResult)
+        ds = GRMCore.GRMProject()
+        ds.ReadXml(self.ProjectFile)
+        time.sleep(0.1)
+        ds.WriteXml(self.ProjectFile)
+        time.sleep(0.1)
+        ds.Dispose()
+        _util.MessageboxShowInfo("GRM Save", '"' + self.ProjectFile + '"' + ' was saved. ')
 
-        #self.btnView_WS_Pars.clicked.connect(self.View_WS_Pars_click)
+    def Click_StartSimulation(self):
+        #값 변경 테스트 용 WatershedFile 파일 경로를 바꿈
+        self.InputDictionary()
+        GRMCore_exe = os.path.dirname(os.path.realpath(__file__)) + "\DLL\GRM.exe"
+        DictoXml = xmltodict.unparse(GRM._xmltodict)
+        fw = open(self.ProjectFile, 'w+')
+        fw.write(DictoXml)
+        time.sleep(0.5)
+        fw.close()
 
-        # 임시 처리
-        self.RubberBand = []
+        ds = GRMCore.GRMProject()
+        ds.ReadXml(self.ProjectFile)
+        ds.WriteXml(self.ProjectFile)
+        ds.Dispose()
+        arg = GRMCore_exe + " " + self.ProjectFile
+        result=_util.Execute(arg)
+
+        if result==0:
+            _util.MessageboxShowError("GRM","Simulation completed")
+        else:
+            _util.MessageboxShowError("GRM", "Simulation is stoped")
+
+    #def Click_Stop_simulation(self):
+    #    self.p.kill()
 
     def Set_ProjectDataInit(self):
 
+        # 툴박스 인덱스를 셋팅
+        self.toolBox.setCurrentIndex(0)
 
         # 그리드 라인 에 사용될 변수
         # 글로벌 변수로 지정 해서 사용 하면 화면을 닫았다가 다시 켜면 값이 남아 있어서 그리드 라인이 안그려짐
@@ -198,12 +262,21 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         self.GridCellSize = GRM._xmltodict['GRMProject']['ProjectSettings']['GridCellSize']
 
         self.ComputationalTimeStep = GRM._xmltodict['GRMProject']['ProjectSettings']['ComputationalTimeStep']
+
+
+        self.IsParallel= GRM._xmltodict['GRMProject']['ProjectSettings']['IsParallel']
+        self.MaxDegreeOfParallelism= GRM._xmltodict['GRMProject']['ProjectSettings']['MaxDegreeOfParallelism']
+
+
+
         self.SimulationDuration = GRM._xmltodict['GRMProject']['ProjectSettings']['SimulationDuration']
         self.OutputTimeStep = GRM._xmltodict['GRMProject']['ProjectSettings']['OutputTimeStep']
         self.SimulateInfiltration = GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateInfiltration']
         self.SimulateSubsurfaceFlow = GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateSubsurfaceFlow']
         self.SimulateBaseFlow = GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateBaseFlow']
         self.SimulateFlowControl = GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateFlowControl']
+
+        self.IsFixedTimeStep = GRM._xmltodict['GRMProject']['ProjectSettings']['IsFixedTimeStep']
 
         self.SimulStartingTime = GRM._xmltodict['GRMProject']['ProjectSettings']['SimulStartingTime']
 
@@ -222,6 +295,16 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         self.InitialSoilSaturationRatioFile = GRM._xmltodict['GRMProject']['ProjectSettings'][
             'InitialSoilSaturationRatioFile']
 
+        self.MakeIMGFile = GRM._xmltodict['GRMProject']['ProjectSettings']['MakeIMGFile']
+        self.MakeASCFile = GRM._xmltodict['GRMProject']['ProjectSettings']['MakeASCFile']
+        self.MakeSoilSaturationDistFile = GRM._xmltodict['GRMProject']['ProjectSettings']['MakeSoilSaturationDistFile']
+        self.MakeRfDistFile = GRM._xmltodict['GRMProject']['ProjectSettings']['MakeRfDistFile']
+        self.MakeRFaccDistFile = GRM._xmltodict['GRMProject']['ProjectSettings']['MakeRFaccDistFile']
+        self.MakeFlowDistFile = GRM._xmltodict['GRMProject']['ProjectSettings']['MakeFlowDistFile']
+        self.PrintOption = GRM._xmltodict['GRMProject']['ProjectSettings']['PrintOption']
+        self.WriteLog = GRM._xmltodict['GRMProject']['ProjectSettings']['WriteLog']
+
+
         if self.InitialChannelFlowFile == None:
             self.InitialChannelFlowFile = ""
         if self.InitialSoilSaturationRatioFile == None:
@@ -235,15 +318,15 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
                                     self.StreamFile, self.LandCoverFile, self.SoilTextureFile, self.SoilDepthFile,
                                     self.InitialSoilSaturationRatioFile, self.InitialChannelFlowFile)
         # WatchPoint Tab table에 데이터만 채워 넣는 방식으로 변수로 값을 받을 필요가 없음 대신 전역 변수로 값 받읍
-        # _util.MessageboxShowInfo("object","in")
-        # result=str(_wsinfo.msoilTextureFPN())
-        # Texture_Result = _wsinfo.STextureValue(99, 52)
-        # _util.MessageboxShowInfo("Texture_Result", (Texture_Result)
+        global _StreamWSID
+        _StreamWSID = _wsinfo.mostDownStreamWSID()
 
-        # _util.MessageboxShowInfo("texture",result)
         self.Set_Wathpoint_default_value()
-
         # ChannelWidth tab 변수
+
+        self.CrossSectionType = GRM._xmltodict['GRMProject']['ProjectSettings']['CrossSectionType']
+        self.SingleCSChannelWidthType= GRM._xmltodict['GRMProject']['ProjectSettings']['SingleCSChannelWidthType']
+
         self.ChannelWidthEQc = GRM._xmltodict['GRMProject']['ProjectSettings']['ChannelWidthEQc']
         self.ChannelWidthEQd = GRM._xmltodict['GRMProject']['ProjectSettings']['ChannelWidthEQd']
         self.ChannelWidthEQe = GRM._xmltodict['GRMProject']['ProjectSettings']['ChannelWidthEQe']
@@ -398,6 +481,8 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         MoveTo = os.path.dirname(os.path.abspath(__file__)) + "\image\MoveTo.png"
 
         self.btnZoomExtent.setIcon(QtGui.QIcon(ZoomExtent))
+        self.btnZoomExtent.setIconSize(QtCore.QSize(200, 200))
+
         self.btnZoomIn.setIcon(QtGui.QIcon(Zoomin))
         self.btnZoomOut.setIcon(QtGui.QIcon(ZoomOut))
         self.btnPan.setIcon(QtGui.QIcon(Pan))
@@ -439,7 +524,7 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         # Watch_Point 기본 설정은 체크
         self.chkWatch_Point.stateChanged.connect(self.watchpoint)
 
-        # chkFC 추후 구현
+        # chkFC
         self.chkFlowContorGird.stateChanged.connect(self.click_FlowContorGird)
 
         # 체크 박스 눌렀을때 캔버스에 그리드 라인 추가 함수
@@ -472,6 +557,56 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
 
     # ----------------- 2017-10-24_오전 박 simulation 탭 텍스트 박스 셋팅 -----------------------------
     def Set_simulation_tab_default(self):
+        # 프린트 옵션 콤보 박스 셋팅
+        combolist = ('All','DischargeFileQ','AllQ')
+        self.cmbPrint.addItems(combolist)
+        index = self.cmbPrint.findText(self.PrintOption, QtCore.Qt.MatchFixedString)
+        if index >= 0:
+            self.cmbPrint.setCurrentIndex(index)
+
+        self.cmbPrint.currentIndexChanged.connect(self.printcombo)
+        self.spTimeStep_min_2.valueChanged.connect(self.SPvaluechange)
+
+
+        self.chkParallel.stateChanged.connect(self.Check_Parallel)
+        self.Check_Parallel()
+
+        if self.MakeIMGFile.upper() == 'TRUE':
+            self.chkmakeimage.setChecked(True)
+        else:
+            self.chkmakeimage.setChecked(False)
+
+        if self.MakeASCFile.upper() == 'TRUE':
+            self.chkmakeASC.setChecked(True)
+        else:
+            self.chkmakeASC.setChecked(False)
+
+        if self.MakeSoilSaturationDistFile.upper() == 'TRUE':
+            self.chksoiSaturation.setChecked(True)
+        else:
+            self.chksoiSaturation.setChecked(False)
+
+        if self.MakeRfDistFile.upper() == 'TRUE':
+            self.chkrfDistFile.setChecked(True)
+        else:
+            self.chkrfDistFile.setChecked(False)
+
+        if self.MakeRFaccDistFile.upper() == 'TRUE':
+            self.chkrfaacDistfile.setChecked(True)
+        else:
+            self.chkrfaacDistfile.setChecked(False)
+
+
+        if self.MakeFlowDistFile.upper() == 'TRUE':
+            self.chkdischarge.setChecked(True)
+        else:
+            self.chkdischarge.setChecked(False)
+
+        if self.WriteLog.upper() == 'TRUE':
+            self.chklog.setChecked(True)
+        else:
+            self.chklog.setChecked(False)
+
 
         if self.SimulStartingTime =="0" :
             now = QtCore.QDateTime.currentDateTime()
@@ -485,26 +620,14 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
             # StartDate = QtCore.QDateTime(2011, 4, 22, 16, 33, 15)
             self.dateTimeEdit.setDateTime(dateTime)
 
-        if self.SimulationDuration is not None:
-            self.txtRainfall_Duration.setText(self.SimulationDuration)
+
+        if self.IsParallel.upper() == 'TRUE':
+            self.chkParallel.setChecked(True)
         else:
-            count=_util.RainfallCount()
-            if count>0:
-                hour = float(count)/60
-                strhour = "%.2f" % hour
-                self.txtRainfall_Duration.setText(strhour)
-            else:
-                self.txtRainfall_Duration.setText("0")
+            self.chkParallel.setChecked(False)
 
 
-        # 만약에 Cell size 값이 없으면 레이어에서 값을 받음
-        if self.GridCellSize is not None :
-            self.txtGrid_Size.setText(self.GridCellSize)
-        else :
-            self.GridCellSize = str(_xsize)
-            if self.GridCellSize is not None :
-                GRM._xmltodict['GRMProject']['ProjectSettings']['GridCellSize'] = str(_xsize)
-                self.txtGrid_Size.setText(self.GridCellSize)
+
 
         if self.ComputationalTimeStep is not None :
             intvalue = int(self.ComputationalTimeStep)
@@ -516,10 +639,12 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
                 value = 5
             self.spTimeStep_min.setValue(value)
 
-        if self.RainfallInterval is not None:
-            self.txtRainfall_intval.setText(str(self.RainfallInterval))
 
-        if self.OutputTimeStep is not None:
+        if self.MaxDegreeOfParallelism is not None :
+            intvalue = int(self.MaxDegreeOfParallelism)
+            self.spTimeStep_min_2.setValue(intvalue)
+     
+        if self.OutputTimeStep is not None and self.OutputTimeStep!="":
             self.txtOutput_time_step.setText(str(self.OutputTimeStep))
         else:
             self.txtOutput_time_step.setText(str(self.RainfallInterval))
@@ -529,12 +654,13 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
             self.txtCellCount.setText(str(Allcount))
 
 
-
         # 기본 사양은 비활성화
-        self.txtGrid_Size.setDisabled(True)
         self.txtCellCount.setDisabled(True)
-        self.txtRainfall_intval.setDisabled(True)
-        self.txtRainfall_Duration.setDisabled(True)
+
+
+
+
+        
 
         # # 프로젝트 파일에서 기본 셋팅 분을 받아 옴
         # if self.ComputationalTimeStep is not None:
@@ -543,16 +669,10 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         #     self.txtTimeStep_min.setText(self.ComputationalTimeStep)
         #     # 타임스텝 (초)
         #     # self.txtTimeStep_sec.setText(str(Time_step_s))
-
         if self.SimulationDuration is not None:
-            self.txtSimulation_duration.setText(SimulationDuration)
+            self.txtSimulation_duration.setText(self.SimulationDuration)
         else:
-            simulationDuration=self.txtRainfall_Duration.text()
-            if float(simulationDuration)>0:
-                convert = float(simulationDuration)
-                # result=math.ceil(convert)
-                result=9
-                self.txtSimulation_duration.setText(str(result))
+            self.txtSimulation_duration.setText("")
 
 
         if self.OutputTimeStep is not None:
@@ -565,12 +685,14 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
             # 데이터 값이 없으면 기본 설정은 체크
             self.chkInfiltration.setChecked(True)
 
+
         if self.SimulateSubsurfaceFlow  is not None:
             if self.SimulateSubsurfaceFlow .upper() == "TRUE" :
                 self.chkSubsurfaceFlow.setChecked(True)
         elif self.SimulateSubsurfaceFlow is None:
             # 데이터 값이 없으면 기본 설정은 체크
             self.chkSubsurfaceFlow.setChecked(True)
+
 
         if self.SimulateBaseFlow is not None:
             if self.SimulateBaseFlow.upper() == "TRUE" :
@@ -588,6 +710,50 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         self.chkStartingTime.stateChanged.connect(self.Check_StartingTime)
         self.chkanalyze.setEnabled(False)
 
+        self.chkmakeimage.stateChanged.connect(self.MakeASC_IMAGE)
+        self.chkmakeASC.stateChanged.connect(self.MakeASC_IMAGE)
+        self.MakeASC_IMAGE()
+
+        if self.IsFixedTimeStep.upper() == "TRUE":
+            self.chkfixeTimeStep.setChecked(True)
+
+    def SPvaluechange(self):
+        value=self.spTimeStep_min_2.text()
+        if value =="0":
+            _util.MessageboxShowError(" GRM " , " Input 0 can not be input. ")
+
+    def Check_Parallel(self):
+        if self.chkParallel.isChecked():
+            self.spTimeStep_min_2.setEnabled(True)
+        else:
+            self.spTimeStep_min_2.setEnabled(False)
+
+    def printcombo(self):
+        if self.cmbPrint.currentText()=="All":
+            self.chkmakeimage.setEnabled(True)
+            self.chkmakeASC.setEnabled(True)
+            self.MakeASC_IMAGE()
+        else:
+            self.chkmakeimage.setEnabled(False)
+            self.chkmakeASC.setEnabled(False)
+            self.chksoiSaturation.setEnabled(False)
+            self.chkrfDistFile.setEnabled(False)
+            self.chkrfaacDistfile.setEnabled(False)
+            self.chkdischarge.setEnabled(False)
+
+
+    def MakeASC_IMAGE(self):
+        if self.chkmakeimage.isChecked() or self.chkmakeASC.isChecked():
+            self.chksoiSaturation.setEnabled(True)
+            self.chkrfDistFile.setEnabled(True)
+            self.chkrfaacDistfile.setEnabled(True)
+            self.chkdischarge.setEnabled(True)
+        else:
+            self.chksoiSaturation.setEnabled(False)
+            self.chkrfDistFile.setEnabled(False)
+            self.chkrfaacDistfile.setEnabled(False)
+            self.chkdischarge.setEnabled(False)
+
     def alyzerEnable(self):
         if self.chkanalyze.isChecked():
             self.btnShowanalyzer.setEnabled(True)
@@ -600,123 +766,192 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         else:
             self.dateTimeEdit.setEnabled(False)
 
-
-
-
     # ======================================simulation 탭 종료=================================
 
 
     # ======================WatchPoint Tab Table Setting and btn event =========================
     def Set_Wathpoint_tab_default(self):
+        try:
+            # 테이블 상에 선택된 열을 위로 올림
+            self.btnMoveup.clicked.connect(self.MoveUp)
 
-        # 테이블 상에 선택된 열을 위로 올림
-        self.btnMoveup.clicked.connect(self.MoveUp)
 
-        # 테이블 상에 선택된 열을 아래로 내림
-        self.btnMovedown.clicked.connect(self.MoveDown)
+            # 테이블 상에 선택된 열을 아래로 내림
+            self.btnMovedown.clicked.connect(self.MoveDown)
 
-        # 테이블 상에 선택된 열을 삭제
-        self.btnRemove.clicked.connect(self.ReMove)
 
-        # 테이블 셀값을 변경 불가능 하게 설정
-        self.tbList.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+            # 테이블 상에 선택된 열을 삭제
+            self.btnRemove.clicked.connect(self.ReMove)
 
-        # color picker 이벤트
-        self.btnColorPicker.clicked.connect(lambda: self.color_picker(self.btnColorPicker, "watchpoint"))
-        #2017/11/22-------------------
-        #테이블 셀 값 선택한 값의 위치로 view 이동
-        self.btnGrid.clicked.connect(self.GoToGrid)
 
-        # 테이블 셀값을 변경 가능하게 설정 ----> 색상값 변경임 잘못된 구현 변경 해야함
-        self.btnEdit.clicked.connect(self.Edit)
+            # 테이블 셀값을 변경 불가능 하게 설정
+            self.tbList.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
 
-        self.btnAddSelectCell.clicked.connect(self.Add_Selected_Cell)
+            # color picker 이벤트
+            self.btnColorPicker.clicked.connect(lambda: self.color_picker(self.btnColorPicker, "watchpoint"))
+            # self.btnColorPicker_3.clicked.connect(lambda: self.color_picker(self.btnColorPicker, "watchpoint"))
+            self.btnColorPicker_3.clicked.connect(lambda: self.color_picker(self.btnColorPicker_3, "flow"))
 
-        # 각각의 컬럼에 갑셋팅(xml 상에 'ObTSId', 'ObTSLegend', 'ObTSMissingCount' 항목의 값이 없음
-        self.Watchpoint_TableCreate(len(self.Name))
-        self.Watchpoint_Table_Insert()
+            #2017/11/22-------------------
+            #테이블 셀 값 선택한 값의 위치로 view 이동
+            self.btnGrid.clicked.connect(self.GoToGrid)
 
+            # 테이블 셀값을 변경 가능하게 설정 ----> 색상값 변경임 잘못된 구현 변경 해야함
+            self.btnEdit.clicked.connect(self.Edit)
+
+            self.btnAddSelectCell.clicked.connect(self.Add_Selected_Cell)
+
+            # 최하류 셀 넣기
+            self.btnAddMostDown.clicked.connect(self.Add_MostDown_Stream)
+
+            # 각각의 컬럼에 갑셋팅(xml 상에 'ObTSId', 'ObTSLegend', 'ObTSMissingCount' 항목의 값이 없음
+            self.Watchpoint_TableCreate(len(self.Name))
+            self.Watchpoint_Table_Insert()
+        except Exception as wa:
+            _util.MessageboxShowError("Error" , str(wa))
+
+
+    def Add_MostDown_Stream(self):
+        x = _wsinfo.mostDownStreamCellArrayXColPosition()
+        y = _wsinfo.mostDownStreamCellArrayYRowPosition()
+        rowCount = self.tbList.rowCount()
+        if self.CheckTableValue(x,y):
+            self.tbList.insertRow(rowCount)
+            text, ok = QtGui.QInputDialog.getText(self, 'Input Dialog', 'Enter name:', QLineEdit.Normal, "")
+            self.tbList.setItem(rowCount, 0, QTableWidgetItem(text))
+            self.tbList.setItem(rowCount, 1, QTableWidgetItem(str(x)))
+            self.tbList.setItem(rowCount, 2, QTableWidgetItem(str(y)))
+            self.row_cols_grid(x, y, "watchpoint")
+            self.SetMostDownStream(_StreamWSID)
+        else:
+            _util.MessageboxShowInfo("GRM"," The most downstream value already exists. ")
+
+
+    def CheckTableValue(self,x,y):
+        rowCount = self.tbList.rowCount()
+        self.RetBool= True
+        for row in range(0, rowCount):
+            X = self.tbList.item(row, 1).text()
+            Y = self.tbList.item(row, 2).text()
+            if X==str(x) and Y==str(y) :
+                self.RetBool= False
+        return self.RetBool
 
     def Watchpoint_Table_Insert(self):
         if len(self.Name) >0:
             for i in range(0, len(self.Name)):
                 # 사용자에게 CVID 표출 안함
-                # self.tbList.setItem(i, 0, QTableWidgetItem(self.CVID[i]))
                 self.tbList.setItem(i, 0, QTableWidgetItem(self.Name[i]))
-                #self.tbList.setItem(i, 1, QTableWidgetItem(self.FlowAccumulation[i]))
-                #self.tbList.setItem(i, 2, QTableWidgetItem(self.CellType[i]))
                 self.tbList.setItem(i, 1, QTableWidgetItem(self.ColX[i]))
                 self.tbList.setItem(i, 2, QTableWidgetItem(self.RowY[i]))
-                #self.tbList.setItem(i, 3, QTableWidgetItem(self.Fixed[i]))
+
 
     # watchpoint datault 값을 변수에 저장
     def Set_Wathpoint_default_value(self):
-        self.CVID =[]
         self.Name = []
-        self.FlowAccumulation = []
-        self.CellType = []
         self.ColX = []
         self.RowY = []
-        self.Fixed = []
-
-
-        doc = ET.parse(self.ProjectFile)
-        root = doc.getroot()
-        for element in root.findall("{http://tempuri.org/GRMProject.xsd}WatchPoints"):
-            #self.CVID.append(element.findtext("{http://tempuri.org/GRMProject.xsd}CVID"))
-            self.Name.append(element.findtext("{http://tempuri.org/GRMProject.xsd}Name"))
-            #self.FlowAccumulation.append(element.findtext("{http://tempuri.org/GRMProject.xsd}FlowAccumulation"))
-            #self.CellType.append(element.findtext("{http://tempuri.org/GRMProject.xsd}CellType"))
-            self.ColX.append(element.findtext("{http://tempuri.org/GRMProject.xsd}ColX"))
-            self.RowY.append(element.findtext("{http://tempuri.org/GRMProject.xsd}RowY"))
-
-        if len(self.Name) ==0:
-            # global _wsinfo
-            # _wsinfo = cGetWatershedInfo(self.WatershedFile, self.SlopeFile, self.FlowDirectionFile, self.FlowAccumFile,
-            #                             self.StreamFile, self.LandCoverFile, self.SoilTextureFile, self.SoilDepthFile,
-            #                             self.InitialSoilSaturationRatioFile, self.InitialChannelFlowFile)
-
-            # _wsinfo = cGetWatershedInfo(self.WatershedFile, self.SlopeFile, self.FlowDirectionFile, self.FlowAccumFile,
-            #                             self.StreamFile, "","","","","")
-
-            # _util.MessageboxShowError("WatershedFile",self.WatershedFile)
-            # _util.MessageboxShowError("SlopeFile", self.SlopeFile)
-            # _util.MessageboxShowError("FlowDirectionFile",self.FlowDirectionFile)
-            # _util.MessageboxShowError("FlowAccumFile",self.FlowAccumFile)
-            # _util.MessageboxShowError("StreamFile",self.StreamFile)
-            # _util.MessageboxShowError("LandCoverFile",self.LandCoverFile)
-            # _util.MessageboxShowError("SoilTextureFile",self.SoilTextureFile)
-            # _util.MessageboxShowError("SoilDepthFile",self.SoilDepthFile)
-            # _util.MessageboxShowError("InitialSoilSaturationRatioFile",self.InitialSoilSaturationRatioFile)
-            # _util.MessageboxShowError("InitialChannelFlowFile",self.InitialChannelFlowFile)
-
-            # WSFPN = "C:\GRM\Sample\Data\Watershed.asc"
-            # SlopeFPN = "C:\GRM\Sample\Data\Wi_Slope_ST.asc"
-            # FdirFPN = "C:\GRM\Sample\Data\WiFDir.asc"
-            # FacFPN = "C:\GRM\Sample\Data\WiFAc.asc"
-            # streamFPN = "C:\GRM\Sample\Data\WiStream6.asc"
-            # lcFPN = "C:\GRM\Sample\Data\wilc200.asc"
-            # stFPN = "C:\GRM\Sample\Data\wistext200.asc"
-            # sdFPN = "C:\GRM\Sample\Data\wisdepth200.asc"
-            # _wsinfo = cGetWatershedInfo(WSFPN, SlopeFPN, FdirFPN, FacFPN, streamFPN, lcFPN, stFPN, sdFPN, "", "")
-
-
+        if GRM._WatchPointCount== 0:
+            # Dll 에서 X,Y 값을 넣었을때 받는 값
             x = _wsinfo.mostDownStreamCellArrayXColPosition()
             y = _wsinfo.mostDownStreamCellArrayYRowPosition()
+            #proname = GRM._xmltodict['GRMProject']['ProjectSettings']['ProjectFile']
+            #names = _util.GetFilename(proname)
+            names = "MD"
 
-            # _util.MessageboxShowError("x", str(x))
-
-            proname = GRM._xmltodict['GRMProject']['ProjectSettings']['ProjectFile']
-            names = _util.GetFilename(proname)
             self.Name.append(names)
             self.ColX.append(str(x))
             self.RowY.append(str(y))
+            # New Project 일때 프로그램 최하류 정보를 Dll에 넣음
+            self.SetMostDownStream(_StreamWSID)
+        elif GRM._WatchPointCount>1:
+            for flowitem in GRM._xmltodict['GRMProject']['WatchPoints']:
+                self.ColX.append(str(flowitem['ColX']))
+                self.RowY.append(str(flowitem['RowY']))
+                self.Name.append(flowitem['Name'])
+        elif  GRM._WatchPointCount==1:
+            self.ColX.append(str(GRM._xmltodict['GRMProject']['WatchPoints']['ColX']))
+            self.RowY.append(str(GRM._xmltodict['GRMProject']['WatchPoints']['RowY']))
+            self.Name.append(str(GRM._xmltodict['GRMProject']['WatchPoints']['Name']))
+
+
+    def SetMostDownStream(self,id):
+        # 만약에 Cell size 값이 없으면 레이어에서 값을 받음
+        if self.GridCellSize is not None:
+            Allsize =self.GridCellSize
+        else:
+            self.GridCellSize = str(_xsize)
+            if self.GridCellSize is not None:
+                GRM._xmltodict['GRMProject']['ProjectSettings']['GridCellSize'] = str(_xsize)
+                Allsize=self.GridCellSize
+
+        IniSaturation = "1"
+        MinSlopeOF = "0.0001"
+        MinSlopeChBed = "0.0001"
+        intAll = float(Allsize)
+        if intAll > 0:
+            MinChBaseWidth = intAll / 10
+        IniFlow = "0"
+        ChRoughness = "0.045"
+        DryStreamOrder = "0"
+        CalCoefLCRoughness = "1"
+        CalCoefSoilDepth = "1"
+        CalCoefPorosity = "1"
+        CalCoefWFSuctionHead = "1"
+        CalCoefHydraulicK = "1"
+        UnsturatedType ="Linear"
+        CoefUnsatruatedk = "0.2"
+
+        _wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(id, float(IniSaturation), float(MinSlopeOF),UnsturatedType,float(CoefUnsatruatedk),
+                                                               float(MinSlopeChBed),float(MinChBaseWidth),
+                                                               float(ChRoughness),int(DryStreamOrder), float(CalCoefLCRoughness),
+                                                               float(CalCoefSoilDepth), float(CalCoefPorosity), float(CalCoefWFSuctionHead),
+                                                               float(CalCoefHydraulicK),0)
+
+        # doc = ET.parse(self.ProjectFile)
+        # root = doc.getroot()
+        # for element in root.findall("{http://tempuri.org/GRMProject.xsd}WatchPoints"):
+        #     self.Name.append(element.findtext("{http://tempuri.org/GRMProject.xsd}Name"))
+        #     self.ColX.append(element.findtext("{http://tempuri.org/GRMProject.xsd}ColX"))
+        #     self.RowY.append(element.findtext("{http://tempuri.org/GRMProject.xsd}RowY"))
+        #
+        # if len(self.Name) ==0:
+        #     # Dll 에서 X,Y 값을 넣었을때 받는 값
+        #     x = _wsinfo.mostDownStreamCellArrayXColPosition()
+        #     y = _wsinfo.mostDownStreamCellArrayYRowPosition()
+        #     proname = GRM._xmltodict['GRMProject']['ProjectSettings']['ProjectFile']
+        #     names = _util.GetFilename(proname)
+        #     self.Name.append(names)
+        #     self.ColX.append(str(x))
+        #     self.RowY.append(str(y))
 
     # ======================WatchPoint Tab Table Setting 종료=======================================
 
 
     # ----------------- Channel CS 탭 텍스트 박스 셋팅 -----------------------------
     def Set_ChannelCS_tab_default(self):
+
+        CrossSectionType=self.CrossSectionType.upper()
+        SingleCSChannelWidthType=self.SingleCSChannelWidthType.upper()
+
+        if CrossSectionType=="CSSINGLE":
+            if SingleCSChannelWidthType=="CWGENERATION":
+                self.rdo_single.setChecked(True)
+                self.rdo_generateCh.setChecked(True)
+            elif SingleCSChannelWidthType=="CWEQUATION":
+                self.rdo_single.setChecked(True)
+                self.rdo_useCh.setChecked(True)
+            else:
+                self.rdo_single.setChecked(True)
+                self.rdo_useCh.setChecked(True)
+        elif CrossSectionType == "CSCOMPOUND":
+            self.rdo_compound.setChecked(True)
+        else:
+            self.rdo_single.setChecked(True)
+            self.rdo_generateCh.setChecked(True)
+
+
+
         self.txt_c.setText(self.ChannelWidthEQc)
         self.txt_d.setText(self.ChannelWidthEQd)
         self.txt_e.setText(self.ChannelWidthEQe)
@@ -727,10 +962,11 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         self.txtCompound_CSChannel_Width_Limit.setText(self.CompoundCSChannelWidthLimit)
         self.txtRight_bank.setText(self.BankSideSlopeRight)
         self.txtLeft_bank.setText(self.BankSideSlopeLeft)
-        self.rdo_single.setChecked(True)
-        self.groupBox_6.setDisabled(True)
-        self.rdo_useCh.setChecked(True)
+
+        # self.groupBox_6.setDisabled(True)
+        # self.rdo_useCh.setChecked(True)
         self.txt_douwnstream.setDisabled(True)
+        self.ChannelCS_rdo_able()
         self.rdo_single.clicked.connect(self.ChannelCS_rdo_able)
         self.rdo_compound.clicked.connect(self.ChannelCS_rdo_able)
         self.rdo_useCh.clicked.connect(self.ChannelCS_rdo_able)
@@ -749,86 +985,109 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
     def Set_FlowControl_tab_default(self):
         # 테이블 셀값을 변경 불가능 하게 설정
         self.tlbFlowControl.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
-
         # 테이블에 초기 셋팅
         self.FlowControlTableSetting()
         # 테이블에 값 셋팅후 화면에 점 표시
         self.FlowContorGird_paint()
-
         self.btnFlowControl_AddCell.clicked.connect(self.FlowControlAddCell)
         self.btnFWCEdit.clicked.connect(self.FlowControlEdit)
         self.tlbFlowControl.itemClicked.connect(self.tlbFlowControl_clik_enent)
         self.btnFlowRemove.clicked.connect(self.RemoveTalbeRow)
+        self.btnfcgotogrid.clicked.connect(self.btnFCGotoGrid)
+
 
     # Flow control 테이블 셋팅
     # 프로젝트 파일에서 데이터 값이 있으면 테이블에 값을 셋팅
     def FlowControlTableSetting(self):
         global  _Flowcontrolgrid_xmlCount
         self.tlbFlowControl.setColumnCount(12)
-        self.tlbFlowControl.setHorizontalHeaderLabels(['ColX', 'RowY', 'Name', 'DT', 'ControlType', 'FlowDataFile','IniStorage','MaxStorage','MaxStorageR','ROType','ROConstQ','ROConstQDuration'])
+        # self.tlbFlowControl.setHorizontalHeaderLabels(['ColX', 'RowY', 'Name', 'DT', 'ControlType', 'FlowDataFile','IniStorage','MaxStorage','MaxStorageR','ROType','ROConstQ','ROConstQDuration'])
+        self.tlbFlowControl.setHorizontalHeaderLabels(['Name','ColX', 'RowY', 'DT', 'ControlType', 'FlowDataFile','IniStorage','MaxStorage','MaxStorageR','ROType','ROConstQ','ROConstQDuration'])
         self.tlbFlowControl.verticalHeader().hide()
 
         if _Flowcontrolgrid_flag == False:
             _Flowcontrolgrid_xmlCount = _util.FlowControlGrid_XmlCount()
-
         if _Flowcontrolgrid_xmlCount == 1:
+
             self.tlbFlowControl.insertRow(0)
-            self.tlbFlowControl.setItem(0, 0, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['ColX']))
-            self.tlbFlowControl.setItem(0, 1, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['RowY']))
-            self.tlbFlowControl.setItem(0, 2, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['Name']))
+            self.tlbFlowControl.setItem(0, 0, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['Name']))
+            self.tlbFlowControl.setItem(0, 1, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['ColX']))
+            self.tlbFlowControl.setItem(0, 2, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['RowY']))
             self.tlbFlowControl.setItem(0, 3, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['DT']))
             self.tlbFlowControl.setItem(0, 4, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['ControlType']))
             self.tlbFlowControl.setItem(0, 5, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['FlowDataFile']))
+
+            # self.tlbFlowControl.setItem(0, 0, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['ColX']))
+            # self.tlbFlowControl.setItem(0, 1, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['RowY']))
+            # self.tlbFlowControl.setItem(0, 2, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['Name']))
+            # self.tlbFlowControl.setItem(0, 3, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['DT']))
+            # self.tlbFlowControl.setItem(0, 4, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['ControlType']))
+            # self.tlbFlowControl.setItem(0, 5, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['FlowDataFile']))
+            #
+
+
+
 
             if 'ROType' in GRM._xmltodict['GRMProject']['FlowControlGrid']:
                 self.tlbFlowControl.setItem(0, 9, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['ROType']))
             else:
                 self.tlbFlowControl.setItem(0, 9, QTableWidgetItem(""))
-
+            # _util.MessageboxShowInfo("Table", "4")
             if 'ROConstQ' in GRM._xmltodict['GRMProject']['FlowControlGrid']:
                 self.tlbFlowControl.setItem(0, 10, QTableWidgetItem(
                     GRM._xmltodict['GRMProject']['FlowControlGrid']['ROConstQ']))
             else:
                 self.tlbFlowControl.setItem(0, 10, QTableWidgetItem(""))
-
+            # _util.MessageboxShowInfo("Table", "5")
             if 'ROConstQDuration' in GRM._xmltodict['GRMProject']['FlowControlGrid']:
                 self.tlbFlowControl.setItem(0, 11, QTableWidgetItem(
                     GRM._xmltodict['GRMProject']['FlowControlGrid']['ROConstQDuration']))
             else:
                 self.tlbFlowControl.setItem(0, 11, QTableWidgetItem(""))
-
+            # _util.MessageboxShowInfo("Table", "6")
             if GRM._xmltodict['GRMProject']['FlowControlGrid']['ControlType'] =="ReservoirOperation":
                 if 'IniStorage' in GRM._xmltodict['GRMProject']['FlowControlGrid']:
                     self.tlbFlowControl.setItem(0, 6, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['IniStorage']))
                 else:
                     self.tlbFlowControl.setItem(0, 6, QTableWidgetItem(""))
-
+                # _util.MessageboxShowInfo("Table", "7")
                 if 'MaxStorage' in GRM._xmltodict['GRMProject']['FlowControlGrid']:
                     self.tlbFlowControl.setItem(0, 7, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['MaxStorage']))
                 else:
                     self.tlbFlowControl.setItem(0, 7, QTableWidgetItem(""))
-
+                # _util.MessageboxShowInfo("Table", "8")
                 if 'MaxStorageR' in GRM._xmltodict['GRMProject']['FlowControlGrid']:
                     self.tlbFlowControl.setItem(0, 8, QTableWidgetItem(GRM._xmltodict['GRMProject']['FlowControlGrid']['MaxStorageR']))
                 else:
                     self.tlbFlowControl.setItem(0, 8, QTableWidgetItem(""))
-
+                # _util.MessageboxShowInfo("Table", "9")
         elif _Flowcontrolgrid_xmlCount > 1:
+            # _util.MessageboxShowInfo("Table", "3")
             row =0
             for flowitem in GRM._xmltodict['GRMProject']['FlowControlGrid']:
                 self.tlbFlowControl.insertRow(row)
-                self.tlbFlowControl.setItem(row, 0, QTableWidgetItem(str(flowitem['ColX'])))
-                self.tlbFlowControl.setItem(row, 1, QTableWidgetItem(str(flowitem['RowY'])))
-                self.tlbFlowControl.setItem(row, 2, QTableWidgetItem(flowitem['Name']))
+                # self.tlbFlowControl.setItem(row, 0, QTableWidgetItem(str(flowitem['ColX'])))
+                # self.tlbFlowControl.setItem(row, 1, QTableWidgetItem(str(flowitem['RowY'])))
+                # self.tlbFlowControl.setItem(row, 2, QTableWidgetItem(flowitem['Name']))
+                # self.tlbFlowControl.setItem(row, 3, QTableWidgetItem(str(flowitem['DT'])))
+                # self.tlbFlowControl.setItem(row, 4, QTableWidgetItem(flowitem['ControlType']))
+                # self.tlbFlowControl.setItem(row, 5, QTableWidgetItem(flowitem['FlowDataFile']))
+
+                self.tlbFlowControl.setItem(row, 0, QTableWidgetItem(flowitem['Name']))
+                self.tlbFlowControl.setItem(row, 1, QTableWidgetItem(str(flowitem['ColX'])))
+                self.tlbFlowControl.setItem(row, 2, QTableWidgetItem(str(flowitem['RowY'])))
                 self.tlbFlowControl.setItem(row, 3, QTableWidgetItem(str(flowitem['DT'])))
                 self.tlbFlowControl.setItem(row, 4, QTableWidgetItem(flowitem['ControlType']))
                 self.tlbFlowControl.setItem(row, 5, QTableWidgetItem(flowitem['FlowDataFile']))
+
+
 
                 if flowitem['ControlType'] == "ReservoirOperation":
                     if 'IniStorage' in flowitem:
                         self.tlbFlowControl.setItem(row, 6, QTableWidgetItem(flowitem['IniStorage']))
                     else:
                         self.tlbFlowControl.setItem(row, 6, QTableWidgetItem(""))
+
                     if 'MaxStorage' in flowitem:
                         self.tlbFlowControl.setItem(row, 7, QTableWidgetItem(flowitem['MaxStorage']))
                     else:
@@ -871,16 +1130,28 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
             _AddFlowcontrol_Edit_or_Insert_type = "Insert"
             results = AddFlowControl()
             results.exec_()
+            # _util.MessageboxShowInfo("flag",str(_Flowcontrolgrid_flag_Insert))
             if _Flowcontrolgrid_flag_Insert :
                 self.ADDFlowData()
                 _Flowcontrolgrid_flag_Insert = False
 
             global _AddFlowcontrolFilePath ,_AddFlowcontrolName ,_AddFlowcontrolType ,_AddFlowcontrolTimeInterval
+            global _AddFlowcontrol_DT,_AddFlowcontrol_IniStorage ,_AddFlowcontrol_MaxStorage
+            global _AddFlowcontrol_MaxStorageR,_AddFlowcontrol_ROType,_AddFlowcontrol_ROConstQ,_AddFlowcontrol_ROConstQDuration
+
+
             _AddFlowcontrolFilePath = ""
             _AddFlowcontrolType = ""
             _AddFlowcontrolTimeInterval = ""
             _AddFlowcontrolName = ""
             _AddFlowcontrol_Edit_or_Insert_type = ""
+            _AddFlowcontrol_DT=""
+            _AddFlowcontrol_IniStorage =""
+            _AddFlowcontrol_MaxStorage=""
+            _AddFlowcontrol_MaxStorageR =""
+            _AddFlowcontrol_ROType=""
+            _AddFlowcontrol_ROConstQ=""
+            _AddFlowcontrol_ROConstQDuration=""
 
     def ADDFlowData(self):
         if _AddFlowcontrolFilePath=="" :
@@ -891,22 +1162,26 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         if _FXCOL !=0 and _FYROW!=0:
             global _FXCOL , _FYROW
             self.tlbFlowControl.insertRow(counts)
-            self.tlbFlowControl.setItem(counts, 0, QTableWidgetItem(str(_YROW)))
-            self.tlbFlowControl.setItem(counts,1, QTableWidgetItem(str(_XCOL)))
+            # self.tlbFlowControl.setItem(counts, 0, QTableWidgetItem(str(_YROW)))
+            # self.tlbFlowControl.setItem(counts,1, QTableWidgetItem(str(_XCOL)))
+            # self.tlbFlowControl.setItem(counts,3, QTableWidgetItem(_AddFlowcontrolTimeInterval))
+
+
+            self.tlbFlowControl.setItem(counts,0, QTableWidgetItem(_AddFlowcontrolName))
+            self.tlbFlowControl.setItem(counts,1, QTableWidgetItem(str(_YROW)))
+            self.tlbFlowControl.setItem(counts,2, QTableWidgetItem(str(_XCOL)))
 
             _FXCOL=0
             _FYROW=0
-            self.tlbFlowControl.setItem(counts,2, QTableWidgetItem(_AddFlowcontrolName))
             self.tlbFlowControl.setItem(counts,3, QTableWidgetItem(_AddFlowcontrolTimeInterval))
             self.tlbFlowControl.setItem(counts,4, QTableWidgetItem(_AddFlowcontrolType))
             self.tlbFlowControl.setItem(counts,5, QTableWidgetItem(_AddFlowcontrolFilePath))
-            self.tlbFlowControl.setItem(counts,6, QTableWidgetItem(""))
-            self.tlbFlowControl.setItem(counts,7, QTableWidgetItem(""))
-            self.tlbFlowControl.setItem(counts,8, QTableWidgetItem(""))
-            self.tlbFlowControl.setItem(counts,9, QTableWidgetItem(""))
-            self.tlbFlowControl.setItem(counts,10, QTableWidgetItem(""))
-            self.tlbFlowControl.setItem(counts,11, QTableWidgetItem(""))
-
+            self.tlbFlowControl.setItem(counts,6, QTableWidgetItem(_AddFlowcontrol_IniStorage))
+            self.tlbFlowControl.setItem(counts,7, QTableWidgetItem(_AddFlowcontrol_MaxStorage))
+            self.tlbFlowControl.setItem(counts,8, QTableWidgetItem(_AddFlowcontrol_MaxStorageR))
+            self.tlbFlowControl.setItem(counts,9, QTableWidgetItem(_AddFlowcontrol_ROType))
+            self.tlbFlowControl.setItem(counts,10, QTableWidgetItem(_AddFlowcontrol_ROConstQ))
+            self.tlbFlowControl.setItem(counts,11, QTableWidgetItem(_AddFlowcontrol_ROConstQDuration))
         # 나중에 함수로 빼야 할 부분 시간 없어서 그냥 사용함
         global _Flowcontrolgrid_xmlCount, _Flowcontrolgrid_flag
         _Flowcontrolgrid_flag = True
@@ -918,78 +1193,133 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         ET.register_namespace('', "http://tempuri.org/GRMProject.xsd")
         xmltree = ET.ElementTree(ET.fromstring(DictoXml))
         root = xmltree.getroot()
-
         count = self.tlbFlowControl.rowCount()
         _Flowcontrolgrid_xmlCount = count
+        GRM._FlowControlCount = count
         for row in range(0, _Flowcontrolgrid_xmlCount):
             child = ET.Element("FlowControlGrid")
             root.append(child)
+            #
+            # GridValue = ET.Element("ColX")
+            # GridValue.text = self.tlbFlowControl.item(row, 0).text()
+            # child.append(GridValue)
+            #
+            # UserLandCover = ET.Element("RowY")
+            # UserLandCover.text = self.tlbFlowControl.item(row, 1).text()
+            # child.append(UserLandCover)
+            #
+            # GRMLandCoverCode = ET.Element("Name")
+            # GRMLandCoverCode.text = self.tlbFlowControl.item(row, 2).text()
+            # child.append(GRMLandCoverCode)
+
+            GRMLandCoverCode = ET.Element("Name")
+            GRMLandCoverCode.text = self.tlbFlowControl.item(row, 0).text()
+            child.append(GRMLandCoverCode)
 
             GridValue = ET.Element("ColX")
-            GridValue.text = self.tlbFlowControl.item(row, 0).text()
+            GridValue.text = self.tlbFlowControl.item(row, 1).text()
             child.append(GridValue)
 
             UserLandCover = ET.Element("RowY")
-            UserLandCover.text = self.tlbFlowControl.item(row, 1).text()
+            UserLandCover.text = self.tlbFlowControl.item(row, 2).text()
             child.append(UserLandCover)
-
-            GRMLandCoverCode = ET.Element("Name")
-            GRMLandCoverCode.text = self.tlbFlowControl.item(row, 2).text()
-            child.append(GRMLandCoverCode)
 
             DT = ET.Element("DT")
             DT.text = self.tlbFlowControl.item(row, 3).text()
             child.append(DT)
 
             ControlType = ET.Element("ControlType")
-            ControlType.text = self.tlbFlowControl.item(row, 4).text()
+            testvalue = self.tlbFlowControl.item(row, 4).text()
+            if testvalue == "Reservoir outflow":
+                ControlType.text = "ReservoirOutflow"
+            elif testvalue == "Reservoir operation":
+                ControlType.text = "ReservoirOperation"
+            elif testvalue == "Sink flow":
+                ControlType.text = "SinkFlow"
+            elif testvalue == "Source flow":
+                ControlType.text = "SourceFlow"
+            elif testvalue == "Inlet":
+                ControlType.text = "Inlet"
             child.append(ControlType)
 
             FlowDataFile = ET.Element("FlowDataFile")
             FlowDataFile.text = self.tlbFlowControl.item(row, 5).text()
             child.append(FlowDataFile)
 
-            IniStorage = ET.Element("IniStorage")
-            if self.tlbFlowControl.item(row, 6).text() != "":
-                IniStorage.text = self.tlbFlowControl.item(row, 6).text()
-            else:
+
+            try:
+                IniStorage = ET.Element("IniStorage")
+                storage = self.tlbFlowControl.item(row, 6).text()
+                if storage != "":
+                    IniStorage.text = self.tlbFlowControl.item(row, 6).text()
+                else:
+                    IniStorage.text = ""
+                child.append(IniStorage)
+            except :
+                IniStorage = ET.Element("IniStorage")
                 IniStorage.text = ""
-            child.append(IniStorage)
+                child.append(IniStorage)
 
-            MaxStorage = ET.Element("MaxStorage")
-            if self.tlbFlowControl.item(row, 7).text() != "":
-                MaxStorage.text = self.tlbFlowControl.item(row, 7).text()
-            else:
-                MaxStorage.text = ""
-            child.append(MaxStorage)
+            try:
+                MaxStorage = ET.Element("MaxStorage")
+                if self.tlbFlowControl.item(row, 7).text() != "":
+                    MaxStorage.text = self.tlbFlowControl.item(row, 7).text()
+                else:
+                    MaxStorage.text = ""
+                child.append(MaxStorage)
+            except:
+                 MaxStorage = ET.Element("MaxStorage")
+                 MaxStorage.text = ""
+                 child.append(MaxStorage)
 
-            MaxStorageR = ET.Element("MaxStorageR")
-            if self.tlbFlowControl.item(row, 8).text() != "":
-                MaxStorageR.text = self.tlbFlowControl.item(row, 8).text()
-            else:
-                MaxStorageR.text = ""
-            child.append(MaxStorageR)
+            try:
+                MaxStorageR = ET.Element("MaxStorageR")
+                if self.tlbFlowControl.item(row, 8).text() != "":
+                    MaxStorageR.text = self.tlbFlowControl.item(row, 8).text()
+                else:
+                    MaxStorageR.text = ""
+                child.append(MaxStorageR)
+            except:
+                 MaxStorageR = ET.Element("MaxStorageR")
+                 MaxStorageR.text = ""
+                 child.append(MaxStorageR)
 
-            ROType = ET.Element("ROType")
-            if self.tlbFlowControl.item(row, 9).text() != "":
-                ROType.text = self.tlbFlowControl.item(row, 9).text()
-            else:
-                ROType.text = ""
-            child.append(ROType)
+            try:
+                ROType = ET.Element("ROType")
+                if self.tlbFlowControl.item(row, 9).text() != "":
+                    ROType.text = self.tlbFlowControl.item(row, 9).text()
+                else:
+                    ROType.text = ""
+                child.append(ROType)
+            except:
+                 ROType = ET.Element("ROType")
+                 ROType.text = ""
+                 child.append(ROType)
 
-            ROConstQ = ET.Element("ROConstQ")
-            if self.tlbFlowControl.item(row, 10).text() != "":
-                ROConstQ.text = self.tlbFlowControl.item(row, 10).text()
-            else:
+
+            try:
+                ROConstQ = ET.Element("ROConstQ")
+                if self.tlbFlowControl.item(row, 10).text() != "":
+                    ROConstQ.text = self.tlbFlowControl.item(row, 10).text()
+                else:
+                    ROConstQ.text = ""
+                child.append(ROConstQ)
+            except:
+                ROConstQ = ET.Element("ROConstQ")
                 ROConstQ.text = ""
-            child.append(ROConstQ)
+                child.append(ROConstQ)
 
-            ROConstQDuration = ET.Element("ROConstQDuration")
-            if self.tlbFlowControl.item(row, 11).text() != "":
-                ROConstQDuration.text = self.tlbFlowControl.item(row, 11).text()
-            else:
+            try:
+                ROConstQDuration = ET.Element("ROConstQDuration")
+                if self.tlbFlowControl.item(row, 11).text() != "":
+                    ROConstQDuration.text = self.tlbFlowControl.item(row, 11).text()
+                else:
+                    ROConstQDuration.text = ""
+                child.append(ROConstQDuration)
+            except:
+                ROConstQDuration = ET.Element("ROConstQDuration")
                 ROConstQDuration.text = ""
-            child.append(ROConstQDuration)
+                child.append(ROConstQDuration)
         xmltree_string = ET.tostring(xmltree.getroot())
         docs = dict(xmltodict.parse(xmltree_string))
         GRM._xmltodict.clear()
@@ -997,12 +1327,62 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
 
 
         # 테이블에 값 셋팅후 화면에 점 표시
-        self.FlowContorGird_paint()
+        if self.chkFlowContorGird.isChecked():
+            self.FlowContorGird_paint()
 
     def FlowControlEdit(self):
         global _AddFlowcontrol_Edit_or_Insert_type,_Flowcontrolgrid_xmlCount
+        global _EditFlowColX,_EditFlowRowY,_EditFlowName,_EditFlowDT,_EditFlowControlType,_EditFlowFlowDataFile,_EditFlowIniStorage
+        global _EditFlowMaxStorage,_EditFlowMaxStorageR,_EditFlowROType,_EditFlowROConstQ,_EditFlowROConstQDuration,_EditFlowCurrentRow
+        global _FlowControlTable
+        _FlowControlTable = self.tlbFlowControl
         row = self.tlbFlowControl.currentRow()
+        _EditFlowCurrentRow = row
         if row>-1:
+            # _EditFlowColX = self.tlbFlowControl.item(row, 0).text()
+            # _EditFlowRowY = self.tlbFlowControl.item(row, 1).text()
+            # _EditFlowName = self.tlbFlowControl.item(row, 2).text()
+
+            _EditFlowName = self.tlbFlowControl.item(row, 0).text()
+            _EditFlowColX = self.tlbFlowControl.item(row, 1).text()
+            _EditFlowRowY = self.tlbFlowControl.item(row, 2).text()
+            _EditFlowDT = self.tlbFlowControl.item(row, 3).text()
+            _EditFlowControlType = self.tlbFlowControl.item(row, 4).text()
+            _EditFlowFlowDataFile = self.tlbFlowControl.item(row, 5).text()
+            try:
+                test11 = str(self.tlbFlowControl.item(row, 6).text().strip())
+                if test11 =="":
+                    _EditFlowIniStorage = ""
+                else:
+                    _EditFlowIniStorage = self.tlbFlowControl.item(row, 6).text()
+
+                if self.tlbFlowControl.item(row, 7).text() != "":
+                    _EditFlowMaxStorage = self.tlbFlowControl.item(row, 7).text()
+                else:
+                    _EditFlowMaxStorage = ""
+
+                if self.tlbFlowControl.item(row, 8).text() != "":
+                    _EditFlowMaxStorageR = self.tlbFlowControl.item(row, 8).text()
+                else:
+                    _EditFlowMaxStorageR = ""
+
+                if self.tlbFlowControl.item(row, 9).text() != "":
+                    _EditFlowROType = self.tlbFlowControl.item(row, 9).text()
+                else:
+                    _EditFlowROType = ""
+
+                if self.tlbFlowControl.item(row, 10).text() != "":
+                    _EditFlowROConstQ = self.tlbFlowControl.item(row, 10).text()
+                else:
+                    _EditFlowROConstQ = ""
+
+                if self.tlbFlowControl.item(row, 11).text() != "":
+                    _EditFlowROConstQDuration = self.tlbFlowControl.item(row, 11).text()
+                else:
+                    _EditFlowROConstQDuration = ""
+            except Exception as e:
+                pass
+
             _AddFlowcontrol_Edit_or_Insert_type = "Edit"
             _Flowcontrolgrid_xmlCount=_util.FlowControlGrid_XmlCount()
             results = AddFlowControl()
@@ -1011,13 +1391,14 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
 
 
 
-
-
     def tlbFlowControl_clik_enent(self):
         global _ClickX,_ClickY
         row=self.tlbFlowControl.currentRow()
-        _ClickX = self.tlbFlowControl.item(row,0).text()
-        _ClickY = self.tlbFlowControl.item(row, 1).text()
+        # _ClickX = self.tlbFlowControl.item(row,0).text()
+        # _ClickY = self.tlbFlowControl.item(row, 1).text()
+
+        _ClickX = self.tlbFlowControl.item(row, 1).text()
+        _ClickY = self.tlbFlowControl.item(row, 2).text()
 
     def RemoveTalbeRow(self):
         global _Flowcontrolgrid_xmlCount , _Flowcontrolgrid_flag
@@ -1039,76 +1420,136 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
                 root = xmltree.getroot()
                 count = self.tlbFlowControl.rowCount()
                 _Flowcontrolgrid_xmlCount = count
+                GRM._FlowControlCount = count
     
                 for row in range(0, count):
                     child = ET.Element("FlowControlGrid")
                     root.append(child)
-    
+
+                    # GridValue = ET.Element("ColX")
+                    # GridValue.text = self.tlbFlowControl.item(row, 0).text()
+                    # child.append(GridValue)
+                    #
+                    # UserLandCover = ET.Element("RowY")
+                    # UserLandCover.text = self.tlbFlowControl.item(row, 1).text()
+                    # child.append(UserLandCover)
+                    #
+                    # GRMLandCoverCode = ET.Element("Name")
+                    # GRMLandCoverCode.text = self.tlbFlowControl.item(row, 2).text()
+                    # child.append(GRMLandCoverCode)
+
+
+
+
+
+                    GRMLandCoverCode = ET.Element("Name")
+                    GRMLandCoverCode.text = self.tlbFlowControl.item(row, 0).text()
+                    child.append(GRMLandCoverCode)
+
                     GridValue = ET.Element("ColX")
-                    GridValue.text = self.tlbFlowControl.item(row, 0).text()
+                    GridValue.text = self.tlbFlowControl.item(row, 1).text()
                     child.append(GridValue)
     
                     UserLandCover = ET.Element("RowY")
-                    UserLandCover.text = self.tlbFlowControl.item(row, 1).text()
+                    UserLandCover.text = self.tlbFlowControl.item(row, 2).text()
                     child.append(UserLandCover)
-    
-                    GRMLandCoverCode = ET.Element("Name")
-                    GRMLandCoverCode.text = self.tlbFlowControl.item(row, 2).text()
-                    child.append(GRMLandCoverCode)
-    
+
                     DT = ET.Element("DT")
                     DT.text = self.tlbFlowControl.item(row, 3).text()
                     child.append(DT)
-    
+
                     ControlType = ET.Element("ControlType")
-                    ControlType.text = self.tlbFlowControl.item(row, 4).text()
+                    testvalue = self.tlbFlowControl.item(row, 4).text()
+                    if testvalue == "Reservoir outflow":
+                        ControlType.text = "ReservoirOutflow"
+                    elif testvalue == "Reservoir operation":
+                        ControlType.text = "ReservoirOperation"
+                    elif testvalue == "Sink flow":
+                        ControlType.text = "SinkFlow"
+                    elif testvalue == "Source flow":
+                        ControlType.text = "SourceFlow"
+                    elif testvalue == "Inlet":
+                        ControlType.text = "Inlet"
                     child.append(ControlType)
+
+
     
                     FlowDataFile = ET.Element("FlowDataFile")
                     FlowDataFile.text = self.tlbFlowControl.item(row, 5).text()
                     child.append(FlowDataFile)
-    
-                    IniStorage = ET.Element("IniStorage")
-                    if self.tlbFlowControl.item(row, 6).text() != "":
-                        IniStorage.text = self.tlbFlowControl.item(row, 6).text()
-                    else :
-                        IniStorage.text=""
-                    child.append(IniStorage)
-    
-                    MaxStorage = ET.Element("MaxStorage")
-                    if self.tlbFlowControl.item(row, 7).text() != "":
-                        MaxStorage.text = self.tlbFlowControl.item(row, 7).text()
-                    else:
+
+                    try:
+                        IniStorage = ET.Element("IniStorage")
+                        storage = self.tlbFlowControl.item(row, 6).text()
+                        if storage != "":
+                            IniStorage.text = self.tlbFlowControl.item(row, 6).text()
+                        else:
+                            IniStorage.text = ""
+                        child.append(IniStorage)
+                    except:
+                        IniStorage = ET.Element("IniStorage")
+                        IniStorage.text = ""
+                        child.append(IniStorage)
+
+                    try:
+                        MaxStorage = ET.Element("MaxStorage")
+                        if self.tlbFlowControl.item(row, 7).text() != "":
+                            MaxStorage.text = self.tlbFlowControl.item(row, 7).text()
+                        else:
+                            MaxStorage.text = ""
+                        child.append(MaxStorage)
+                    except:
+                        MaxStorage = ET.Element("MaxStorage")
                         MaxStorage.text = ""
-                    child.append(MaxStorage)
-    
-                    MaxStorageR = ET.Element("MaxStorageR")
-                    if self.tlbFlowControl.item(row, 8).text() != "":
-                        MaxStorageR.text = self.tlbFlowControl.item(row, 8).text()
-                    else:
-                        MaxStorageR.text=""
-                    child.append(MaxStorageR)
-    
-                    ROType = ET.Element("ROType")
-                    if self.tlbFlowControl.item(row, 9).text() != "":
-                        ROType.text = self.tlbFlowControl.item(row, 9).text()
-                    else:
+                        child.append(MaxStorage)
+
+                    try:
+                        MaxStorageR = ET.Element("MaxStorageR")
+                        if self.tlbFlowControl.item(row, 8).text() != "":
+                            MaxStorageR.text = self.tlbFlowControl.item(row, 8).text()
+                        else:
+                            MaxStorageR.text = ""
+                        child.append(MaxStorageR)
+                    except:
+                        MaxStorageR = ET.Element("MaxStorageR")
+                        MaxStorageR.text = ""
+                        child.append(MaxStorageR)
+
+                    try:
+                        ROType = ET.Element("ROType")
+                        if self.tlbFlowControl.item(row, 9).text() != "":
+                            ROType.text = self.tlbFlowControl.item(row, 9).text()
+                        else:
+                            ROType.text = ""
+                        child.append(ROType)
+                    except:
+                        ROType = ET.Element("ROType")
                         ROType.text = ""
-                    child.append(ROType)
-    
-                    ROConstQ = ET.Element("ROConstQ")
-                    if self.tlbFlowControl.item(row, 10).text() != "":
-                        ROConstQ.text = self.tlbFlowControl.item(row, 10).text()
-                    else:
-                        ROConstQ.text =""
-                    child.append(ROConstQ)
-    
-                    ROConstQDuration = ET.Element("ROConstQDuration")
-                    if self.tlbFlowControl.item(row, 11).text() != "":
-                        ROConstQDuration.text = self.tlbFlowControl.item(row, 11).text()
-                    else:
+                        child.append(ROType)
+
+                    try:
+                        ROConstQ = ET.Element("ROConstQ")
+                        if self.tlbFlowControl.item(row, 10).text() != "":
+                            ROConstQ.text = self.tlbFlowControl.item(row, 10).text()
+                        else:
+                            ROConstQ.text = ""
+                        child.append(ROConstQ)
+                    except:
+                        ROConstQ = ET.Element("ROConstQ")
+                        ROConstQ.text = ""
+                        child.append(ROConstQ)
+
+                    try:
+                        ROConstQDuration = ET.Element("ROConstQDuration")
+                        if self.tlbFlowControl.item(row, 11).text() != "":
+                            ROConstQDuration.text = self.tlbFlowControl.item(row, 11).text()
+                        else:
+                            ROConstQDuration.text = ""
+                        child.append(ROConstQDuration)
+                    except:
+                        ROConstQDuration = ET.Element("ROConstQDuration")
                         ROConstQDuration.text = ""
-                    child.append(ROConstQDuration)
+                        child.append(ROConstQDuration)
     
                 xmltree_string = ET.tostring(xmltree.getroot())
                 docs = dict(xmltodict.parse(xmltree_string))
@@ -1175,24 +1616,161 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
 #
     # ----------------- 2017-10-24_오전 박 Watershed Parmeters 탭 텍스트 박스 셋팅 -----------------------------
     def Set_Watershed_Parameter_tab_default(self):
-
         # Select watershed 콥보 박스 셋팅
         self.Set_Watershed_combo()
 
-        self.SelectWsCombobox()
+        # 함수로 빼야함 급해서 그냥 넣음
+        combolist = ('Linear','Exponential','Constant')
+        self.cmbUnsturatedType.addItems(combolist)
+        self.cmbUnsturatedType.currentIndexChanged.connect(self.chage_UnsturatedType)
+
+        # 최하류 셀값 설정정
+        self.Set_MostDownStream()
+
         self.cb_selectws.currentIndexChanged.connect(self.SelectWsCombobox)
+        self.btnApplyWS.clicked.connect(self.UserSet_Add)
+        self.btnRemoveWS.clicked.connect(self.UserSet_remove)
+
+        self.SetWatershedstream()
+        self.SetMostDownStream_combobox()
+        self.SelectWsCombobox()
+
+
+    def SetMostDownStream_combobox(self):
+        count = self.cb_selectws.count()
+        for i in range(0, count):
+            selectWS=self.cb_selectws.itemText(i)
+
+            if str(selectWS) ==str(_StreamWSID):
+                self.cb_selectws.setCurrentIndex(i)
+                return
 
 
 
-    # 콤보 박스에 유역 설정 하기
+    def chage_UnsturatedType(self):
+        self.selectText=self.cmbUnsturatedType.currentText()
+        if self.selectText=="Linear":
+            self.txtCoefUnsatruatedk.setText("0.2")
+            self.txtCoefUnsatruatedk.setEnabled(True)
+        elif self.selectText=="Exponential":
+           self.txtCoefUnsatruatedk.setText("6.4")
+           self.txtCoefUnsatruatedk.setEnabled(True)
+        else :
+            self.txtCoefUnsatruatedk.setText("0")
+            self.txtCoefUnsatruatedk.setEnabled(False)
+
+    def UserSet_remove(self):
+        id = self.cb_selectws.currentText()
+        comboindex = self.cb_selectws.currentIndex()
+        result=_wsinfo.RemoveUserParametersSetting(int(id))
+
+        if result:
+            count = self.lisw_UserSet.count()
+            for index in range(0,count):
+                item = self.lisw_UserSet.item(index).text()
+                if item==id:
+                    if id!=str(_StreamWSID):
+                        self.lisw_UserSet.takeItem(index)
+                        _util.MessageboxShowInfo("GRM" , "Remove parameter was completed")
+                        self.cb_selectws.setCurrentIndex(0)
+                        self.cb_selectws.setCurrentIndex(comboindex)
+
+    def UserSet_Add(self):
+
+        id = int(self.cb_selectws.currentText())
+        items = self.lisw_UserSet.findItems(str(id), Qt.MatchExactly)
+        if len(items) ==0:
+            item1 = QListWidgetItem(str(id))
+            self.lisw_UserSet.addItem(item1)
+
+        IniSaturation = self.txtIniSaturation.text()
+        MinSlopeOF = self.txtMinSlopeOF.text()
+        MinSlopeChBed = self.txtMinSlopeChBed.text()
+        IniFlow = self.txtIniFlow.text()
+
+        UnsturatedType = self.cmbUnsturatedType.currentText()
+        CoefUnsatruatedk = self.txtCoefUnsatruatedk.text()
+        ChRoughness = self.txtChRoughness.text()
+        DryStreamOrder = self.txtDryStreamOrder.text()
+        CalCoefLCRoughness = self.txtCalCoefLCRoughness.text()
+        CalCoefSoilDepth = self.txtCalCoefSoilDepth.text()
+        CalCoefPorosity = self.txtCalCoefPorosity.text()
+        CalCoefWFSuctionHead = self.txtCalCoefWFSuctionHead.text()
+        CalCoefHydraulicK = self.txtCalCoefHydraulicK.text()
+        if float(self.GridCellSize) > 0:
+            MinChBaseWidth = float(self.GridCellSize) / 10
+        result=_wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(id, float(IniSaturation), float(MinSlopeOF),UnsturatedType,float(CoefUnsatruatedk),
+                                                               float(MinSlopeChBed), float(MinChBaseWidth),
+                                                               float(ChRoughness), int(DryStreamOrder),
+                                                               float(CalCoefLCRoughness),
+                                                               float(CalCoefSoilDepth), float(CalCoefPorosity),
+                                                               float(CalCoefWFSuctionHead),
+                                                               float(CalCoefHydraulicK),float(IniFlow))
+        if result:
+            _util.MessageboxShowInfo("GRM" , "Apply parameter was completed")
+        else:
+            _util.MessageboxShowError("GRM" , "Apply parameter was not completed!")
+
+    def Set_MostDownStream(self):
+
+
+        # if GRM._SubWatershedCount==0:
+        item1 = QListWidgetItem(str(_StreamWSID))
+        self.lisw_UserSet.addItem(item1)
+        #     self.txtIniSaturation.setText("1")
+        #     self.txtMinSlopeOF.setText("0.001")
+        #     self.txtMinSlopeChBed.setText("0.001")
+        #
+        #     intAll = float(self.GridCellSize)
+        #     if intAll > 0:
+        #         cal_MinChBaseWidth = intAll / 10
+        #     self.txtMinChBaseWidth.setText(str(cal_MinChBaseWidth))
+        #     self.txtIniFlow.setText("0")
+        #     self.txtChRoughness.setText("0.045")
+        #     self.txtDryStreamOrder.setText("0")
+        #     self.txtCalCoefLCRoughness.setText("1")
+        #     self.txtCalCoefSoilDepth.setText("1")
+        #     self.txtCalCoefPorosity.setText("1")
+        #     self.txtCalCoefWFSuctionHead.setText("1")
+        #     self.txtCalCoefHydraulicK.setText("1")
+        #
+        # elif GRM._SubWatershedCount==1:
+        #     item1 = QListWidgetItem(str(_StreamWSID))
+        #     self.lisw_UserSet.addItem(item1)
+        #
+        #     self.txtIniSaturation.setText("1")
+        #     self.txtMinSlopeOF.setText("0.001")
+        #     self.txtMinSlopeChBed.setText("0.001")
+        #
+        #     # 만약에 Cell size 값이 없으면 레이어에서 값을 받음
+        #     intAll = float(self.GridCellSize)
+        #     if intAll > 0:
+        #         cal_MinChBaseWidth = intAll / 10
+        #     self.txtMinChBaseWidth.setText(str(cal_MinChBaseWidth))
+        #     self.txtIniFlow.setText("0")
+        #     self.txtChRoughness.setText("0.045")
+        #     self.txtDryStreamOrder.setText("0")
+        #     self.txtCalCoefLCRoughness.setText("1")
+        #     self.txtCalCoefSoilDepth.setText("1")
+        #     self.txtCalCoefPorosity.setText("1")
+        #     self.txtCalCoefWFSuctionHead.setText("1")
+        #     self.txtCalCoefHydraulicK.setText("1")
+        # elif GRM._SubWatershedCount> 1:
+        #     item1 = QListWidgetItem(str(_StreamWSID))
+        #     self.lisw_UserSet.addItem(item1)
+        #
+
+
+
+
+
+        # 콤보 박스에 유역 설정 하기
     def Set_Watershed_combo(self):
         WS_list = []
         wscount=_wsinfo.WScount()
         AllItem=_wsinfo.WSIDsAll()
-
         for i in range(wscount):
             WS_list.append(str(AllItem[i]))
-
         self.cb_selectws.clear()
         self.cb_selectws.addItems(WS_list)
 
@@ -1200,36 +1778,96 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
 
 
 
+    def SetWatershedstream(self):
+        self.ID = []; self.IniSaturation=[];self.MinSlopeOF=[];self.MinSlopeChBed=[]
+        self.MinChBaseWidth=[]; self.ChRoughness=[]; self.DryStreamOrder=[]; self.IniFlow=[]
+        self.CalCoefLCRoughness=[]; self.CalCoefPorosity=[]; self.CalCoefWFSuctionHead=[]; self.CalCoefHydraulicK=[]
+        self.CalCoefSoilDepth=[];self.UserSet =[]
+        self.UnsaturatedKType=[];self.CoefUnsaturatedK=[]
+        doc = ET.parse(self.ProjectFile)
+        root = doc.getroot()
+        # 최하류 유역 Id 값
+        try:
+            if GRM._SubWatershedCount == 1:
+                i=0
+                self.ID.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['ID'])
+                self.IniSaturation.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['IniSaturation'])
+                self.MinSlopeOF.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['MinSlopeOF'])
+                self.MinSlopeChBed.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['MinSlopeChBed'])
+                self.MinChBaseWidth.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['MinChBaseWidth'])
+                self.ChRoughness.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['ChRoughness'])
+                self.DryStreamOrder.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['DryStreamOrder'])
+                self.IniFlow.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['IniFlow'])
+                self.UnsaturatedKType.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['UnsaturatedKType'])
+                self.CoefUnsaturatedK.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CoefUnsaturatedK'])
+                self.CalCoefLCRoughness.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefLCRoughness'])
+                self.CalCoefPorosity.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefPorosity'])
+                self.CalCoefWFSuctionHead.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefWFSuctionHead'])
+                self.CalCoefHydraulicK.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefHydraulicK'])
+                self.CalCoefSoilDepth.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefSoilDepth'])
+                usersetString = GRM._xmltodict['GRMProject']['SubWatershedSettings']['UserSet']
+                self.UserSet.append(usersetString)
+                results=_wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(int(self.ID[i]), float(self.IniSaturation[i]),float(self.MinSlopeOF[i]),self.UnsaturatedKType[i],float(self.CoefUnsaturatedK[i]), float(self.MinSlopeChBed[i]), float(self.MinChBaseWidth[i]),
+                                                                       float(self.ChRoughness[i]), int(self.DryStreamOrder[i]), float(self.CalCoefLCRoughness[i]), float(self.CalCoefSoilDepth[i])
+                                                                       ,float(self.CalCoefPorosity[i]), float(self.CalCoefWFSuctionHead[i]), float(self.CalCoefHydraulicK[i])
+                                                                       ,float(self.IniFlow[i]))
+
+            elif GRM._SubWatershedCount>1:
+                i = 0
+                for watershed in GRM._xmltodict['GRMProject']['SubWatershedSettings']:
+                    self.ID.append(watershed['ID'])
+                    self.IniSaturation.append(watershed['IniSaturation'])
+                    self.MinSlopeOF.append(watershed['MinSlopeOF'])
+                    self.MinSlopeChBed.append(watershed['MinSlopeChBed'])
+                    self.MinChBaseWidth.append(watershed['MinChBaseWidth'])
+                    self.ChRoughness.append(watershed['ChRoughness'])
+                    self.DryStreamOrder.append(watershed['DryStreamOrder'])
+                    self.IniFlow.append(watershed['IniFlow'])
+                    self.UnsaturatedKType.append(watershed['UnsaturatedKType'])
+                    self.CoefUnsaturatedK.append(watershed['CoefUnsaturatedK'])
+                    self.CalCoefLCRoughness.append(watershed['CalCoefLCRoughness'])
+                    self.CalCoefPorosity.append(watershed['CalCoefPorosity'])
+                    self.CalCoefWFSuctionHead.append(watershed['CalCoefWFSuctionHead'])
+                    self.CalCoefHydraulicK.append(watershed['CalCoefHydraulicK'])
+                    self.CalCoefSoilDepth.append(watershed['CalCoefSoilDepth'])
+                    usersetString = watershed['UserSet']
+                    self.UserSet.append(usersetString)
+                    if usersetString.upper() == "TRUE":
+                        _wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(int(self.ID[i]),
+                                                                               float(self.IniSaturation[i]),
+                                                                               float(self.MinSlopeOF[i]),
+                                                                               self.UnsaturatedKType[i],
+                                                                               float(self.CoefUnsaturatedK[i]),
+                                                                               float(self.MinSlopeChBed[i]),
+                                                                               float(self.MinChBaseWidth[i]),
+                                                                               float(self.ChRoughness[i]),
+                                                                               int(self.DryStreamOrder[i]),
+                                                                               float(self.CalCoefLCRoughness[i]),
+                                                                               float(self.CalCoefSoilDepth[i]),
+                                                                               float(self.CalCoefPorosity[i]),
+                                                                               float(self.CalCoefWFSuctionHead[i]),
+                                                                               float(self.CalCoefHydraulicK[i]),
+                                                                               float(self.IniFlow[i]))
+                        if str(self.ID[i])!= str(_StreamWSID):
+                            item1 = QListWidgetItem(self.ID[i])
+                            self.lisw_UserSet.addItem(item1)
+
+                    i = i+1
+            elif GRM._SubWatershedCount==0:
+                intAll = float(self.GridCellSize)
+                if intAll > 0:
+                    cal_MinChBaseWidth = intAll / 10
+                else:
+                    cal_MinChBaseWidth=0
+                _wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(int(_StreamWSID),1,0.001,"Linear",0.2,0.001,float(cal_MinChBaseWidth),0.045,0,1,1,1,1,1,0)
+        except Exception as esd:
+            _util.MessageboxShowError("error",str(esd))
 
 
     # 콤보박스 선택시 하류 유역과 상류 유역의 콤보박스에 값 셋팅
     def SelectWsCombobox(self):
-
+        self.project_use_flag = False
         # 2018-01-29 박: Watershed parmeter 함수 호출
-        '''
-        첫번째로 OpenProject 할때 처리 영역
-        콤보 박스 셋팅 하기 전에 DLL에 선행 처리 해야 할 부분
-            <ID>1</ID>
-            <IniSaturation>1</IniSaturation>
-            <MinSlopeOF>0.0001</MinSlopeOF>
-            <MinSlopeChBed>0.0002</MinSlopeChBed>
-            <MinChBaseWidth>50</MinChBaseWidth>
-            <ChRoughness>0.055</ChRoughness>
-            <DryStreamOrder>0</DryStreamOrder>
-            <IniFlow>350</IniFlow>
-            <CalCoefLCRoughness>1</CalCoefLCRoughness>
-            <CalCoefPorosity>1</CalCoefPorosity>
-            <CalCoefWFSuctionHead>1</CalCoefWFSuctionHead>
-            <CalCoefHydraulicK>2</CalCoefHydraulicK>
-            <CalCoefSoilDepth>1</CalCoefSoilDepth>
-            <UserSet>true</UserSet>
-        '''
-
-
-
-
-
-
         # 하류 유역 정보 셋팅
         selectWS=self.cb_selectws.currentText()
         DownSW = []
@@ -1240,6 +1878,8 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
             for i in range(len(DownSW)):
                 item = QListWidgetItem(str(DownSW[i]))
                 self.lisw_DownWS.addItem(item)
+        else:
+            self.lisw_DownWS.clear()
 
         # 상류 유역 정보 셋팅
         UPSW = []
@@ -1250,156 +1890,218 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
             for s in range(len(UPSW)):
                 item1 = QListWidgetItem(str(UPSW[s]))
                 self.lisw_UpWS.addItem(item1)
-
-        self.ID = []; self.IniSaturation=[];self.MinSlopeOF=[];self.MinSlopeChBed=[]
-        self.MinChBaseWidth=[]; self.ChRoughness=[]; self.DryStreamOrder=[]; self.IniFlow=[]
-        self.CalCoefLCRoughness=[]; self.CalCoefPorosity=[]; self.CalCoefWFSuctionHead=[]; self.CalCoefHydraulicK=[]
-        self.CalCoefSoilDepth=[];self.UserSet =[]
-
-
-        doc = ET.parse(self.ProjectFile)
-        root = doc.getroot()
-
-        # 최하류 유역 Id 값
-        StreamWSID = _wsinfo.mostDownStreamWSID()
-
-        for element in root.findall('{http://tempuri.org/GRMProject.xsd}SubWatershedSettings'):
-            self.ID.append(element.findtext("{http://tempuri.org/GRMProject.xsd}ID"))
-            self.IniSaturation.append(element.findtext("{http://tempuri.org/GRMProject.xsd}IniSaturation"))
-            self.MinSlopeOF.append(element.findtext("{http://tempuri.org/GRMProject.xsd}MinSlopeOF"))
-            self.MinSlopeChBed.append(element.findtext("{http://tempuri.org/GRMProject.xsd}MinSlopeChBed"))
-            self.MinChBaseWidth.append(element.findtext("{http://tempuri.org/GRMProject.xsd}MinChBaseWidth"))
-            self.ChRoughness.append(element.findtext("{http://tempuri.org/GRMProject.xsd}ChRoughness"))
-            self.DryStreamOrder.append(element.findtext("{http://tempuri.org/GRMProject.xsd}DryStreamOrder"))
-            self.IniFlow.append(element.findtext("{http://tempuri.org/GRMProject.xsd}IniFlow"))
-            self.CalCoefLCRoughness.append(element.findtext("{http://tempuri.org/GRMProject.xsd}CalCoefLCRoughness"))
-            self.CalCoefPorosity.append(element.findtext("{http://tempuri.org/GRMProject.xsd}CalCoefPorosity"))
-            self.CalCoefWFSuctionHead.append(element.findtext("{http://tempuri.org/GRMProject.xsd}CalCoefWFSuctionHead"))
-            self.CalCoefHydraulicK.append(element.findtext("{http://tempuri.org/GRMProject.xsd}CalCoefHydraulicK"))
-            self.CalCoefSoilDepth.append(element.findtext("{http://tempuri.org/GRMProject.xsd}CalCoefSoilDepth"))
-            usersetString =element.findtext("{http://tempuri.org/GRMProject.xsd}UserSet")
-            self.UserSet.append(usersetString)
-            idsss = element.findtext("{http://tempuri.org/GRMProject.xsd}ID")
-            if len(self.ID)>0:
-                if usersetString.upper() == "TRUE" or str(StreamWSID) == idsss:
-                    item1 = QListWidgetItem(element.findtext("{http://tempuri.org/GRMProject.xsd}ID"))
-                    self.lisw_UserSet.addItem(item1)
-        for i in range(len(self.ID)):
-            if float(self.IniFlow[i])>0:
-                flowFlage = True
-            else:
-                flowFlage = False
-
-        # # 2018-01-30
-        #     # wsid As Integer , iniSat As Single , minSlopeLandSurface As Single
-        #     # , minSlopeChannel As Single , minChannelBaseWidth As Single , roughnessChannel As Single
-        #     # , dryStreamOrder As Integer , ccLCRoughness As Single , ccSoilDepth As Single
-        #     # , ccPorosity As Single , ccWFSuctionHead As Single , ccSoilHydraulicCond As Single
-        #     # , applyIniFlow As Boolean , Optional iniFlow As Single = 0
-        #     # 사용자가 Apply 버튼 눌렀을때 적용 하는거
-
-
-            # _xml.ProjectLoad()
-            # count=_xml.SubWatershedSettings_Count
-            # if count>0:
-                #  # 매개 변수 방식
-                # _wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(int(self.ID[i]),float(self.IniSaturation[i]),float(self.MinSlopeOF[i])
-                #                                                                  ,float(self.MinSlopeChBed[i]),float(self.MinChBaseWidth[i]),float(self.ChRoughness[i])
-                #                                                                  ,int(self.DryStreamOrder[i]),float(self.CalCoefLCRoughness[i]),float(self.CalCoefSoilDepth[i])
-                #                                                                  ,float(self.CalCoefPorosity[i]),float(self.CalCoefWFSuctionHead[i]),float(self.CalCoefHydraulicK[i])
-                #                                                                  ,flowFlage,float(self.IniFlow[i]))
-        _new_wsinfo = cGetWatershedInfo("C:/GRM/Sample/SampleProject.gmp")
-        iniSaturation = str(_new_wsinfo.subwatershedPars(StreamWSID).iniSaturation)
-        minSlopeChBed = str(_new_wsinfo.subwatershedPars(StreamWSID).minSlopeChBed)
-        minSlopeOF = str(_new_wsinfo.subwatershedPars(StreamWSID).minSlopeOF)
-        minChBaseWidth = str(_new_wsinfo.subwatershedPars(StreamWSID).minChBaseWidth)
-        chRoughness = str(_new_wsinfo.subwatershedPars(StreamWSID).chRoughness)
-        dryStreamOrder = str(_new_wsinfo.subwatershedPars(StreamWSID).dryStreamOrder)
-        ccLCRoughness = str(_new_wsinfo.subwatershedPars(StreamWSID).ccLCRoughness)
-        ccSoilDepth = str(_new_wsinfo.subwatershedPars(StreamWSID).ccSoilDepth)
-        ccPorosity = str(_new_wsinfo.subwatershedPars(StreamWSID).ccPorosity)
-        ccWFSuctionHead = str(_new_wsinfo.subwatershedPars(StreamWSID).ccWFSuctionHead)
-        ccHydraulicK = str(_new_wsinfo.subwatershedPars(StreamWSID).ccHydraulicK)
-        iniFlow = str(_new_wsinfo.subwatershedPars(StreamWSID).iniFlow)
-
-        self.txtIniSaturation.setText(iniSaturation)
-        self.txtMinSlopeOF.setText(minSlopeOF)
-        self.txtMinSlopeChBed.setText(minSlopeChBed)
-        # Allsize=self.txtGrid_Size.text()
-        # intAll = float(Allsize)
-        # cal_MinChBaseWidth = intAll/10
-        self.txtMinChBaseWidth.setText(str(minChBaseWidth))
-        self.txtIniFlow.setText(iniFlow)
-        self.txtChRoughness.setText(chRoughness)
-        self.txtDryStreamOrder.setText(dryStreamOrder)
-        self.txtCalCoefLCRoughness.setText(ccLCRoughness)
-        self.txtCalCoefSoilDepth.setText(ccSoilDepth)
-        self.txtCalCoefPorosity.setText(ccPorosity)
-        self.txtCalCoefWFSuctionHead.setText(ccWFSuctionHead)
-        self.txtCalCoefHydraulicK.setText(ccHydraulicK)
-
-        if float(iniFlow)>0:
-            self.chkStream_flow.setChecked(True)
         else:
-            self.chkStream_flow.setChecked(False)
+            self.lisw_UpWS.clear()
+
+        # --------------------------------------------------------------------------------------------------------------
+        #self.ID = []; self.IniSaturation=[];self.MinSlopeOF=[];self.MinSlopeChBed=[]
+        #self.MinChBaseWidth=[]; self.ChRoughness=[]; self.DryStreamOrder=[]; self.IniFlow=[]
+        #self.CalCoefLCRoughness=[]; self.CalCoefPorosity=[]; self.CalCoefWFSuctionHead=[]; self.CalCoefHydraulicK=[]
+        #self.CalCoefSoilDepth=[];self.UserSet =[]
+        #self.UnsaturatedKType=[];self.CoefUnsaturatedK=[]
+        #doc = ET.parse(self.ProjectFile)
+        #root = doc.getroot()
+        ## 최하류 유역 Id 값
+
+        #try:
+        #    if GRM._SubWatershedCount == 1:
+        #        i = 0
+        #        self.ID.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['ID'])
+        #        self.IniSaturation.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['IniSaturation'])
+        #        self.MinSlopeOF.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['MinSlopeOF'])
+        #        self.MinSlopeChBed.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['MinSlopeChBed'])
+        #        self.MinChBaseWidth.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['MinChBaseWidth'])
+        #        self.ChRoughness.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['ChRoughness'])
+        #        self.DryStreamOrder.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['DryStreamOrder'])
+        #        self.IniFlow.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['IniFlow'])
+
+
+        #        self.UnsaturatedKType.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['UnsaturatedKType'])
+        #        self.CoefUnsaturatedK.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CoefUnsaturatedK'])
+
+        #        self.CalCoefLCRoughness.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefLCRoughness'])
+        #        self.CalCoefPorosity.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefPorosity'])
+        #        self.CalCoefWFSuctionHead.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefWFSuctionHead'])
+        #        self.CalCoefHydraulicK.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefHydraulicK'])
+        #        self.CalCoefSoilDepth.append(GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefSoilDepth'])
+        #        usersetString = GRM._xmltodict['GRMProject']['SubWatershedSettings']['UserSet']
+        #        self.UserSet.append(usersetString)
+        #        results=_wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(int(self.ID[i]), float(self.IniSaturation[i]),float(self.MinSlopeOF[i]),self.UnsaturatedKType[i],float(self.CoefUnsaturatedK[i]), float(self.MinSlopeChBed[i]), float(self.MinChBaseWidth[i]),
+        #                                                               float(self.ChRoughness[i]), int(self.DryStreamOrder[i]), float(self.CalCoefLCRoughness[i]), float(self.CalCoefSoilDepth[i])
+        #                                                               , float(self.CalCoefPorosity[i]), float(self.CalCoefWFSuctionHead[i]), float(self.CalCoefHydraulicK[i])
+        #                                                               , 0)
+
+        #    if GRM._SubWatershedCount>1:
+        #        i = 0
+        #        for watershed in GRM._xmltodict['GRMProject']['SubWatershedSettings']:
+        #            self.ID.append(watershed['ID'])
+        #            self.IniSaturation.append(watershed['IniSaturation'])
+        #            self.MinSlopeOF.append(watershed['MinSlopeOF'])
+        #            self.MinSlopeChBed.append(watershed['MinSlopeChBed'])
+        #            self.MinChBaseWidth.append(watershed['MinChBaseWidth'])
+        #            self.ChRoughness.append(watershed['ChRoughness'])
+        #            self.DryStreamOrder.append(watershed['DryStreamOrder'])
+        #            self.IniFlow.append(watershed['IniFlow'])
+
+        #            self.UnsaturatedKType.append(watershed['UnsaturatedKType'])
+        #            self.CoefUnsaturatedK.append(watershed['CoefUnsaturatedK'])
+
+        #            self.CalCoefLCRoughness.append(watershed['CalCoefLCRoughness'])
+        #            self.CalCoefPorosity.append(watershed['CalCoefPorosity'])
+        #            self.CalCoefWFSuctionHead.append(watershed['CalCoefWFSuctionHead'])
+        #            self.CalCoefHydraulicK.append(watershed['CalCoefHydraulicK'])
+        #            self.CalCoefSoilDepth.append(watershed['CalCoefSoilDepth'])
 
 
 
+        #            usersetString = watershed['UserSet']
+        #            self.UserSet.append(usersetString)
+        #            if usersetString.upper() == "TRUE":
+        #                _wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(int(self.ID[i]),
+        #                                                                       float(self.IniSaturation[i]),
+        #                                                                       float(self.MinSlopeOF[i]),
+        #                                                                       self.UnsaturatedKType[i],
+        #                                                                       float(self.CoefUnsaturatedK[i]),
+        #                                                                       float(self.MinSlopeChBed[i]),
+        #                                                                       float(self.MinChBaseWidth[i]),
+        #                                                                       float(self.ChRoughness[i]),
+        #                                                                       int(self.DryStreamOrder[i]),
+        #                                                                       float(self.CalCoefLCRoughness[i]),
+        #                                                                       float(self.CalCoefSoilDepth[i]),
+        #                                                                       float(self.CalCoefPorosity[i]),
+        #                                                                       float(self.CalCoefWFSuctionHead[i]),
+        #                                                                       float(self.CalCoefHydraulicK[i]),
+        #                                                                       0)
+        #                self.project_use_flag = True
+        #            i = i + 1
+        #except Exception as esd:
+        #    _util.MessageboxShowError("error",str(esd))
+        # -------------------------------------------------------------------------------------------------------------
 
-            #
-            # self.txtIniSaturation.setText("1")
-            # self.txtMinSlopeOF.setText("0.001")
-            # self.txtMinSlopeChBed.setText("0.001")
+
+        try:
+            global _wsinfo
+            iniSaturation = str(_wsinfo.subwatershedPars(int(selectWS)).iniSaturation)
+            minSlopeChBed = str(_wsinfo.subwatershedPars(int(selectWS)).minSlopeChBed)
+            minSlopeOF = str(_wsinfo.subwatershedPars(int(selectWS)).minSlopeOF)
+
+            # 2018-03-12 박: 화면 수정
+            UKType = str(_wsinfo.subwatershedPars(int(selectWS)).UKType)
+            coefUK = str(_wsinfo.subwatershedPars(int(selectWS)).coefUK)
+
+            minChBaseWidth = str(_wsinfo.subwatershedPars(int(selectWS)).minChBaseWidth)
+            chRoughness = str(_wsinfo.subwatershedPars(int(selectWS)).chRoughness)
+            dryStreamOrder = str(_wsinfo.subwatershedPars(int(selectWS)).dryStreamOrder)
+            ccLCRoughness = str(_wsinfo.subwatershedPars(int(selectWS)).ccLCRoughness)
+            ccSoilDepth = str(_wsinfo.subwatershedPars(int(selectWS)).ccSoilDepth)
+            ccPorosity = str(_wsinfo.subwatershedPars(int(selectWS)).ccPorosity)
+            ccWFSuctionHead = str(_wsinfo.subwatershedPars(int(selectWS)).ccWFSuctionHead)
+            ccHydraulicK = str(_wsinfo.subwatershedPars(int(selectWS)).ccHydraulicK)
+            iniFlow = str(_wsinfo.subwatershedPars(int(selectWS)).iniFlow)
+            if iniFlow.upper() =="NONE":
+                iniFlow ="0"
+
+
+            self.txtIniSaturation.setText(iniSaturation)
+            self.txtMinSlopeOF.setText(minSlopeOF)
+            self.txtMinSlopeChBed.setText(minSlopeChBed)
             # Allsize=self.txtGrid_Size.text()
             # intAll = float(Allsize)
             # cal_MinChBaseWidth = intAll/10
-            # self.txtMinChBaseWidth.setText(str(cal_MinChBaseWidth))
-            # self.txtIniFlow.setText("0")
-            # self.txtChRoughness.setText("0.045")
+            self.txtMinChBaseWidth.setText(str(minChBaseWidth))
+            self.txtIniFlow.setText(str(iniFlow))
+            self.txtChRoughness.setText(chRoughness)
+            self.txtDryStreamOrder.setText(dryStreamOrder)
+            self.txtCalCoefLCRoughness.setText(ccLCRoughness)
+            self.txtCalCoefSoilDepth.setText(ccSoilDepth)
+            self.txtCalCoefPorosity.setText(ccPorosity)
+            self.txtCalCoefWFSuctionHead.setText(ccWFSuctionHead)
+            self.txtCalCoefHydraulicK.setText(ccHydraulicK)
+
+            # if UKType.upper()=="LINEAR":
+            #     self.cmbUnsturatedType.setCurrentIndex(0)
+            # else:
+            #     self.cmbUnsturatedType.setCurrentIndex(1)
+            #
+            #self.selectText=self.cmbUnsturatedType.currentText()
+            if UKType == "Linear":
+                self.cmbUnsturatedType.setCurrentIndex(0)
+                self.txtCoefUnsatruatedk.setEnabled(True)
+            elif UKType == "Exponential":
+                self.cmbUnsturatedType.setCurrentIndex(1)
+                self.txtCoefUnsatruatedk.setEnabled(True)
+            else:
+                self.cmbUnsturatedType.setCurrentIndex(2)
+                self.txtCoefUnsatruatedk.setEnabled(False)
+
+            self.txtCoefUnsatruatedk.setText(coefUK)
+
+
+
+
+
+
+            # else:
+            #     iniSaturation = str(_wsinfo.subwatershedPars(int(selectWS)).iniSaturation)
+            #     minSlopeChBed = str(_wsinfo.subwatershedPars(int(selectWS)).minSlopeChBed)
+            #     minSlopeOF = str(_wsinfo.subwatershedPars(int(selectWS)).minSlopeOF)
+            #
+            #     # 2018-03-12 박: 화면 수정
+            #     UKType = str(_new_wsinfo.subwatershedPars(int(selectWS)).UKType)
+            #     coefUK = str(_new_wsinfo.subwatershedPars(int(selectWS)).coefUK)
             #
             #
-            # self.txtDryStreamOrder.setText("0")
-            # self.txtCalCoefLCRoughness.setText("1")
-            # self.txtCalCoefSoilDepth.setText("1")
-            # self.txtCalCoefPorosity.setText("1")
-            # self.txtCalCoefWFSuctionHead.setText("1")
-            # self.txtCalCoefHydraulicK.setText("1")
+            #     minChBaseWidth = str(_wsinfo.subwatershedPars(int(selectWS)).minChBaseWidth)
+            #     chRoughness = str(_wsinfo.subwatershedPars(int(selectWS)).chRoughness)
+            #     dryStreamOrder = str(_wsinfo.subwatershedPars(int(selectWS)).dryStreamOrder)
+            #     ccLCRoughness = str(_wsinfo.subwatershedPars(int(selectWS)).ccLCRoughness)
+            #     ccSoilDepth = str(_wsinfo.subwatershedPars(int(selectWS)).ccSoilDepth)
+            #     ccPorosity = str(_wsinfo.subwatershedPars(int(selectWS)).ccPorosity)
+            #     ccWFSuctionHead = str(_wsinfo.subwatershedPars(int(selectWS)).ccWFSuctionHead)
+            #     ccHydraulicK = str(_wsinfo.subwatershedPars(int(selectWS)).ccHydraulicK)
+            #     iniFlow = str(_wsinfo.subwatershedPars(int(selectWS)).iniFlow)
+            #     self.txtIniSaturation.setText(iniSaturation)
+            #     self.txtMinSlopeOF.setText(minSlopeOF)
+            #     self.txtMinSlopeChBed.setText(minSlopeChBed)
+            #     # Allsize=self.txtGrid_Size.text()
+            #     # intAll = float(Allsize)
+            #     # cal_MinChBaseWidth = intAll/10
+            #     self.txtMinChBaseWidth.setText(str(minChBaseWidth))
+            #     if iniFlow is None  or iniFlow =="None":
+            #         self.txtIniFlow.setText("0")
+            #     else:
+            #         self.txtIniFlow.setText(iniFlow)
+            #
+            #     self.txtChRoughness.setText(chRoughness)
+            #     self.txtDryStreamOrder.setText(dryStreamOrder)
+            #     self.txtCalCoefLCRoughness.setText(ccLCRoughness)
+            #     self.txtCalCoefSoilDepth.setText(ccSoilDepth)
+            #     self.txtCalCoefPorosity.setText(ccPorosity)
+            #     self.txtCalCoefWFSuctionHead.setText(ccWFSuctionHead)
+            #     self.txtCalCoefHydraulicK.setText(ccHydraulicK)
 
+        except Exception as e:
+            self.txtIniSaturation.setText("1")
+            self.txtMinSlopeOF.setText("0.0001")
+            self.txtMinSlopeChBed.setText("0.0001")
+            intAll = float(self.GridCellSize)
+            if intAll>0:
+                cal_MinChBaseWidth = intAll/10
+            self.txtMinChBaseWidth.setText(str(cal_MinChBaseWidth))
+            self.txtIniFlow.setText("0")
 
-        # if len(self.ID) > 0:
-        #     for i in rang(len(self.ID)):
-        #         if usersetString.upper() == "TRUE":
-        #             self.ID[i]
-        #             self.IniSaturation
-        #             self.MinSlopeOF
-        #             self.MinSlopeChBed
-        #             self.MinChBaseWidth
-        #             self.ChRoughness
-        #             self.DryStreamOrder
-        #             self.IniFlow
-        #             self.CalCoefLCRoughness
-        #             self.CalCoefPorosity
-        #             self.CalCoefWFSuctionHead
-        #             self.CalCoefHydraulicK
-        #             self.CalCoefSoilDepth
-        #             self.UserSet
+            self.cmbUnsturatedType.setCurrentIndex(0)
+            self.txtCoefUnsatruatedk.setText('0.2')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            self.txtChRoughness.setText("0.045")
+            self.txtDryStreamOrder.setText("0")
+            self.txtCalCoefLCRoughness.setText("1")
+            self.txtCalCoefSoilDepth.setText("1")
+            self.txtCalCoefPorosity.setText("1")
+            self.txtCalCoefWFSuctionHead.setText("1")
+            self.txtCalCoefHydraulicK.setText("1")
+            item1 = QListWidgetItem(str(_StreamWSID))
+            # self.lisw_UserSet.addItem(item1)
 
     # ============================ Watershed Parmeters 탭 종료 =================================================
 #
@@ -1421,22 +2123,537 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
             #중복되서 생성하지 못하게 기존의 루버밴드를 제거하고 새로 생성
             self.post_grid_remove2()
             self.watchpoint()
-            # 나중에 기능 추가 할 예정임
-            # elif type == "channel":
-            #
-            # elif type == "flow":
+            self.click_FlowContorGird()
+        elif type == "flow":
+            self.post_grid_remove2()
+            self.watchpoint()
+            self.click_FlowContorGird()
 
     # 폼 종료
     def Close_Form(self):
         self.close()
 
     def closeEvent(self, ev):
+        # 화면 종료 하기 전에 딕셔너리에 값넣기
+        self.InputDictionary()
+
         QtGui.QDialog.closeEvent(self, ev)
         global _FXCOL, _FYROW
         _FXCOL = 0
         _FYROW = 0
 
-#
+
+    def InputDictionary(self):
+        # =========================simulation tab ===================================
+
+
+
+        GRM._xmltodict['GRMProject']['ProjectSettings']['ComputationalTimeStep'] = self.spTimeStep_min.text()
+
+        if self.chkStartingTime.isChecked():
+            DateTime = self.dateTimeEdit.dateTime().toString("yyyy-MM-dd hh:mm")
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulStartingTime'] = DateTime
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulStartingTime'] = "0"
+
+
+        if self.chkParallel.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['IsParallel'] = 'true'
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MaxDegreeOfParallelism'] =self.spTimeStep_min_2.text()
+
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['IsParallel'] = 'false'
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MaxDegreeOfParallelism'] ="-1"
+
+        GRM._xmltodict['GRMProject']['ProjectSettings']['OutputTimeStep'] = self.txtOutput_time_step.text()
+        GRM._xmltodict['GRMProject']['ProjectSettings']['SimulationDuration'] = self.txtSimulation_duration.text()
+        GRM._xmltodict['GRMProject']['ProjectSettings']['OutputTimeStep'] = self.txtOutput_time_step.text()
+
+        if self.chkInfiltration.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateInfiltration'] = 'true'
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateInfiltration'] = 'false'
+
+        if self.chkSubsurfaceFlow.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateSubsurfaceFlow'] = 'true'
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateSubsurfaceFlow'] = 'false'
+
+        if self.chkBaseFlow.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateBaseFlow'] = 'true'
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateBaseFlow'] = 'false'
+
+        if self.chkFlowControl.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateFlowControl'] = 'true'
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SimulateFlowControl'] = 'false'
+
+        if self.chkmakeimage.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeIMGFile'] = 'true'
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeIMGFile'] = 'false'
+
+        if self.chkmakeASC.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeASCFile'] = 'true'
+        else :
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeASCFile'] = 'false'
+
+        if self.chksoiSaturation.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeSoilSaturationDistFile'] = 'true'
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeSoilSaturationDistFile'] = 'false'
+
+        if self.chkrfDistFile.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeRfDistFile'] = 'true'
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeRfDistFile'] = 'false'
+
+        if self.chkrfaacDistfile.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeRFaccDistFile'] = 'true'
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeRFaccDistFile'] = 'false'
+
+        if self.chkdischarge.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeFlowDistFile'] = 'true'
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['MakeFlowDistFile'] = 'false'
+
+        if self.chklog.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['WriteLog'] = 'true'
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['WriteLog'] = 'false'
+
+        GRM._xmltodict['GRMProject']['ProjectSettings']['PrintOption'] =self.cmbPrint.currentText()
+
+
+        # 2018-03-06
+        if self.chkfixeTimeStep.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['IsFixedTimeStep']= 'true'
+        else:
+            GRM._xmltodict['GRMProject']['ProjectSettings']['IsFixedTimeStep'] = 'false'
+
+        # =========================simulation tab end ===============================================
+
+        # =========================Watch Point tab===================================================
+        #     GRM._WatchPointCount
+        if GRM._WatchPointCount > 0:
+            del GRM._xmltodict['GRMProject']['WatchPoints']
+        GRM._WatchPointCount = self.tbList.rowCount()
+
+        DictoXml = xmltodict.unparse(GRM._xmltodict)
+        ET.register_namespace('', "http://tempuri.org/GRMProject.xsd")
+        xmltree = ET.ElementTree(ET.fromstring(DictoXml))
+        root = xmltree.getroot()
+
+        wcount = self.tbList.rowCount()
+        GRM._WatchPointCount = wcount
+        for row in range(0, wcount):
+            child = ET.Element("WatchPoints")
+            root.append(child)
+
+            WathchName = ET.Element("Name")
+            WathchName.text = self.tbList.item(row, 0).text()
+            child.append(WathchName)
+
+            WathchColX = ET.Element("ColX")
+            WathchColX.text = self.tbList.item(row, 1).text()
+            child.append(WathchColX)
+
+            WathchRowY = ET.Element("RowY")
+            WathchRowY.text = self.tbList.item(row, 2).text()
+            child.append(WathchRowY)
+        xmltree_string = ET.tostring(xmltree.getroot())
+        docs = dict(xmltodict.parse(xmltree_string))
+        GRM._xmltodict.clear()
+        GRM._xmltodict.update(docs)
+
+        # =========================Wahch Point tab end===============================================
+
+        # =========================Channel CS tab====================================================
+        if self.rdo_single.isChecked() and self.rdo_useCh.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['CrossSectionType'] = "CSSingle"
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SingleCSChannelWidthType'] = "CWEquation"
+            GRM._xmltodict['GRMProject']['ProjectSettings']['ChannelWidthEQc'] = self.txt_c.text()
+            GRM._xmltodict['GRMProject']['ProjectSettings']['ChannelWidthEQd'] = self.txt_d.text()
+            GRM._xmltodict['GRMProject']['ProjectSettings']['ChannelWidthEQe'] = self.txt_e.text()
+
+        if self.rdo_single.isChecked() and self.rdo_generateCh.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['CrossSectionType'] = "CSSingle"
+            GRM._xmltodict['GRMProject']['ProjectSettings']['SingleCSChannelWidthType'] = "CWGeneration"
+            GRM._xmltodict['GRMProject']['ProjectSettings']['ChannelWidthMostDownStream'] = self.txt_douwnstream.text()
+
+        if self.rdo_compound.isChecked():
+            GRM._xmltodict['GRMProject']['ProjectSettings']['CrossSectionType'] = "CSCompound"
+            GRM._xmltodict['GRMProject']['ProjectSettings']['LowerRegionHeight'] = self.txtLower_Region_Height.text()
+            GRM._xmltodict['GRMProject']['ProjectSettings']['LowerRegionBaseWidth'] = self.txtLower_Region_Base_Width.text()
+            GRM._xmltodict['GRMProject']['ProjectSettings']['UpperRegionBaseWidth'] = self.txtUpper_Region_Base_Width.text()
+            GRM._xmltodict['GRMProject']['ProjectSettings']['CompoundCSChannelWidthLimit'] = self.txtCompound_CSChannel_Width_Limit.text()
+
+        GRM._xmltodict['GRMProject']['ProjectSettings']['BankSideSlopeRight'] = self.txtRight_bank.text()
+        GRM._xmltodict['GRMProject']['ProjectSettings']['BankSideSlopeLeft'] = self.txtLeft_bank.text()
+
+        # version
+        #
+        #
+        # GRM._xmltodict['GRMProject']['ProjectSettings']['GRMVersion'] = version
+        #
+
+
+        # =========================Channel CS tab end================================================
+        # =========================Flow Control Tab==================================================
+        # 딕셔너리 삭제
+        if GRM._FlowControlCount>0:
+            del GRM._xmltodict['GRMProject']['FlowControlGrid']
+
+        DictoXml = xmltodict.unparse(GRM._xmltodict)
+        ET.register_namespace('', "http://tempuri.org/GRMProject.xsd")
+        xmltree = ET.ElementTree(ET.fromstring(DictoXml))
+        root = xmltree.getroot()
+        fcount = self.tlbFlowControl.rowCount()
+        _Flowcontrolgrid_xmlCount = fcount
+        GRM._FlowControlCount = fcount
+
+        for row in range(0, fcount):
+            child = ET.Element("FlowControlGrid")
+            root.append(child)
+            #
+            # GridValue = ET.Element("ColX")
+            # GridValue.text = self.tlbFlowControl.item(row, 0).text()
+            # child.append(GridValue)
+            #
+            # UserLandCover = ET.Element("RowY")
+            # UserLandCover.text = self.tlbFlowControl.item(row, 1).text()
+            # child.append(UserLandCover)
+            #
+            # GRMLandCoverCode = ET.Element("Name")
+            # GRMLandCoverCode.text = self.tlbFlowControl.item(row, 2).text()
+            # child.append(GRMLandCoverCode)
+
+            GRMLandCoverCode = ET.Element("Name")
+            GRMLandCoverCode.text = self.tlbFlowControl.item(row, 0).text()
+            child.append(GRMLandCoverCode)
+
+            GridValue = ET.Element("ColX")
+            GridValue.text = self.tlbFlowControl.item(row, 1).text()
+            child.append(GridValue)
+
+            UserLandCover = ET.Element("RowY")
+            UserLandCover.text = self.tlbFlowControl.item(row, 2).text()
+            child.append(UserLandCover)
+
+            DT = ET.Element("DT")
+            DT.text = self.tlbFlowControl.item(row, 3).text()
+            child.append(DT)
+
+            ControlType = ET.Element("ControlType")
+            testvalue = self.tlbFlowControl.item(row, 4).text()
+            if testvalue == "Reservoir outflow":
+                ControlType.text = "ReservoirOutflow"
+            elif testvalue == "Reservoir operation":
+                ControlType.text = "ReservoirOperation"
+            elif testvalue == "Sink flow":
+                ControlType.text = "SinkFlow"
+            elif testvalue == "Source flow":
+                ControlType.text = "SourceFlow"
+            elif  testvalue == "Inlet":
+                ControlType.text = "Inlet"
+            child.append(ControlType)
+
+
+            #
+            # ControlType.text = self.tlbFlowControl.item(row, 4).text()
+            # child.append(ControlType)
+
+            FlowDataFile = ET.Element("FlowDataFile")
+            FlowDataFile.text = self.tlbFlowControl.item(row, 5).text()
+            child.append(FlowDataFile)
+
+            try:
+                IniStorage = ET.Element("IniStorage")
+                storage = self.tlbFlowControl.item(row, 6).text()
+                if storage != "":
+                    IniStorage.text = self.tlbFlowControl.item(row, 6).text()
+                else:
+                    IniStorage.text = ""
+                child.append(IniStorage)
+            except :
+                IniStorage = ET.Element("IniStorage")
+                IniStorage.text = ""
+                child.append(IniStorage)
+
+            try:
+                MaxStorage = ET.Element("MaxStorage")
+                if self.tlbFlowControl.item(row, 7).text() != "":
+                    MaxStorage.text = self.tlbFlowControl.item(row, 7).text()
+                else:
+                    MaxStorage.text = ""
+                child.append(MaxStorage)
+            except:
+                 MaxStorage = ET.Element("MaxStorage")
+                 MaxStorage.text = ""
+                 child.append(MaxStorage)
+
+            try:
+                MaxStorageR = ET.Element("MaxStorageR")
+                if self.tlbFlowControl.item(row, 8).text() != "":
+                    MaxStorageR.text = self.tlbFlowControl.item(row, 8).text()
+                else:
+                    MaxStorageR.text = ""
+                child.append(MaxStorageR)
+            except:
+                 MaxStorageR = ET.Element("MaxStorageR")
+                 MaxStorageR.text = ""
+                 child.append(MaxStorageR)
+
+            try:
+                ROType = ET.Element("ROType")
+                if self.tlbFlowControl.item(row, 9).text() != "":
+                    ROType.text = self.tlbFlowControl.item(row, 9).text()
+                else:
+                    ROType.text = ""
+                child.append(ROType)
+            except:
+                 ROType = ET.Element("ROType")
+                 ROType.text = ""
+                 child.append(ROType)
+
+
+            try:
+                ROConstQ = ET.Element("ROConstQ")
+                if self.tlbFlowControl.item(row, 10).text() != "":
+                    ROConstQ.text = self.tlbFlowControl.item(row, 10).text()
+                else:
+                    ROConstQ.text = ""
+                child.append(ROConstQ)
+            except:
+                ROConstQ = ET.Element("ROConstQ")
+                ROConstQ.text = ""
+                child.append(ROConstQ)
+
+            try:
+                ROConstQDuration = ET.Element("ROConstQDuration")
+                if self.tlbFlowControl.item(row, 11).text() != "":
+                    ROConstQDuration.text = self.tlbFlowControl.item(row, 11).text()
+                else:
+                    ROConstQDuration.text = ""
+                child.append(ROConstQDuration)
+            except:
+                ROConstQDuration = ET.Element("ROConstQDuration")
+                ROConstQDuration.text = ""
+                child.append(ROConstQDuration)
+
+
+        xmltree_string = ET.tostring(xmltree.getroot())
+        docs = dict(xmltodict.parse(xmltree_string))
+        GRM._xmltodict.clear()
+        GRM._xmltodict.update(docs)
+
+        # =========================Flow Control Tab end ==================================================
+        # ========================= Watershed tab ========================================================
+        if GRM._SubWatershedCount>0:
+            del GRM._xmltodict['GRMProject']['SubWatershedSettings']
+        DictoXml = xmltodict.unparse(GRM._xmltodict)
+        ET.register_namespace('', "http://tempuri.org/GRMProject.xsd")
+        xmltree = ET.ElementTree(ET.fromstring(DictoXml))
+        root = xmltree.getroot()
+        GRM._SubWatershedCount = self.cb_selectws.count()
+        scount = self.cb_selectws.count()
+
+        for row in range(0, scount):
+            selectWS=self.cb_selectws.itemText(row)
+
+            child = ET.Element("SubWatershedSettings")
+            root.append(child)
+
+            ID = ET.Element("ID")
+            ID.text = selectWS
+            child.append(ID)
+
+            IniSaturation = ET.Element("IniSaturation")
+            IniSaturation.text = str(_wsinfo.subwatershedPars(int(selectWS)).iniSaturation)
+            child.append(IniSaturation)
+
+            MinSlopeOF = ET.Element("MinSlopeOF")
+            MinSlopeOF.text = str(_wsinfo.subwatershedPars(int(selectWS)).minSlopeOF)
+            child.append(MinSlopeOF)
+
+            MinSlopeChBed = ET.Element("MinSlopeChBed")
+            MinSlopeChBed.text = str(_wsinfo.subwatershedPars(int(selectWS)).minSlopeChBed)
+            child.append(MinSlopeChBed)
+
+            MinChBaseWidth = ET.Element("MinChBaseWidth")
+            MinChBaseWidth.text = str(_wsinfo.subwatershedPars(int(selectWS)).minChBaseWidth)
+            child.append(MinChBaseWidth)
+
+            ChRoughness = ET.Element("ChRoughness")
+            ChRoughness.text = str(_wsinfo.subwatershedPars(int(selectWS)).chRoughness)
+            child.append(ChRoughness)
+
+            DryStreamOrder = ET.Element("DryStreamOrder")
+            DryStreamOrder.text =  str(_wsinfo.subwatershedPars(int(selectWS)).dryStreamOrder)
+            child.append(DryStreamOrder)
+
+            IniFlow = ET.Element("IniFlow")
+            if _wsinfo.subwatershedPars(int(selectWS)).iniFlow is None:
+                IniFlow.text = "0"
+            else:
+                IniFlow.text = str(_wsinfo.subwatershedPars(int(selectWS)).iniFlow)
+            child.append(IniFlow)
+
+            UnsaturatedKType=ET.Element('UnsaturatedKType')
+            UnsaturatedKType.text = str(_wsinfo.subwatershedPars(int(selectWS)).UKType)
+            child.append(UnsaturatedKType)
+
+
+            CoefUnsaturatedK=ET.Element('CoefUnsaturatedK')
+            CoefUnsaturatedK.text = str(_wsinfo.subwatershedPars(int(selectWS)).coefUK)
+            child.append(CoefUnsaturatedK)
+
+
+            CalCoefLCRoughness = ET.Element("CalCoefLCRoughness")
+            CalCoefLCRoughness.text =  str(_wsinfo.subwatershedPars(int(selectWS)).ccLCRoughness)
+            child.append(CalCoefLCRoughness)
+
+            CalCoefPorosity = ET.Element("CalCoefPorosity")
+            CalCoefPorosity.text =str(_wsinfo.subwatershedPars(int(selectWS)).ccPorosity)
+            child.append(CalCoefPorosity)
+
+            CalCoefWFSuctionHead = ET.Element("CalCoefWFSuctionHead")
+            CalCoefWFSuctionHead.text = str(_wsinfo.subwatershedPars(int(selectWS)).ccWFSuctionHead)
+            child.append(CalCoefWFSuctionHead)
+
+            CalCoefHydraulicK = ET.Element("CalCoefHydraulicK")
+            CalCoefHydraulicK.text = str(_wsinfo.subwatershedPars(int(selectWS)).ccHydraulicK)
+            child.append(CalCoefHydraulicK)
+
+            CalCoefSoilDepth = ET.Element("CalCoefSoilDepth")
+            CalCoefSoilDepth.text = str(_wsinfo.subwatershedPars(int(selectWS)).ccSoilDepth)
+            child.append(CalCoefSoilDepth)
+
+            UserSet = ET.Element("UserSet")
+            UserSet.text = str(_wsinfo.subwatershedPars(int(selectWS)).isUserSet)
+            child.append(UserSet)
+
+        xmltree_string = ET.tostring(xmltree.getroot())
+        docs = dict(xmltodict.parse(xmltree_string))
+        GRM._xmltodict.clear()
+        GRM._xmltodict.update(docs)
+        # else:
+        #     if GRM._SubWatershedCount>0:
+        #         del GRM._xmltodict['GRMProject']['SubWatershedSettings']
+        #
+        #     DictoXml = xmltodict.unparse(GRM._xmltodict)
+        #     ET.register_namespace('', "http://tempuri.org/GRMProject.xsd")
+        #     xmltree = ET.ElementTree(ET.fromstring(DictoXml))
+        #     root = xmltree.getroot()
+        #     GRM._SubWatershedCount = self.cb_selectws.count()
+        #     count = self.cb_selectws.count()
+        #
+        #     for row in range(0, count):
+        #         selectWS = self.cb_selectws.itemText(row)
+        #         child = ET.Element("SubWatershedSettings")
+        #         root.append(child)
+        #
+        #         ID = ET.Element("ID")
+        #         ID.text = selectWS
+        #         child.append(ID)
+        #
+        #
+        #         IniSaturation = ET.Element("IniSaturation")
+        #         IniSaturation.text = str(_wsinfo.subwatershedPars(int(selectWS)).iniSaturation)
+        #         child.append(IniSaturation)
+        #
+        #         MinSlopeOF = ET.Element("MinSlopeOF")
+        #         MinSlopeOF.text = str(_wsinfo.subwatershedPars(int(selectWS)).minSlopeOF)
+        #         child.append(MinSlopeOF)
+        #
+        #         MinSlopeChBed = ET.Element("MinSlopeChBed")
+        #         MinSlopeChBed.text = str(_wsinfo.subwatershedPars(int(selectWS)).minSlopeChBed)
+        #         child.append(MinSlopeChBed)
+        #
+        #         MinChBaseWidth = ET.Element("MinChBaseWidth")
+        #         MinChBaseWidth.text = str(_wsinfo.subwatershedPars(int(selectWS)).minChBaseWidth)
+        #         child.append(MinChBaseWidth)
+        #
+        #         ChRoughness = ET.Element("ChRoughness")
+        #         ChRoughness.text = str(_wsinfo.subwatershedPars(int(selectWS)).chRoughness)
+        #         child.append(ChRoughness)
+        #
+        #         DryStreamOrder = ET.Element("DryStreamOrder")
+        #         DryStreamOrder.text = str(_wsinfo.subwatershedPars(int(selectWS)).dryStreamOrder)
+        #         child.append(DryStreamOrder)
+        #
+        #         IniFlow = ET.Element("IniFlow")
+        #         if _wsinfo.subwatershedPars(int(selectWS)).iniFlow is None:
+        #             IniFlow.text ="0"
+        #         else:
+        #             IniFlow.text = str(_wsinfo.subwatershedPars(int(selectWS)).iniFlow)
+        #         child.append(IniFlow)
+        #
+        #         UnsaturatedKType=ET.Element('UnsaturatedKType')
+        #         UnsaturatedKType.text = str(_new_wsinfo.subwatershedPars(int(selectWS)).UnsKType)
+        #         child.append(UnsaturatedKType)
+        #
+        #
+        #         CoefUnsaturatedK=ET.Element('CoefUnsaturatedK')
+        #         CoefUnsaturatedK.text = str(_new_wsinfo.subwatershedPars(int(selectWS)).coefUnsK)
+        #         child.append(CoefUnsaturatedK)
+        #
+        #
+        #         CalCoefLCRoughness = ET.Element("CalCoefLCRoughness")
+        #         CalCoefLCRoughness.text = str(_wsinfo.subwatershedPars(int(selectWS)).ccLCRoughness)
+        #         child.append(CalCoefLCRoughness)
+        #
+        #         CalCoefPorosity = ET.Element("CalCoefPorosity")
+        #         CalCoefPorosity.text = str(_wsinfo.subwatershedPars(int(selectWS)).ccPorosity)
+        #         child.append(CalCoefPorosity)
+        #
+        #         CalCoefWFSuctionHead = ET.Element("CalCoefWFSuctionHead")
+        #         CalCoefWFSuctionHead.text = str(_wsinfo.subwatershedPars(int(selectWS)).ccWFSuctionHead)
+        #         child.append(CalCoefWFSuctionHead)
+        #
+        #         CalCoefHydraulicK = ET.Element("CalCoefHydraulicK")
+        #         CalCoefHydraulicK.text = str(_wsinfo.subwatershedPars(int(selectWS)).ccHydraulicK)
+        #         child.append(CalCoefHydraulicK)
+        #
+        #         CalCoefSoilDepth = ET.Element("CalCoefSoilDepth")
+        #         CalCoefSoilDepth.text = str(_wsinfo.subwatershedPars(int(selectWS)).ccSoilDepth)
+        #         child.append(CalCoefSoilDepth)
+        #
+        #         UserSet = ET.Element("UserSet")
+        #         UserSet.text = str(_wsinfo.subwatershedPars(int(selectWS)).isUserSet)
+        #         child.append(UserSet)
+        #
+        #     xmltree_string = ET.tostring(xmltree.getroot())
+        #     docs = dict(xmltodict.parse(xmltree_string))
+        #     GRM._xmltodict.clear()
+        #     GRM._xmltodict.update(docs)
+
+
+        # # Watershed Parmeters 탭
+        # GRM._xmltodict['GRMProject']['SubWatershedSettings']['IniSaturation'] = self.txtIniSaturation.text()
+        # GRM._xmltodict['GRMProject']['SubWatershedSettings']['MinSlopeOF']=self.txtMinSlopeOF.text()
+        # GRM._xmltodict['GRMProject']['SubWatershedSettings']['MinSlopeChBed']=self.txtMinSlopeChBed.text()
+        # GRM._xmltodict['GRMProject']['SubWatershedSettings']['MinChBaseWidth']=self.txtMinChBaseWidth.text()
+        # GRM._xmltodict['GRMProject']['SubWatershedSettings']['ChRoughness']=self.txtChRoughness.text()
+        # GRM._xmltodict['GRMProject']['SubWatershedSettings']['DryStreamOrder']=self.txtDryStreamOrder.text()
+        # GRM._xmltodict['GRMProject']['SubWatershedSettings']['IniFlow']=self.txtIniFlow.text()
+        # GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefLCRoughness']=self.txtCalCoefLCRoughness.text()
+        # GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefSoilDepth']=self.txtCalCoefSoilDepth.text()
+        # GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefPorosity']=self.txtCalCoefPorosity.text()
+        # GRM._xmltodict['GRMProject']['SubWatershedSettings']['CalCoefWFSuctionHead']=self.txtCalCoefWFSuctionHead.text()
+        #
+        #
+        #
+        #
+
+
+
+
+
+
+
 #     def Click_StartSimulation(self):
 #         # simulation 탭=====================================================
 #         GRM._xmltodict['GRMProject']['ProjectSettings']['GridCellSize']=self.txtGrid_Size.text()
@@ -1631,101 +2848,174 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         self.mapcanvas.refresh()
 
     def ReMove(self):
-            row = self.tbList.currentIndex().row()
-            mess="Are you sure you want to delete the selected items?"
-            result=QMessageBox.question(None, "Watershed Setup",mess,QMessageBox.Yes, QMessageBox.No)
-            if result == QMessageBox.Yes:
-                self.tbList.removeRow(row)
+        row = self.tbList.currentIndex().row()
+        mess="Are you sure you want to delete the selected items?"
+        result=QMessageBox.question(None, "Watershed Setup",mess,QMessageBox.Yes, QMessageBox.No)
+        if result == QMessageBox.Yes:
+            self.tbList.removeRow(row)
+
+        self.post_grid_remove2()
+        if self.chkFlowContorGird.isChecked():
+            self.FlowContorGird_paint()
+        if self.chkWatch_Point.isChecked():
+            self.watchpoint_paint()
+
+
+    # def MoveUp(self):
+    #     fixcount=len(self.Fixed)
+    #     row = self.tbList.currentRow()
+    #     column = self.tbList.currentColumn()
+    #     if row > 0:
+    #         if row-1 > fixcount-1:
+    #             self.tbList.insertRow(row - 1)
+    #             for i in range(self.tbList.columnCount()):
+    #                 self.tbList.setItem(row - 1, i, self.tbList.takeItem(row + 1, i))
+    #                 self.tbList.setCurrentCell(row - 1, column)
+    #             self.tbList.removeRow(row + 1)
 
     def MoveUp(self):
-        fixcount=len(self.Fixed)
         row = self.tbList.currentRow()
         column = self.tbList.currentColumn()
         if row > 0:
-            if row-1 > fixcount-1:
-                self.tbList.insertRow(row - 1)
-                for i in range(self.tbList.columnCount()):
-                    self.tbList.setItem(row - 1, i, self.tbList.takeItem(row + 1, i))
-                    self.tbList.setCurrentCell(row - 1, column)
-                self.tbList.removeRow(row + 1)
+            self.tbList.insertRow(row - 1)
+            for i in range(self.tbList.columnCount()):
+                self.tbList.setItem(row - 1, i, self.tbList.takeItem(row + 1, i))
+                self.tbList.setCurrentCell(row - 1, column)
+            self.tbList.removeRow(row + 1)
+
+
+
+    # def MoveDown(self):
+    #     fixcount=len(self.Fixed)
+    #     row = self.tbList.currentRow()
+    #     column = self.tbList.currentColumn()
+    #     if row < self.tbList.rowCount() - 1:
+    #         if row > fixcount-1:
+    #             self.tbList.insertRow(row + 2)
+    #             for i in range(self.tbList.columnCount()):
+    #                 self.tbList.setItem(row + 2, i, self.tbList.takeItem(row, i))
+    #                 self.tbList.setCurrentCell(row + 2, column)
+    #             self.tbList.removeRow(row)
 
     def MoveDown(self):
-        fixcount=len(self.Fixed)
         row = self.tbList.currentRow()
         column = self.tbList.currentColumn()
         if row < self.tbList.rowCount() - 1:
-            if row > fixcount-1:
-                self.tbList.insertRow(row + 2)
-                for i in range(self.tbList.columnCount()):
-                    self.tbList.setItem(row + 2, i, self.tbList.takeItem(row, i))
-                    self.tbList.setCurrentCell(row + 2, column)
-                self.tbList.removeRow(row)
+            self.tbList.insertRow(row + 2)
+            for i in range(self.tbList.columnCount()):
+                self.tbList.setItem(row + 2, i, self.tbList.takeItem(row, i))
+                self.tbList.setCurrentCell(row + 2, column)
+            self.tbList.removeRow(row)
 
-    #2017 -12-15 박: 추가 버튼 눌렀을때 Watchpoint table 에 데이터 추가 하기 
+            #2017 -12-15 박: 추가 버튼 눌렀을때 Watchpoint table 에 데이터 추가 하기
     def Add_Selected_Cell(self):
         if _XCOL !=0 and _YROW!=0:
             rowCount = self.tbList.rowCount()
             if rowCount >0:
-                self.tbList.insertRow(rowCount)
-                #박 :2017 - 12 -21  1. name , 2. ColX , 3. RowY
                 text, ok = QtGui.QInputDialog.getText(self, 'Input Dialog','Enter name:',QLineEdit.Normal,"")
-                self.tbList.setItem(rowCount, 0, QTableWidgetItem(text))
-                self.tbList.setItem(rowCount, 1, QTableWidgetItem(str(_XCOL)))
-                self.tbList.setItem(rowCount, 2, QTableWidgetItem(str(_YROW)))
-
+                if text.strip()!="":
+                    if self.check_add_watchpoint(_YROW,_XCOL,text):
+                        self.tbList.insertRow(rowCount)
+                        self.tbList.setItem(rowCount, 0, QTableWidgetItem(text))
+                        self.tbList.setItem(rowCount, 1, QTableWidgetItem(str(_YROW)))
+                        self.tbList.setItem(rowCount, 2, QTableWidgetItem(str(_XCOL)))
+                        if self.chkWatch_Point.isChecked():
+                            self.row_cols_grid(_YROW, _XCOL, "watchpoint")
+                    else:
+                        _util.MessageboxShowInfo("GRM", " Name or watchpoint is required. ")
+                else:
+                    _util.MessageboxShowInfo("GRM"," Name is required. ")
             else:
-
-                self.tbList.insertRow(0)
                 text, ok = QtGui.QInputDialog.getText(self, 'Input Dialog','Enter name:',QLineEdit.Normal,"")
-                self.tbList.setItem(rowCount, 0, QTableWidgetItem(text))
-                self.tbList.setItem(0, 1, QTableWidgetItem(str(_XCOL)))
-                self.tbList.setItem(0, 2, QTableWidgetItem(str(_YROW)))
+                if text.strip() != "":
+                    self.tbList.insertRow(0)
+                    self.tbList.setItem(rowCount, 0, QTableWidgetItem(text))
+                    self.tbList.setItem(0, 1, QTableWidgetItem(str(_YROW)))
+                    self.tbList.setItem(0, 2, QTableWidgetItem(str(_XCOL)))
+                    if self.chkWatch_Point.isChecked():
+                        self.row_cols_grid(_YROW, _XCOL, "watchpoint")
+                else:
+                    _util.MessageboxShowInfo("GRM", " Name is required. ")
+
+
+    def check_add_watchpoint(self,x,y,name):
+        rowCount = self.tbList.rowCount()
+        self.RetBool= True
+        for row in range(0, rowCount):
+            Names = self.tbList.item(row,0).text()
+            X = self.tbList.item(row, 1).text()
+            Y = self.tbList.item(row, 2).text()
+            if (X==str(x) and Y==str(y) ) or name==Names :
+                self.RetBool= False
+        return self.RetBool
+
+
 
     # 에디트 클릭시에 선택된 Row 의 name 변경
     def Edit(self):
         # 현재 선택된 Row
         row=self.tbList.currentRow()
-        cell = self.tbList.item(row, 1).text()
+        cell = self.tbList.item(row, 0).text()
         # 다이얼 로그 출력하여 사용자가 셀값 제정의
         text, ok = QtGui.QInputDialog.getText(self, 'Input Dialog','Enter name:',QLineEdit.Normal,cell)
         if ok:
             item = QTableWidgetItem(str(text))  # create a new Item
-            self.tbList.setItem(row, 1, item)
+            self.tbList.setItem(row, 0, item)
 
 #
 #     # 2017/11/22 -----------------------------임시.. 불완전
 #
     #테이블의 Row cols의 위치로 view 이동
     def GoToGrid(self):
+        # 사용자가 선택한 영역 표시를 vertex marker 로 표시 할때  사라지게 해야 하는데 그게 안됨
+
+        if self.chkFlowContorGird.isChecked():
+            self.FlowContorGird_paint()
+        if self.chkWatch_Point.isChecked():
+            self.watchpoint_paint()
+
         row = self.tbList.currentRow()
-        ColX = self.tbList.item(row, 4).text()
-        RowY = self.tbList.item(row, 5).text()
+        ColX = int(self.tbList.item(row, 1).text())
+        RowY = int(self.tbList.item(row, 2).text())
+        self.row_cols_grid(ColX,RowY,None)
 
-        self.row_cols_grid(self.layer,ColX,RowY,None)
-        self.scale_changed_mapcanvas()
-        # self.row_cols_grid(self.layer, self.txt_xColyRowNo_1.text(), self.txt_xColyRowNo_2.text(), None)
+    def btnFCGotoGrid(self):
+        # 사용자가 선택한 영역 표시를 vertex marker 로 표시 할때  사라지게 해야 하는데 그게 안됨
 
-#     # 2017/11/22 -----------------------------임시.. 불완전
-#
-#
-#     def reset(self):
-#         self.startPoint = self.endPoint = None
-#         self.isEmittingPoint = False
-#         self.rubberBand.reset(QGis.Polygon)
-#
-#
+        if self.chkFlowContorGird.isChecked():
+            self.FlowContorGird_paint()
+        if self.chkWatch_Point.isChecked():
+            self.watchpoint_paint()
+
+        row = self.tlbFlowControl.currentRow()
+
+        # ColX = int(self.tlbFlowControl.item(row, 0).text())
+        # RowY = int(self.tlbFlowControl.item(row, 1).text())
+
+        ColX = int(self.tlbFlowControl.item(row, 1).text())
+        RowY = int(self.tlbFlowControl.item(row, 2).text())
+        self.row_cols_grid(ColX, RowY, None)
+
+
+
 
     def FlowContorGird_paint(self):
         counts = self.tlbFlowControl.rowCount()
         for i in range(0,counts):
-            xvalue = _xmin + _xsize / 2 + _xsize * (int(self.tlbFlowControl.item(i, 0).text()))
-            yvalue = _ymax - _ysize / 2 - _ysize * (int(self.tlbFlowControl.item(i, 1).text()))
+            xvalue = _xmin + _xsize / 2 + _xsize * (int(self.tlbFlowControl.item(i, 1).text()))
+            yvalue = _ymax - _ysize / 2 - _ysize * (int(self.tlbFlowControl.item(i, 2).text()))
             self.draw_grid2(xvalue,yvalue,self.btnColorPicker_3)
 
     def watchpoint_paint(self):
         if len(self.ColX)>0 and len(self.RowY)>0:
-            for i in range(0,len(self.ColX)):
-                self.row_cols_grid(self.ColX[i],self.RowY[i],"watchpoint")
+            if self.tbList.rowCount()>0:
+                for i in range(0,self.tbList.rowCount()):
+                    x=self.tbList.item(i, 1).text()
+                    y=self.tbList.item(i, 2).text()
+                    self.row_cols_grid(int(x),int(y),"watchpoint")
+            else:
+                for i in range(0,len(self.ColX)):
+                    self.row_cols_grid(self.ColX[i],self.RowY[i],"watchpoint")
 
 
     def Watchpoint_TableCreate(self,Row):
@@ -1923,6 +3213,7 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
                 if Cell_X_Center2<= _xmax or _xmin<=Cell_X_Center2 or Cell_Y_Center2<=_ymax or _ymin<=Cell_Y_Center2:
                     self.draw_grid2(Cell_X_Center2, Cell_Y_Center2,self.btnColorPicker)
             else:
+                global Cell_X_Center1,Cell_Y_Center1
                 self.lblColRow.setText("xCol, yRow:" + str(row) + " , " + str(column))
                 Cell_X_Center1 = _xmin+ _xsize/2 + _xsize * (row)
                 Cell_Y_Center1 =  _ymax -  _ysize/2 -  _ysize * (column)
@@ -1999,10 +3290,12 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
                 self.draw_grid(Cell_X_Center1,Cell_Y_Center1)
 
      #이전 grid 지우기
+
     def post_grid_remove(self):
         for v in self.mapcanvas.scene().items():
-            if issubclass(type(v), QgsVertexMarker) == True:
+            if issubclass(type(v), QgsVertexMarker):
                 self.mapcanvas.scene().removeItem(v)
+                #self.mapcanvas().refresh()
 
 
     # watchpoint RubberBand 제거
@@ -2010,6 +3303,7 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         for v in self.mapcanvas.scene().items():
             if issubclass(type(v), QgsRubberBand) == True:
                 self.mapcanvas.scene().removeItem(v)
+
 
          #grid 그리기
     def draw_grid(self,x,y):
@@ -2028,8 +3322,8 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
      # Watch point 그림을 Rubberbanc로 처리 함
     def draw_grid2(self,x,y,btn):
         r = QgsRubberBand(self.mapcanvas, True)
-        points = [[QgsPoint(x - 100, y + 100), QgsPoint(x - 100, y - 100), QgsPoint(x + 100, y - 100),
-                   QgsPoint(x + 100, y + 100)]]
+        size=_xsize/2
+        points = [[QgsPoint(x - size, y + size), QgsPoint(x - size, y - size), QgsPoint(x + size, y - size),QgsPoint(x + size, y + size)]]
         r.setToGeometry(QgsGeometry.fromPolygon(points), None)
         r.setColor(QColor(btn.palette().button().color()))
         r.setWidth(2)
@@ -2099,11 +3393,13 @@ class CanvasTool(QgsMapTool):
         self.canvas.scaleChanged.connect(self.scale_change_marker)
 
     def scale_changed_disconnect(self):
-        self.canvas.scaleChanged.disconnect(self.scale_change_marker)
-
+        try:
+            self.canvas.scaleChanged.disconnect(self.scale_change_marker)
+        except:
+            pass
      #canvas scale이 변화할 때  marker를 새로 그림
     def scale_change_marker(self):
-        global Cell_X_Center,Cell_Y_Center
+        #global Cell_X_Center,Cell_Y_Center
         self.post_vertex_remove()
         self.create_vertex(Cell_X_Center,Cell_Y_Center)
 
@@ -2113,7 +3409,35 @@ class CanvasTool(QgsMapTool):
             if issubclass(type(v), QgsVertexMarker):
                 self.canvas.scene().removeItem(v)
 
+        # for v in self.canvas.scene().items():
+        #     if issubclass(type(v), QgsRubberBand) == True:
+        #         self.canvas.scene().removeItem(v)
+
+
     def create_vertex(self,x,y):
+
+        #2018-0313 박:
+        # r1 = QgsRubberBand(self.canvas, True)
+        # r2 = QgsRubberBand(self.canvas, True)
+        # r3 = QgsRubberBand(self.canvas, True)
+        # r4 = QgsRubberBand(self.canvas, True)
+        # size = _xsize / 2
+        # #points = [[QgsPoint(x - size, y + size), QgsPoint(x - size, y - size), QgsPoint(x + size, y - size),QgsPoint(x + size, y + size)]]
+        # #r.setToGeometry(QgsGeometry.fromPolygon(points), None)
+        # r1.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(x - size, y + size), QgsPoint(x - size, y - size)]),None)
+        # r2.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(x - size, y - size), QgsPoint(x + size, y - size)]),None)
+        # r3.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(x + size, y - size), QgsPoint(x + size, y + size)]),None)
+        # r4.setToGeometry(QgsGeometry.fromPolyline([QgsPoint(x + size, y + size), QgsPoint(x - size, y + size)]),None)
+        # r1.setColor(QColor(255,0,0))
+        # r2.setColor(QColor(255,0,0))
+        # r3.setColor(QColor(255,0,0))
+        # r4.setColor(QColor(255,0,0))
+        # r1.setWidth(1)
+        # r2.setWidth(1)
+        # r3.setWidth(1)
+        # r4.setWidth(1)
+             
+
         marker = QgsVertexMarker(self.canvas)
         marker.setCenter(QgsPoint(x,y))
         marker.setColor(QColor(255,0,0))
@@ -2122,7 +3446,6 @@ class CanvasTool(QgsMapTool):
         marker.setIconSize(size)
         marker.setIconType(QgsVertexMarker.ICON_BOX)
         marker.setPenWidth(1)
-
 
     def getCVID(self, Rt, Ct):
         cvid_v = 0
@@ -2160,15 +3483,12 @@ class CanvasTool(QgsMapTool):
             _FXCOL= _XCOL
             text = "xCol, yRow: " + str(row) + " , " + str(column)
             _util.GlobalLabel_SetText(text,"colrow")
-            # _util.MessageboxShowInfo("1","1")
             self.Input_Cell_Value(row, column)
-            # _util.MessageboxShowInfo("1","2")
             if row < 0 or column < 0 or _height<=column or _width <= row :
                 row = "out of extent"
                 column="out of extent"
 
             else:
-                # _util.MessageboxShowInfo("1", "3")
                 global Cell_X_Center,Cell_Y_Center
                 Cell_X_Center = _extent.xMinimum()+ _xsize/2 + _xsize * (row)
                 Cell_Y_Center =  _ymax -  _ysize/2 -  _ysize * (column)
@@ -2200,32 +3520,18 @@ class CanvasTool(QgsMapTool):
         FD_Result = _wsinfo.flowDirection(x, y)
         FA_Result = _wsinfo.flowAccumulation(x,y)
         Slop_Result = _wsinfo.slope(x,y)
-        _util.GlobalControl_SetValue(CellType_Result,str(Stream_Result), FD_Result, str(FA_Result), str(Slop_Result))
-
-        # _util.MessageboxShowInfo("x : Y", "x " + str(x) + " : " + str(y) )
-        # _util.MessageboxShowInfo("texture File" ,str(self.SoilTextureFile) )
-        # _util.MessageboxShowInfo("Depth File", str(self.SoilDepthFile))
-
-        # Cell Info Texture 그룹 박스 테이터 내용
-        # inOut = _wsinfo.IsInWatershedArea(99,52)
-        # _util.MessageboxShowInfo("in Out" ,str(inOut))
-        #
-        # Texture_Result=_wsinfo.STextureValue(99,52)
-        #
-        # # _util.MessageboxShowInfo("1", "7")
-        # # Texture_Result=_wsinfo.grmPrj.WSCells(99, 52).SoilTextureValue()
-        # _util.MessageboxShowInfo("1", "6")
-        # # #
-        # # # Cell Info Depth 그룹 박스 테이터 내용
-        # Depth_Result = _wsinfo.soilDepthValue(x,y)
-        # _util.MessageboxShowInfo("1", "7")
+        watershed = _wsinfo.watershedID(x,y)
 
 
-        # # Cell Info Landcover 그룹 박스 테이터 내용
+        _util.GlobalControl_SetValue(CellType_Result,str(Stream_Result), FD_Result, str(FA_Result), str(Slop_Result),str(watershed))
+
+        Texture_Result=_wsinfo.soilTextureValue(x,y)
+
+        # Cell Info Depth 그룹 박스 테이터 내용
+        Depth_Result = _wsinfo.soilDepthValue(x,y)
+
+        # Cell Info Landcover 그룹 박스 테이터 내용
         Landcover_Result = _wsinfo.landCoverValue(x,y)
-        # _util.MessageboxShowInfo("1", "8")
-        # _util.MessageboxShowInfo("land value", str(Landcover_Result))
-
 
         projectFile = GRM._xmltodict['GRMProject']['ProjectSettings']['ProjectFile']
         doc = ET.parse(projectFile)
@@ -2245,22 +3551,21 @@ class CanvasTool(QgsMapTool):
                 break
             elif Texture_Result is None or Texture_Result=="":
                 break
-        #
-        #
-        # for element in root.findall('{http://tempuri.org/GRMProject.xsd}SoilDepth'):
-        #     GridValue=element.findtext("{http://tempuri.org/GRMProject.xsd}GridValue")
-        #     if str(Depth_Result)==GridValue:
-        #         UserDepthClass=element.findtext("{http://tempuri.org/GRMProject.xsd}GRMCode")
-        #         SoilDepth=element.findtext("{http://tempuri.org/GRMProject.xsd}SoilDepth")
-        #         _util.GlobalControl_Depth_SetValue(GridValue, UserDepthClass, SoilDepth)
-        #         break
-        #     elif Depth_Result is None or Depth_Result=="":
-        #         break
 
-        _util.MessageboxShowInfo("land","1")
+
+        for element in root.findall('{http://tempuri.org/GRMProject.xsd}SoilDepth'):
+            GridValue=element.findtext("{http://tempuri.org/GRMProject.xsd}GridValue")
+            if str(Depth_Result)==GridValue:
+                UserDepthClass=element.findtext("{http://tempuri.org/GRMProject.xsd}GRMCode")
+                SoilDepth=element.findtext("{http://tempuri.org/GRMProject.xsd}SoilDepth")
+                _util.GlobalControl_Depth_SetValue(GridValue, UserDepthClass, SoilDepth)
+                break
+            elif Depth_Result is None or Depth_Result=="":
+                break
+
+        # 최박사님과 협의 할것 (2018 03 04)
         for element in root.findall('{http://tempuri.org/GRMProject.xsd}LandCover'):
             GridValue = element.findtext("{http://tempuri.org/GRMProject.xsd}GridValue")
-            _util.MessageboxShowInfo("land", "2")
             if str(Landcover_Result)== GridValue:
                 GRMCode = element.findtext("{http://tempuri.org/GRMProject.xsd}GRMCode")
                 RoughnessCoefficient = element.findtext("{http://tempuri.org/GRMProject.xsd}RoughnessCoefficient")

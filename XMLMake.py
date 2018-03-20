@@ -3,6 +3,11 @@
 import os
 import sys
 from ElementTree import Element, ElementTree , SubElement, dump, parse, tostring
+import clr
+DllPath = os.path.dirname(os.path.realpath(__file__)) + "\DLL\GRMCore.dll"
+clr.AddReference(DllPath)
+import GRMCore
+from GRMCore import cGRM
 
 class make:
     def __init__(self):
@@ -54,7 +59,7 @@ class make:
         SubElement(ProjectSettings, 'SimulateInfiltration').text = 'true'
         SubElement(ProjectSettings, 'SimulateSubsurfaceFlow').text = 'true'
         SubElement(ProjectSettings, 'SimulateBaseFlow').text = 'true'
-        SubElement(ProjectSettings, 'SimulateFlowControl').text = 'true'
+        SubElement(ProjectSettings, 'SimulateFlowControl').text = 'false'
         SubElement(ProjectSettings, 'CrossSectionType').text = 'CSSingle'
         SubElement(ProjectSettings, 'SingleCSChannelWidthType').text = 'CWGemeration'
         SubElement(ProjectSettings, 'ChannelWidthEQc').text = '1.698'
@@ -83,9 +88,21 @@ class make:
         SubElement(ProjectSettings, 'AboutSoilDepthMap')
         SubElement(ProjectSettings, 'AboutRainfall')
         SubElement(ProjectSettings, 'ProjectSavedTime')
-        SubElement(ProjectSettings, 'ComputerName')
-        SubElement(ProjectSettings, 'ComputerUserName')
-        SubElement(ProjectSettings, 'GRMVersion')
+
+        # PC 이름 가져오기
+        pc_name = os.getenv("COMPUTERNAME")
+
+        # USER (로그인 된 계정) 이름 가져오기
+        user_name = os.getenv("USERNAME")
+
+        Path = os.path.dirname(os.path.realpath(__file__)) + "\DLL\GRMCore.dll"
+        clsGRM=cGRM(Path)
+
+
+
+        SubElement(ProjectSettings, 'ComputerName').text = pc_name
+        SubElement(ProjectSettings, 'ComputerUserName').text = user_name
+        SubElement(ProjectSettings, 'GRMVersion').text = str(clsGRM.BuildInfo.FileVersion)
         ElementTree(GRMProject).write(save_gmp_path, encoding="utf-8", xml_declaration=True)
 
 

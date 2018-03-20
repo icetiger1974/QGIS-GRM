@@ -143,16 +143,16 @@ class GRMDockWidget(QtGui.QDockWidget, FORM_CLASS):
 
         item2 = QtGui.QTreeWidgetItem(self.treeWidget, ['Run GRM'])
         item21 = QtGui.QTreeWidgetItem(item2, ['Setup / Run GRM'])
-        item22 = QtGui.QTreeWidgetItem(item2, ['Output Table'])
-        item23 = QtGui.QTreeWidgetItem(item2, ['Output Graph'])
-        item24 = QtGui.QTreeWidgetItem(item2, ['GRM Multiple Events'])
+        # item22 = QtGui.QTreeWidgetItem(item2, ['Output Table'])
+        # item23 = QtGui.QTreeWidgetItem(item2, ['Output Graph'])
+        # item24 = QtGui.QTreeWidgetItem(item2, ['GRM Multiple Events'])
         icon = QtGui.QIcon(RunGRM)
         item2.setIcon(0, icon)
 
-        item3 = QtGui.QTreeWidgetItem(self.treeWidget, ['Uncertainty Analysis'])
-        item31 = QtGui.QTreeWidgetItem(item3, ['Uncertainty'])
-        icon = QtGui.QIcon(Analysis)
-        item3.setIcon(0, icon)
+        # item3 = QtGui.QTreeWidgetItem(self.treeWidget, ['Uncertainty Analysis'])
+        # item31 = QtGui.QTreeWidgetItem(item3, ['Uncertainty'])
+        # icon = QtGui.QIcon(Analysis)
+        # item3.setIcon(0, icon)
 
         item4 = QtGui.QTreeWidgetItem(self.treeWidget, ['GRM Tools'])
         item41 = QtGui.QTreeWidgetItem(item4, ['Make RainFall Grid Layers with point time Series'])
@@ -173,17 +173,17 @@ class GRMDockWidget(QtGui.QDockWidget, FORM_CLASS):
 
 
         # 2017/09/05 시연으로 인해서 기능 중지
-        item6 = QtGui.QTreeWidgetItem(self.treeWidget, ['GRM_Forms'])
-        item61 = QtGui.QTreeWidgetItem(item6, ['Call_GRM_EXE'])
-        item62 = QtGui.QTreeWidgetItem(item6, ['Add Flow Control Grid'])
-        item63 = QtGui.QTreeWidgetItem(item6, ['Analyzer'])
-        item64 = QtGui.QTreeWidgetItem(item6, ['Watershed Stetup'])
-        item65 = QtGui.QTreeWidgetItem(item6, ['Set Watershed'])
-        item66 = QtGui.QTreeWidgetItem(item65, ['python Watershed'])
-        item67 = QtGui.QTreeWidgetItem(item65, ['Exe Watershed'])
-        item68 = QtGui.QTreeWidgetItem(item6, ['View Chart'])
-        icon = QtGui.QIcon(Flask)
-        item6.setIcon(0, icon)
+        # item6 = QtGui.QTreeWidgetItem(self.treeWidget, ['GRM_Forms'])
+        # item61 = QtGui.QTreeWidgetItem(item6, ['Call_GRM_EXE'])
+        # item62 = QtGui.QTreeWidgetItem(item6, ['Add Flow Control Grid'])
+        # item63 = QtGui.QTreeWidgetItem(item6, ['Analyzer'])
+        # item64 = QtGui.QTreeWidgetItem(item6, ['Watershed Stetup'])
+        # item65 = QtGui.QTreeWidgetItem(item6, ['Set Watershed'])
+        # item66 = QtGui.QTreeWidgetItem(item65, ['python Watershed'])
+        # item67 = QtGui.QTreeWidgetItem(item65, ['Exe Watershed'])
+        # item68 = QtGui.QTreeWidgetItem(item6, ['View Chart'])
+        # icon = QtGui.QIcon(Flask)
+        # item6.setIcon(0, icon)
 
         self.mainLayout = QtGui.QGridLayout(self)
         self.mainLayout.addWidget(self.treeWidget)
@@ -235,18 +235,18 @@ class GRMDockWidget(QtGui.QDockWidget, FORM_CLASS):
 
         item2 = QtGui.QTreeWidgetItem(self.treeWidget, ['Run GRM'])
         item21 = QtGui.QTreeWidgetItem(item2, ['Setup / Run GRM'])
-        item22 = QtGui.QTreeWidgetItem(item2, ['Output Table'])
-        item23 = QtGui.QTreeWidgetItem(item2, ['Output Graph'])
-        item24 = QtGui.QTreeWidgetItem(item2, ['GRM Multiple Events'])
+        # item22 = QtGui.QTreeWidgetItem(item2, ['Output Table'])
+        # item23 = QtGui.QTreeWidgetItem(item2, ['Output Graph'])
+        # item24 = QtGui.QTreeWidgetItem(item2, ['GRM Multiple Events'])
         icon = QtGui.QIcon(RunGRM)
         item2.setIcon(0, icon)
         item2.setDisabled(True)
 
-        item3 = QtGui.QTreeWidgetItem(self.treeWidget, ['Uncertainty Analysis'])
-        item31 = QtGui.QTreeWidgetItem(item3, ['Uncertainty'])
-        icon = QtGui.QIcon(Analysis)
-        item3.setIcon(0, icon)
-        item3.setDisabled(True)
+        # item3 = QtGui.QTreeWidgetItem(self.treeWidget, ['Uncertainty Analysis'])
+        # item31 = QtGui.QTreeWidgetItem(item3, ['Uncertainty'])
+        # icon = QtGui.QIcon(Analysis)
+        # item3.setIcon(0, icon)
+        # item3.setDisabled(True)
 
         item4 = QtGui.QTreeWidgetItem(self.treeWidget, ['GRM Tools'])
         item41 = QtGui.QTreeWidgetItem(item4, ['Make RainFall Grid Layers with point time Series'])
@@ -266,17 +266,17 @@ class GRMDockWidget(QtGui.QDockWidget, FORM_CLASS):
         item5.setIcon(0, icon)
         item5.setDisabled(True)
 
-        item6 = QtGui.QTreeWidgetItem(self.treeWidget, ['GRM_Forms'])
-        item61 = QtGui.QTreeWidgetItem(item6, ['Call_GRM_EXE'])
-        item62 = QtGui.QTreeWidgetItem(item6, ['Add Flow Control Grid'])
-        item63 = QtGui.QTreeWidgetItem(item6, ['Analyzer'])
-        item64 = QtGui.QTreeWidgetItem(item6, ['Watershed Stetup'])
-        item65 = QtGui.QTreeWidgetItem(item6, ['Set Watershed'])
-        item66 = QtGui.QTreeWidgetItem(item65, ['python Watershed'])
-        item67 = QtGui.QTreeWidgetItem(item65, ['Exe Watershed'])
-        item68 = QtGui.QTreeWidgetItem(item6, ['View Chart'])
-        icon = QtGui.QIcon(Flask)
-        item6.setIcon(0, icon)
+        # item6 = QtGui.QTreeWidgetItem(self.treeWidget, ['GRM_Forms'])
+        # item61 = QtGui.QTreeWidgetItem(item6, ['Call_GRM_EXE'])
+        # item62 = QtGui.QTreeWidgetItem(item6, ['Add Flow Control Grid'])
+        # item63 = QtGui.QTreeWidgetItem(item6, ['Analyzer'])
+        # item64 = QtGui.QTreeWidgetItem(item6, ['Watershed Stetup'])
+        # item65 = QtGui.QTreeWidgetItem(item6, ['Set Watershed'])
+        # item66 = QtGui.QTreeWidgetItem(item65, ['python Watershed'])
+        # item67 = QtGui.QTreeWidgetItem(item65, ['Exe Watershed'])
+        # item68 = QtGui.QTreeWidgetItem(item6, ['View Chart'])
+        # icon = QtGui.QIcon(Flask)
+        # item6.setIcon(0, icon)
 
         self.mainLayout = QtGui.QGridLayout(self)
         self.mainLayout.addWidget(self.treeWidget)
@@ -343,7 +343,6 @@ class GRMDockWidget(QtGui.QDockWidget, FORM_CLASS):
         elif SelectItme == "Call_GRM_EXE":
             exeFile = os.path.dirname(os.path.abspath(__file__)) +"\GRM.exe"
             arg = '"' + exeFile+ '"' + " " + '"' + _ProjectFile + '"'
-            _util.MessageboxShowInfo("test",arg)
             _util.Execute(arg)
         elif SelectItme =="Land Cover / Soil":
             results_dialog = SetLCST_StetupDialog()
@@ -351,7 +350,7 @@ class GRMDockWidget(QtGui.QDockWidget, FORM_CLASS):
         elif SelectItme == "Uncertainty":
             _xmltodict['GRMProject']['ProjectSettings']['ChannelWidthFile']="test"
             test = _xmltodict['GRMProject']['ProjectSettings']['ChannelWidthFile']
-            _util.MessageboxShowInfo("FDType", test)
+
 
     def CloseEvent(self, event):
         self.closingPlugin.emit()
@@ -363,36 +362,62 @@ class GRMDockWidget(QtGui.QDockWidget, FORM_CLASS):
         global _ProjectFile,_xmltodict
         # self.filename = "C:\GRM\Sample\SampleProject.gmp"
 
+        try:
+            # self.filename ="C:\\GRM\\NGD\\ngd.gmp"
+            # # 기존에 사용 하던 경로를 디폴트로 여는 옵션 적용 options=QtGui.QFileDialog.DontUseNativeDialog
+            self.filename = QtGui.QFileDialog.getOpenFileName(self,'select output file','','GRM Project xml files (*.gmp)',options=QtGui.QFileDialog.DontUseNativeDialog)
+            if self.filename:
+                _ProjectFile = self.filename
+                time.sleep(0.1)
+                _XmlCheck.Check_Gmp_xml(self.filename)
 
+                # 프로젝트 파일 확인 후에 QtreeWidget 재설정(비활성화 메뉴 활성화)
+                if len(self.filename)>0:
+                    self.clear()
 
-        # self.filename ="C:\\GRM\\NGD\\ngd.gmp"
-        # # 기존에 사용 하던 경로를 디폴트로 여는 옵션 적용 options=QtGui.QFileDialog.DontUseNativeDialog
-        self.filename = QtGui.QFileDialog.getOpenFileName(self,'select output file','','GRM Project xml files (*.gmp)',options=QtGui.QFileDialog.DontUseNativeDialog)
-        _ProjectFile = self.filename
-        _XmlCheck.Check_Gmp_xml(self.filename)
-        # 프로젝트 파일 확인 후에 QtreeWidget 재설정(비활성화 메뉴 활성화)
-        if len(self.filename)>0:
-            self.clear()
-        # 2017/09/17 프로젝트 파일(XML)을 그냥 일반 문서 처럼 읽어옴
-        Projectfile = open(self.filename, 'r')
-        data = Projectfile.read()
-        Projectfile.close()
-        # 읽어온 파일 내용(XML)을 dictionary 로 변경
-        self.doc = dict(xmltodict.parse(data))
-        _xmltodict = self.doc
+                # 2017/09/17 프로젝트 파일(XML)을 그냥 일반 문서 처럼 읽어옴
+                Projectfile = open(self.filename, 'r')
+                time.sleep(0.1)
+                data = Projectfile.read()
 
-        # dictionary 값을 받아서 레이어 목록을 Qgis 에 올림
-        self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['WatershedFile'])
-        self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['SlopeFile'])
-        self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['FlowDirectionFile'])
-        self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['FlowAccumFile'])
-        self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['StreamFile'])
-        self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['LandCoverFile'])
-        self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['SoilDepthFile'])
-        self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['SoilTextureFile'])
+                Projectfile.close()
 
-        # 현재 열은 프로젝트 파일 경로와 GMP 내부 프로젝트 파일 경로 동기화
-        self.doc['GRMProject']['ProjectSettings']['ProjectFile'] = _ProjectFile
+                # 읽어온 파일 내용(XML)을 dictionary 로 변경
+                self.doc = dict(xmltodict.parse(data))
+                time.sleep(0.1)
+                _xmltodict = self.doc
+
+                # dictionary 값을 받아서 레이어 목록을 Qgis 에 올림
+
+                if self.doc['GRMProject']['ProjectSettings']['WatershedFile'] is not None:
+                    self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['WatershedFile'])
+
+                if self.doc['GRMProject']['ProjectSettings']['SlopeFile'] is not None:
+                    self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['SlopeFile'])
+
+                if self.doc['GRMProject']['ProjectSettings']['FlowDirectionFile'] is not None:
+                    self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['FlowDirectionFile'])
+
+                if self.doc['GRMProject']['ProjectSettings']['FlowAccumFile'] is not None:
+                    self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['FlowAccumFile'])
+
+                if self.doc['GRMProject']['ProjectSettings']['StreamFile'] is not None:
+                    self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['StreamFile'])
+
+                if self.doc['GRMProject']['ProjectSettings']['LandCoverFile'] is not None:
+                    self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['LandCoverFile'])
+
+                if self.doc['GRMProject']['ProjectSettings']['SoilDepthFile'] is not None:
+                    self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['SoilDepthFile'])
+
+                if self.doc['GRMProject']['ProjectSettings']['SoilTextureFile'] is not None:
+                    self.AddlayerQGIS(self.doc['GRMProject']['ProjectSettings']['SoilTextureFile'])
+
+                # 현재 열은 프로젝트 파일 경로와 GMP 내부 프로젝트 파일 경로 동기화
+                self.doc['GRMProject']['ProjectSettings']['ProjectFile'] = _ProjectFile
+                time.sleep(0.1)
+        except Exception as wa:
+            _util.MessageboxShowError("Error", str(wa))
 
 
     # gis에 올리기
@@ -409,28 +434,30 @@ class GRMDockWidget(QtGui.QDockWidget, FORM_CLASS):
 
         # New Project 시에 GMP 파일 새로 생성
         filename = QFileDialog.getSaveFileName(self, "select output file ", "", "*.gmp")
-        _ProjectFile = filename
-        _XmlMake.Make_GMP_File(filename)
-        if len(filename)>0:
-            self.clear()
-        Projectfile = open(filename, 'r')
-        data = Projectfile.read()
-        Projectfile.close()
 
-        # 여기서 dataset 대신 datatable로 하면 안된다.
-        ds = System.Data.DataSet()
-        ds.ReadXml(filename)
-        ds.WriteXml(filename)
-        ds.Dispose()
+        if filename:
+            _ProjectFile = filename
+            _XmlMake.Make_GMP_File(filename)
+            if len(filename) > 0:
+                self.clear()
+            Projectfile = open(filename, 'r')
+            data = Projectfile.read()
+            Projectfile.close()
 
-        self.doc = dict(xmltodict.parse(data))
-        _xmltodict = self.doc
+            # 여기서 dataset 대신 datatable로 하면 안된다.
+            ds = System.Data.DataSet()
+            ds.ReadXml(filename)
+            ds.WriteXml(filename)
+            ds.Dispose()
+
+            self.doc = dict(xmltodict.parse(data))
+            _xmltodict = self.doc
+        else:
+            return
+
 
 
     def SaveProjectFile(self):
-        #값 변경 테스트 용 WatershedFile 파일 경로를 바꿈
-        # self.doc['GRMProject']['ProjectSettings']['WatershedFile'] = "im your brother"
-
         # 현재 변경된 XML 자료를 파일에 덮어 씌우는 부분
         DictoXml = xmltodict.unparse(self.doc)
         fw = open(_ProjectFile, 'w+')
@@ -439,22 +466,12 @@ class GRMDockWidget(QtGui.QDockWidget, FORM_CLASS):
         fw.close()
 
 
-
-
-
-
-        # ds = System.Data.DataSet()
-        # ds.ReadXml(self.filename)
-
-
         # 여기서 dataset 대신 datatable로 하면 안된다.
         ds = GRMCore.GRMProject()
         ds.ReadXml(_ProjectFile)
         ds.WriteXml(_ProjectFile)
         ds.Dispose()
-        _util.MessageboxShowInfo("GRM Save"," Saving is complete. ")
-
-
+        _util.MessageboxShowInfo("GRM Save", '"' + _ProjectFile + '"' + ' was saved. ')
 
 
         #
@@ -499,22 +516,37 @@ class GRMDockWidget(QtGui.QDockWidget, FORM_CLASS):
         # file.write(u'\ufeff')
         # file.close()
 
-
-
-
-
-
     def SaveASProjectFile(self):
-       SaveAsPath=self.Select_Ouput_File()
-       DictoXml = xmltodict.unparse(self.doc)
-       fw = open(SaveAsPath, 'w+')
-       fw.write(DictoXml)
-       fw.close()
+        SaveAsPath=self.Select_Ouput_File()
+        global _ProjectFile
+        if SaveAsPath=="":
+            _util.MessageboxShowInfo("GRM Save", "  Save was cancelled. ")
+            return
+        else :
+            _ProjectFile = SaveAsPath
+
+        DictoXml = xmltodict.unparse(self.doc)
+        fw = open(_ProjectFile, 'w+')
+        fw.write(DictoXml)
+        time.sleep(0.5)
+        fw.close()
+
+    # 여기서 dataset 대신 datatable로 하면 안된다.
+        ds = GRMCore.GRMProject()
+        ds.ReadXml(_ProjectFile)
+        ds.WriteXml(_ProjectFile)
+        ds.Dispose()
+        # _util.MessageboxShowInfo("GRM Save", " Save as completed.  \n File Name : " +_util.GetFilename(_ProjectFile)  +  "\n File Path : " + _ProjectFile )
+        _util.MessageboxShowInfo("GRM Save", '"' + _ProjectFile + '"' + ' was saved. ')
 
     # Util 에 있는 기능 임시로 여기에 만듬
     def Select_Ouput_File(self):
         filename = QFileDialog.getSaveFileName(self, "select output file ", "", "*.gmp")
-        return filename
+        if filename:
+            return filename
+        else:
+            filename=""
+            return filename
 
     # 레이어가 Qgis에 올라와 있는지 확인 (현재 QGIS에 올라온 레이어면 올리지 않음)
     def CheckLayer(self,layerpath):

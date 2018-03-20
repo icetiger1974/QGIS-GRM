@@ -5,7 +5,8 @@ from qgis.core import *
 from qgis.gui import *
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
-
+import os
+import utils
 import numpy as np
 
 def get_flow_layer(fd_layer,canvas,stream_layer):
@@ -37,7 +38,12 @@ def get_flow_layer(fd_layer,canvas,stream_layer):
         # MyDirections = {64: 0, 128: 45, 1: 90, 2: 135, 4: 180, 8: 225, 16: 270, 32: 315} 	#HyGIS(x). TOPAZ
         MyDirections = {128: 0, 1: 45, 2: 90, 4: 135, 8: 180, 16: 225, 32: 270, 64: 315}  # HyGIS(O)
 
-    strStylePath = "C:\GRM\sample\data\FD_Style_Template_v3.qml"  # We Will change the path to relative path
+    # strStylePath = "C:\GRM\sample\data\FD_Style_Template_v3.qml"  # We Will change the path to relative path
+    strStylePath = os.path.dirname(os.path.realpath(__file__))
+    strStylePath = strStylePath[:-6] + "DLL\FD_Style_Template_v3.qml"  # We Will change the path to relative path
+
+
+
     point_layer.loadNamedStyle(strStylePath)
 
     for i in range(int(cols)):

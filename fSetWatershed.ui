@@ -70,8 +70,8 @@
     <widget class="QRadioButton" name="rbFDIndexTypeNE">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>20</y>
+       <x>180</x>
+       <y>30</y>
        <width>131</width>
        <height>16</height>
       </rect>
@@ -83,8 +83,8 @@
     <widget class="QRadioButton" name="rbFDIndexTypeN">
      <property name="geometry">
       <rect>
-       <x>180</x>
-       <y>20</y>
+       <x>30</x>
+       <y>30</y>
        <width>111</width>
        <height>16</height>
       </rect>
