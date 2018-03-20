@@ -33,8 +33,6 @@ from PyQt4.QtGui import QFileDialog
 # import math.py
 
 
-
-
 sys.path.insert(0, 'C:/Program Files/QGIS 2.18/apps/Python27\lib\site-packages/future/backports')
 import datetime
 FORM_CLASS, _ = uic.loadUiType(os.path.join(os.path.dirname(__file__), 'Rainfall.ui'))
@@ -45,16 +43,19 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
         """Constructor."""
         super(RainFallDialog, self).__init__(parent)
         self.setupUi(self)
-
         # 프로젝트 파일 내용을 받아 옴
         self.ProjectSetting()
-
-
         # 프로젝트 파일 내용을 받아서 폼에 셋팅
         self.SettingForm()
 
         # 버튼 이벤트 셋팅
         self.SetbtnEvent()
+        if self.RainfallDataType == "TextFileASCgrid" or self.RainfallDataType is None :
+            filelsit = self.search(self.txtFolderPath.text())
+            self.ReSettingListWidgetASC(filelsit)
+        elif self.RainfallDataType == "TextFileMAP" :
+            filelsit = self.search(self.txtFolderPath.text())
+            self.SettingListWidget(filelsit)
 
     # 프로젝트 파일 내용을 받아 옴
     def ProjectSetting(self):
@@ -111,13 +112,15 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
 
     def Chage_textFolderpath(self):
         FolderPath =self.txtFolderPath.text()
-        if _util.CheckFolder(FolderPath.rstrip()):
-            self.txtFolderPath.setText(FolderPath.rstrip())
-            if self.rbUseASCgirdLayer.isChecked:
-                self.rbUseASCgirdLayer_click()
-            if self.rbUseTextFileMRF.isChecked:
-                self.rbUseTextFileMRF_click()
-
+        try:
+            if _util.CheckFolder(FolderPath.rstrip()):
+                self.txtFolderPath.setText(FolderPath.rstrip())
+                if self.rbUseASCgirdLayer.isChecked():
+                    self.rbUseASCgirdLayer_click()
+                if self.rbUseTextFileMRF.isChecked():
+                    self.rbUseTextFileMRF_click()
+        except Exception as es1:
+            pass
     def SetbtnEvent(self):
         self.btOpenRfFolder.clicked.connect(self.SelectFolder)
         # self.btApplyNewFloder.clicked.connect(self.ApplyFolderFile)
@@ -322,10 +325,10 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
             if self.rbUseASCgirdLayer.isChecked():
                 if self.lstRFfiles.count()==0 or self.dgvRainfallList.columnCount()==0 :
                     raise Exception("\n Rainfall data is not entered. \n")
-
             if self.rbUseTextFileMRF.isChecked():
                 if self.lstRFfiles.count() == 0 :
                     raise Exception("\n Rainfall data is not entered.  \n")
+
             self.UpdateMenuStatus()
         except Exception as exce:
             _util.MessageboxShowError("RainFall", exce.args[0])
@@ -355,6 +358,7 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
             GRM._xmltodict['GRMProject']['ProjectSettings']['RainfallDataType'] = 'TextFileMAP'
         elif self.rbUseASCgirdLayer.isChecked():
             GRM._xmltodict['GRMProject']['ProjectSettings']['RainfallDataType'] = 'TextFileASCgrid'
+            self.SettingTableASC()
             self.SaveTableData_to_Text()
 
 
@@ -390,11 +394,12 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
             self.dgvRainfallList.setHorizontalHeaderLabels(['Order', 'DataTime', 'Rainfall'])
 
             for i in range(len(itemsList)):
-                # Datafile = self.txtFolderPath.text() + "\\" + itemsList[i].text()
+                Datafile = self.txtFolderPath.text() + "/" + itemsList[i].text()
                 self.dgvRainfallList.setItem(i, 0, QTableWidgetItem(str(i + 1)))
                 # self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.txtRainfallTimeStep.text()) * i)))
                 self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.spbtimestep.value()) * i)))
-                self.dgvRainfallList.setItem(i, 2, QTableWidgetItem(itemsList[i].text()))
+                self.dgvRainfallList.setItem(i, 2, QTableWidgetItem(Datafile))
+                #self.dgvRainfallList.setItem(i, 2, QTableWidgetItem(itemsList[i].text()))
         elif len(itemsList)==0 and self.lstRFfiles.count()>0 :
             self.dgvRainfallList.setColumnCount(3)
             self.dgvRainfallList.setRowCount(self.lstRFfiles.count())
@@ -403,7 +408,7 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
                 self.dgvRainfallList.setItem(i, 0, QTableWidgetItem(str(i + 1)))
                 # self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.txtRainfallTimeStep.text()) * i)))
                 self.dgvRainfallList.setItem(i, 1, QTableWidgetItem(str(int(self.spbtimestep.value()) * i)))
-                self.dgvRainfallList.setItem(i, 2, QTableWidgetItem(str(self.lstRFfiles.item(i).text())))
+                self.dgvRainfallList.setItem(i, 2, QTableWidgetItem(str(self.txtFolderPath.text() + "/"+ self.lstRFfiles.item(i).text())))
 
     # 폼 종료
     def Close_Form(self):
@@ -418,13 +423,15 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
         if os.path.exists(SaveTxtPath):
             fh = open(SaveTxtPath, "r+")
             for i in range(Rcount):
-                value=self.txtFolderPath.text() + "\\" + self.dgvRainfallList.item(i, 2).text()
+                value=self.dgvRainfallList.item(i, 2).text()
+                #value=self.txtFolderPath.text() + "\\" + self.dgvRainfallList.item(i, 2).text()
                 fh.write(value.replace("\\","/") + "\n")
             fh.truncate()
         else:
             fh = open(SaveTxtPath, "w")
             for i in range(Rcount):
-                value = self.txtFolderPath.text() + "\\" + self.dgvRainfallList.item(i, 2).text()
+                value =self.dgvRainfallList.item(i, 2).text()
+                #value = self.txtFolderPath.text() + "\\" + self.dgvRainfallList.item(i, 2).text()
                 fh.write(value.replace("\\", "/") + "\n")
             fh.close()
 
