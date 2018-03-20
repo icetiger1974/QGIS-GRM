@@ -533,8 +533,6 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         # 캔버스에 Flow direction
         self.show_flow_direction.clicked.connect(self.show_hide_flow_direction)
 
-
-
     # 캔버스에 레이어 올리기
     def Set_Canvas_Layer_default(self):
         # canvase 레이어 올리기
@@ -657,10 +655,6 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         # 기본 사양은 비활성화
         self.txtCellCount.setDisabled(True)
 
-
-
-
-        
 
         # # 프로젝트 파일에서 기본 셋팅 분을 받아 옴
         # if self.ComputationalTimeStep is not None:
@@ -1626,11 +1620,9 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
 
         # 최하류 셀값 설정정
         self.Set_MostDownStream()
-
         self.cb_selectws.currentIndexChanged.connect(self.SelectWsCombobox)
         self.btnApplyWS.clicked.connect(self.UserSet_Add)
         self.btnRemoveWS.clicked.connect(self.UserSet_remove)
-
         self.SetWatershedstream()
         self.SetMostDownStream_combobox()
         self.SelectWsCombobox()
@@ -1644,8 +1636,6 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
             if str(selectWS) ==str(_StreamWSID):
                 self.cb_selectws.setCurrentIndex(i)
                 return
-
-
 
     def chage_UnsturatedType(self):
         self.selectText=self.cmbUnsturatedType.currentText()
@@ -1676,7 +1666,6 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
                         self.cb_selectws.setCurrentIndex(comboindex)
 
     def UserSet_Add(self):
-
         id = int(self.cb_selectws.currentText())
         items = self.lisw_UserSet.findItems(str(id), Qt.MatchExactly)
         if len(items) ==0:
@@ -1832,7 +1821,7 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
                     self.CalCoefSoilDepth.append(watershed['CalCoefSoilDepth'])
                     usersetString = watershed['UserSet']
                     self.UserSet.append(usersetString)
-                    if usersetString.upper() == "TRUE":
+                    if usersetString.upper() == "TRUE" or self.ID[i] == str(_StreamWSID):
                         _wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(int(self.ID[i]),
                                                                                float(self.IniSaturation[i]),
                                                                                float(self.MinSlopeOF[i]),
