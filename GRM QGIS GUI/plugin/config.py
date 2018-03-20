@@ -1,1 +1,0 @@
-NAMESPACE = "{http://tempuri.org/GRMProject.xsd}"
