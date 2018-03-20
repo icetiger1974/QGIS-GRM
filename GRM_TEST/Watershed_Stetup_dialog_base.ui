@@ -1,0 +1,2410 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Watershed_StetupDialogBase</class>
+ <widget class="QDialog" name="Watershed_StetupDialogBase">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>957</width>
+    <height>694</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Watershed Setup</string>
+  </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
+  <widget class="QToolBox" name="toolBox">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>7</y>
+     <width>401</width>
+     <height>621</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="mouseTracking">
+    <bool>false</bool>
+   </property>
+   <property name="contextMenuPolicy">
+    <enum>Qt::NoContextMenu</enum>
+   </property>
+   <property name="acceptDrops">
+    <bool>false</bool>
+   </property>
+   <property name="currentIndex">
+    <number>4</number>
+   </property>
+   <property name="tabSpacing">
+    <number>6</number>
+   </property>
+   <widget class="QWidget" name="toolBoxPage1">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>401</width>
+      <height>465</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>Simulation</string>
+    </attribute>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>10</y>
+       <width>390</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Simulation environments</string>
+     </property>
+     <widget class="QLabel" name="label_9">
+      <property name="geometry">
+       <rect>
+        <x>24</x>
+        <y>24</y>
+        <width>181</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Computational time step[min] :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_11">
+      <property name="geometry">
+       <rect>
+        <x>49</x>
+        <y>77</y>
+        <width>160</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Simulation duration[hour] :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_12">
+      <property name="geometry">
+       <rect>
+        <x>69</x>
+        <y>102</y>
+        <width>151</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Output time step[min] :</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtSimulation_duration">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>77</y>
+        <width>120</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtOutput_time_step">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>102</y>
+        <width>120</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkStartingTime">
+      <property name="geometry">
+       <rect>
+        <x>23</x>
+        <y>53</y>
+        <width>181</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Set simulation starting time : </string>
+      </property>
+     </widget>
+     <widget class="QDateTimeEdit" name="dateTimeEdit">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>51</y>
+        <width>121</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="displayFormat">
+       <string>yyyy-MM-dd hh:mm</string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spTimeStep_min">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>24</y>
+        <width>51</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="maximum">
+       <number>60</number>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkfixeTimeStep">
+      <property name="geometry">
+       <rect>
+        <x>266</x>
+        <y>27</y>
+        <width>110</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Fixed time step</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>154</y>
+       <width>390</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Simulation options</string>
+     </property>
+     <widget class="QCheckBox" name="chkInfiltration">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>24</y>
+        <width>81</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Infiltation</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkSubsurfaceFlow">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>43</y>
+        <width>121</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Subsurface flow</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkBaseFlow">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>22</y>
+        <width>81</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Base flow</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkFlowControl">
+      <property name="geometry">
+       <rect>
+        <x>170</x>
+        <y>43</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Flow control</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkParallel">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>64</y>
+        <width>311</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Parallel      Max.degree of parallelism : </string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="spTimeStep_min_2">
+      <property name="geometry">
+       <rect>
+        <x>272</x>
+        <y>63</y>
+        <width>81</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="minimum">
+       <number>-1</number>
+      </property>
+      <property name="maximum">
+       <number>60</number>
+      </property>
+      <property name="value">
+       <number>0</number>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_5">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>270</y>
+       <width>391</width>
+       <height>140</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Output options</string>
+     </property>
+     <widget class="QCheckBox" name="chksoiSaturation">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>32</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Soil saturation</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkmakeASC">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>107</y>
+        <width>110</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Make ASCII file</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chklog">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>35</y>
+        <width>80</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Write log</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkrfDistFile">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>56</y>
+        <width>80</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Rainfall</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkrfaacDistfile">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>81</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cumul. rainfall</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkdischarge">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>106</y>
+        <width>80</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Discharge</string>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="cmbPrint">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>50</y>
+        <width>100</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_10">
+      <property name="geometry">
+       <rect>
+        <x>21</x>
+        <y>30</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Print option : </string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnShowanalyzer">
+      <property name="geometry">
+       <rect>
+        <x>259</x>
+        <y>77</y>
+        <width>111</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Show analyzer</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkanalyze">
+      <property name="geometry">
+       <rect>
+        <x>260</x>
+        <y>57</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Enable analyzer</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="chkmakeimage">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>82</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Make img file</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="toolBoxPage2">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>401</width>
+      <height>465</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>Watch points</string>
+    </attribute>
+    <widget class="QTableWidget" name="tbList">
+     <property name="geometry">
+      <rect>
+       <x>7</x>
+       <y>5</y>
+       <width>380</width>
+       <height>350</height>
+      </rect>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectRows</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnColorPicker">
+     <property name="geometry">
+      <rect>
+       <x>7</x>
+       <y>370</y>
+       <width>31</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(255, 85, 255);</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnEdit">
+     <property name="geometry">
+      <rect>
+       <x>43</x>
+       <y>370</y>
+       <width>90</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Edit</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnGrid">
+     <property name="geometry">
+      <rect>
+       <x>267</x>
+       <y>400</y>
+       <width>121</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Go to grid</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnAddMostDown">
+     <property name="geometry">
+      <rect>
+       <x>7</x>
+       <y>430</y>
+       <width>180</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Add most downstream</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnMoveup">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>370</y>
+       <width>120</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Move up</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnRemove">
+     <property name="geometry">
+      <rect>
+       <x>268</x>
+       <y>370</y>
+       <width>120</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Remove</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnAddSelectCell">
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>430</y>
+       <width>178</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Add selected cell</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnMovedown">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>400</y>
+       <width>120</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Move down</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="toolBoxPage3">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>401</width>
+      <height>465</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>Channel cross section</string>
+    </attribute>
+    <widget class="QRadioButton" name="rdo_single">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>141</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Single cross section</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="rdo_compound">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>211</y>
+       <width>171</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Compound Cross Section</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>371</width>
+       <height>160</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string/>
+     </property>
+     <widget class="QLabel" name="label_5">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>40</y>
+        <width>91</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>c : </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_6">
+      <property name="geometry">
+       <rect>
+        <x>113</x>
+        <y>40</y>
+        <width>21</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>d :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>205</x>
+        <y>40</y>
+        <width>31</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>e :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>40</x>
+        <y>70</y>
+        <width>261</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>A : Upstream WS area. s:Channel bed slope</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txt_c">
+      <property name="geometry">
+       <rect>
+        <x>50</x>
+        <y>40</y>
+        <width>41</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txt_d">
+      <property name="geometry">
+       <rect>
+        <x>133</x>
+        <y>40</y>
+        <width>51</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txt_e">
+      <property name="geometry">
+       <rect>
+        <x>225</x>
+        <y>40</y>
+        <width>51</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txt_douwnstream">
+      <property name="geometry">
+       <rect>
+        <x>252</x>
+        <y>129</y>
+        <width>91</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="rdo_useCh">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>311</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Use channel width equation : b=(cxA^d)/S^e</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="rdo_generateCh">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>100</y>
+        <width>311</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Generate channel width</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_14">
+      <property name="geometry">
+       <rect>
+        <x>33</x>
+        <y>129</y>
+        <width>211</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Most downstream channel width[m]:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_6">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>230</y>
+       <width>371</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string/>
+     </property>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>123</x>
+        <y>10</y>
+        <width>171</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>M.D. Lower region height[m]:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_16">
+      <property name="geometry">
+       <rect>
+        <x>126</x>
+        <y>40</y>
+        <width>170</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>M.D. Lower region width[m]:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_17">
+      <property name="geometry">
+       <rect>
+        <x>92</x>
+        <y>70</y>
+        <width>201</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>M.D. Upper region base width[m] : </string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_18">
+      <property name="geometry">
+       <rect>
+        <x>51</x>
+        <y>100</y>
+        <width>241</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Channel width limit for compound CS[m] :</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtLower_Region_Height">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>10</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtLower_Region_Base_Width">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>40</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtUpper_Region_Base_Width">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>70</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtCompound_CSChannel_Width_Limit">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>100</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_7">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>380</y>
+       <width>371</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Bank side slope[m/m]</string>
+     </property>
+     <widget class="QLabel" name="label_19">
+      <property name="geometry">
+       <rect>
+        <x>90</x>
+        <y>20</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Right bank:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_20">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>20</y>
+        <width>61</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Left bank:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtRight_bank">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>20</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtLeft_bank">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>20</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="toolBoxPage4">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>401</width>
+      <height>465</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>Flow control</string>
+    </attribute>
+    <widget class="QGroupBox" name="groupBox_8">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>391</width>
+       <height>450</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Flow control grid</string>
+     </property>
+     <widget class="QPushButton" name="btnColorPicker_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>410</y>
+        <width>21</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(170, 85, 0);</string>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnFWCEdit">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>410</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Edit</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnfcgotogrid">
+      <property name="geometry">
+       <rect>
+        <x>230</x>
+        <y>410</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Go to grid</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnFlowRemove">
+      <property name="geometry">
+       <rect>
+        <x>308</x>
+        <y>410</y>
+        <width>75</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Remove</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="btnFlowControl_AddCell">
+      <property name="geometry">
+       <rect>
+        <x>36</x>
+        <y>410</y>
+        <width>111</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Add selected cell</string>
+      </property>
+     </widget>
+     <widget class="QTableWidget" name="tlbFlowControl">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>371</width>
+        <height>380</height>
+       </rect>
+      </property>
+      <property name="selectionBehavior">
+       <enum>QAbstractItemView::SelectRows</enum>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="toolBoxPage5">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>401</width>
+      <height>465</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>Watershed parameters</string>
+    </attribute>
+    <widget class="QGroupBox" name="group225">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>2</y>
+       <width>390</width>
+       <height>113</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Select watershed</string>
+     </property>
+     <widget class="QComboBox" name="cb_selectws">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>40</y>
+        <width>91</width>
+        <height>22</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_24">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>18</y>
+        <width>91</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(212, 212, 212);</string>
+      </property>
+      <property name="text">
+       <string>Select WS</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_25">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>18</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(212, 212, 212);</string>
+      </property>
+      <property name="text">
+       <string>UserSetWS</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_26">
+      <property name="geometry">
+       <rect>
+        <x>215</x>
+        <y>18</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(212, 212, 212);</string>
+      </property>
+      <property name="text">
+       <string>UpWS</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_27">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>18</y>
+        <width>71</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: rgb(212, 212, 212);</string>
+      </property>
+      <property name="text">
+       <string>DownWS</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+     <widget class="QListWidget" name="lisw_UserSet">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>39</y>
+        <width>71</width>
+        <height>67</height>
+       </rect>
+      </property>
+      <property name="verticalScrollBarPolicy">
+       <enum>Qt::ScrollBarAsNeeded</enum>
+      </property>
+     </widget>
+     <widget class="QListWidget" name="lisw_DownWS">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>39</y>
+        <width>71</width>
+        <height>67</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QListWidget" name="lisw_UpWS">
+      <property name="geometry">
+       <rect>
+        <x>215</x>
+        <y>39</y>
+        <width>71</width>
+        <height>67</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_11">
+     <property name="geometry">
+      <rect>
+       <x>6</x>
+       <y>124</y>
+       <width>390</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Watershed</string>
+     </property>
+     <widget class="QLabel" name="label_33">
+      <property name="geometry">
+       <rect>
+        <x>158</x>
+        <y>20</y>
+        <width>151</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Initial soil saturation ratio:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_34">
+      <property name="geometry">
+       <rect>
+        <x>122</x>
+        <y>40</y>
+        <width>190</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Minimum slope of land surface:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtIniSaturation">
+      <property name="geometry">
+       <rect>
+        <x>305</x>
+        <y>20</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtMinSlopeOF">
+      <property name="geometry">
+       <rect>
+        <x>305</x>
+        <y>40</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QComboBox" name="cmbUnsturatedType">
+      <property name="geometry">
+       <rect>
+        <x>116</x>
+        <y>61</y>
+        <width>78</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtCoefUnsatruatedk">
+      <property name="geometry">
+       <rect>
+        <x>305</x>
+        <y>60</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_3">
+      <property name="geometry">
+       <rect>
+        <x>197</x>
+        <y>65</y>
+        <width>110</width>
+        <height>12</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>CoefUnsaturatedK:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>7</x>
+        <y>63</y>
+        <width>111</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>UnsaturatedK type:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_12">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>222</y>
+       <width>390</width>
+       <height>100</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Stream</string>
+     </property>
+     <widget class="QLabel" name="label_35">
+      <property name="geometry">
+       <rect>
+        <x>124</x>
+        <y>15</y>
+        <width>181</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Minimum slope of channel bed:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_36">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>32</y>
+        <width>171</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Minimum channel width[m]:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_37">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>74</y>
+        <width>121</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Channel roughness:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_38">
+      <property name="geometry">
+       <rect>
+        <x>184</x>
+        <y>74</y>
+        <width>130</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Ini. dry stream order:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtMinSlopeChBed">
+      <property name="geometry">
+       <rect>
+        <x>306</x>
+        <y>13</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtMinChBaseWidth">
+      <property name="geometry">
+       <rect>
+        <x>306</x>
+        <y>33</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtIniFlow">
+      <property name="geometry">
+       <rect>
+        <x>306</x>
+        <y>53</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtChRoughness">
+      <property name="geometry">
+       <rect>
+        <x>128</x>
+        <y>73</y>
+        <width>50</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtDryStreamOrder">
+      <property name="geometry">
+       <rect>
+        <x>306</x>
+        <y>73</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>124</x>
+        <y>53</y>
+        <width>181</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Apply initial stream flow[CMS]:</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_13">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>334</y>
+       <width>391</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Calibration coefficient</string>
+     </property>
+     <widget class="QLabel" name="label_39">
+      <property name="geometry">
+       <rect>
+        <x>114</x>
+        <y>20</y>
+        <width>201</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Land cover roughness coefficient:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_40">
+      <property name="geometry">
+       <rect>
+        <x>75</x>
+        <y>41</y>
+        <width>60</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Soil depth:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_41">
+      <property name="geometry">
+       <rect>
+        <x>232</x>
+        <y>40</y>
+        <width>80</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Soil porosity:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_42">
+      <property name="geometry">
+       <rect>
+        <x>13</x>
+        <y>63</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Soil wetting front S.H.:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_43">
+      <property name="geometry">
+       <rect>
+        <x>216</x>
+        <y>63</y>
+        <width>121</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Soil hyd. cond.:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtCalCoefLCRoughness">
+      <property name="geometry">
+       <rect>
+        <x>311</x>
+        <y>20</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtCalCoefSoilDepth">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>40</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtCalCoefPorosity">
+      <property name="geometry">
+       <rect>
+        <x>311</x>
+        <y>40</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtCalCoefWFSuctionHead">
+      <property name="geometry">
+       <rect>
+        <x>140</x>
+        <y>63</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtCalCoefHydraulicK">
+      <property name="geometry">
+       <rect>
+        <x>311</x>
+        <y>63</y>
+        <width>70</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="btnRemoveWS">
+     <property name="geometry">
+      <rect>
+       <x>226</x>
+       <y>431</y>
+       <width>170</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Remove WS parameters</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btnApplyWS">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>431</y>
+       <width>170</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Apply current WS</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="toolBoxPage6">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>0</y>
+      <width>401</width>
+      <height>465</height>
+     </rect>
+    </property>
+    <attribute name="label">
+     <string>Cell Info.</string>
+    </attribute>
+    <widget class="QGroupBox" name="groupBox_14">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>0</y>
+       <width>390</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Flow</string>
+     </property>
+     <widget class="QLabel" name="label_45">
+      <property name="geometry">
+       <rect>
+        <x>32</x>
+        <y>44</y>
+        <width>56</width>
+        <height>12</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cell type:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtCelltype">
+      <property name="geometry">
+       <rect>
+        <x>92</x>
+        <y>40</y>
+        <width>100</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_47">
+      <property name="geometry">
+       <rect>
+        <x>8</x>
+        <y>62</y>
+        <width>81</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Stream value:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtStreamValue">
+      <property name="geometry">
+       <rect>
+        <x>92</x>
+        <y>61</y>
+        <width>50</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_48">
+      <property name="geometry">
+       <rect>
+        <x>153</x>
+        <y>64</y>
+        <width>60</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Flow dir.:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtFD">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>61</y>
+        <width>49</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_49">
+      <property name="geometry">
+       <rect>
+        <x>269</x>
+        <y>63</y>
+        <width>60</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Flow acc.:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtFA">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>61</y>
+        <width>50</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_51">
+      <property name="geometry">
+       <rect>
+        <x>257</x>
+        <y>42</y>
+        <width>40</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Slope:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtSlope">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="geometry">
+       <rect>
+        <x>299</x>
+        <y>40</y>
+        <width>82</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtCellCount">
+      <property name="geometry">
+       <rect>
+        <x>92</x>
+        <y>18</y>
+        <width>100</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>9</x>
+        <y>21</y>
+        <width>81</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Cell number :</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>22</y>
+        <width>80</width>
+        <height>12</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Wateshed ID:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtWatershedID">
+      <property name="geometry">
+       <rect>
+        <x>299</x>
+        <y>18</y>
+        <width>82</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_15">
+     <property name="geometry">
+      <rect>
+       <x>4</x>
+       <y>100</y>
+       <width>390</width>
+       <height>141</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Soil texture</string>
+     </property>
+     <widget class="QLabel" name="label_53">
+      <property name="geometry">
+       <rect>
+        <x>14</x>
+        <y>20</y>
+        <width>61</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Grid value:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtTextureGridValue">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>17</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_54">
+      <property name="geometry">
+       <rect>
+        <x>206</x>
+        <y>23</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Soil texture:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtSoilTexture">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>20</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_55">
+      <property name="geometry">
+       <rect>
+        <x>224</x>
+        <y>45</y>
+        <width>71</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Porosity:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtPorosity">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>43</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_56">
+      <property name="geometry">
+       <rect>
+        <x>176</x>
+        <y>68</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Effective porosity:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_57">
+      <property name="geometry">
+       <rect>
+        <x>96</x>
+        <y>93</y>
+        <width>181</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Wetting front suction head[cm]:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_58">
+      <property name="geometry">
+       <rect>
+        <x>104</x>
+        <y>117</y>
+        <width>181</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Hydraulic conductivity[cm/h]:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtEffectivePorosity">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>66</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtSuctionhead">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>90</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtcondcutivity">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>113</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_16">
+     <property name="geometry">
+      <rect>
+       <x>5</x>
+       <y>339</y>
+       <width>390</width>
+       <height>101</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Land Cover</string>
+     </property>
+     <widget class="QLabel" name="label_60">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>21</y>
+        <width>61</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Grid value:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtLandGridValue">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>21</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_61">
+      <property name="geometry">
+       <rect>
+        <x>237</x>
+        <y>22</y>
+        <width>41</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Type:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_62">
+      <property name="geometry">
+       <rect>
+        <x>142</x>
+        <y>50</y>
+        <width>138</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Roughness coefficient:</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_63">
+      <property name="geometry">
+       <rect>
+        <x>177</x>
+        <y>73</y>
+        <width>108</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Impervious ratio:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtLandType">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>21</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtRoughness">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>46</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtratio">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>70</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_17">
+     <property name="geometry">
+      <rect>
+       <x>4</x>
+       <y>256</y>
+       <width>390</width>
+       <height>70</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Soil depth</string>
+     </property>
+     <widget class="QLabel" name="label_71">
+      <property name="geometry">
+       <rect>
+        <x>14</x>
+        <y>20</y>
+        <width>61</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Grid value:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtDepthValue">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>17</y>
+        <width>61</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_72">
+      <property name="geometry">
+       <rect>
+        <x>200</x>
+        <y>19</y>
+        <width>80</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Depth class :</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtSoilDepthClass">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>16</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_77">
+      <property name="geometry">
+       <rect>
+        <x>209</x>
+        <y>43</y>
+        <width>101</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Depth[cm]:</string>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="txtSoilDepth">
+      <property name="geometry">
+       <rect>
+        <x>280</x>
+        <y>39</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QgsMapCanvas" name="mapcanvas" native="true">
+   <property name="geometry">
+    <rect>
+     <x>425</x>
+     <y>50</y>
+     <width>522</width>
+     <height>635</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnZoomExtent">
+   <property name="geometry">
+    <rect>
+     <x>424</x>
+     <y>8</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Zoom extents</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="chkWatch_Point">
+   <property name="geometry">
+    <rect>
+     <x>700</x>
+     <y>8</y>
+     <width>91</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Watch point</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="show_grid_line">
+   <property name="geometry">
+    <rect>
+     <x>700</x>
+     <y>24</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Grid line</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="chkFlowContorGird">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>8</y>
+     <width>81</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>FC</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="show_flow_direction">
+   <property name="geometry">
+    <rect>
+     <x>790</x>
+     <y>24</y>
+     <width>101</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Flow direction</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="lblColRow">
+   <property name="geometry">
+    <rect>
+     <x>832</x>
+     <y>6</y>
+     <width>210</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>xCol, yRow:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnZoomIn">
+   <property name="geometry">
+    <rect>
+     <x>525</x>
+     <y>8</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Zoom In</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnZoomOut">
+   <property name="geometry">
+    <rect>
+     <x>559</x>
+     <y>8</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Zoom out</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnPan">
+   <property name="geometry">
+    <rect>
+     <x>593</x>
+     <y>8</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="cursor">
+    <cursorShape>ArrowCursor</cursorShape>
+   </property>
+   <property name="toolTip">
+    <string>Pan</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnSaveproject">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>635</y>
+     <width>151</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save project</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnStart_Simulation">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>635</y>
+     <width>248</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save project &amp;&amp; Start simulation</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnClose">
+   <property name="geometry">
+    <rect>
+     <x>260</x>
+     <y>665</y>
+     <width>151</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>close</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnViewResult">
+   <property name="geometry">
+    <rect>
+     <x>9</x>
+     <y>665</y>
+     <width>247</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>View Result</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnMoveto">
+   <property name="geometry">
+    <rect>
+     <x>627</x>
+     <y>8</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Move to</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnZoomnext">
+   <property name="geometry">
+    <rect>
+     <x>491</x>
+     <y>8</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Zoom next</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnZoomprevious">
+   <property name="geometry">
+    <rect>
+     <x>457</x>
+     <y>8</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Zoom previous</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="btnSelectgrid">
+   <property name="geometry">
+    <rect>
+     <x>661</x>
+     <y>8</y>
+     <width>31</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="toolTip">
+    <string>Select grid</string>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>30</width>
+     <height>30</height>
+    </size>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsMapCanvas</class>
+   <extends>QWidget</extends>
+   <header location="global">qgis.gui</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
