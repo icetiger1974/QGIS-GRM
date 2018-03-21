@@ -4,7 +4,7 @@
         <description><![CDATA[GRM]]></description>
         <version>0.0.1</version>
         <qgis_minimum_version>2.18.15</qgis_minimum_version>
-        <homepage>https://github.com/floodmodel/QGIS-GRM</homepage>
+        <homepage>http://github.com/floodmodel/QGIS-GRM</homepage>
         <file_name>QGIS-GRM.zip</file_name>
         <icon>.</icon>
         <author_name>heremsys</author_name>
