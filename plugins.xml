@@ -6,7 +6,7 @@
         <version>0.1</version>
         <qgis_minimum_version>2.18.15</qgis_minimum_version>
         <homepage>http://github.com/floodmodel/QGIS-GRM</homepage>
-        <file_name>GRM.zip</file_name>
+        <file_name>QGIS-GRM.zip</file_name>
 	<icon>.</icon>
         <author_name>Hermesys</author_name>
         <download_url>https://raw.githubusercontent.com/floodmodel/QGIS-GRM/master/GRM-0.1.zip</download_url>
