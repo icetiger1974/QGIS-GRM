@@ -8,13 +8,13 @@
 
 [general]
 name=GRM
-qgisMinimumVersion=2.0
-description=GRM Plugin
-version=0.1
+qgisMinimumVersion=2.18.15
+description=GRM
+version=0.1.0
 author=Hermesys
 email=shpark@hermesys.co.kr
 
-about=GRM Plugin
+about=GRM
 
 tracker=test
 repository=test
