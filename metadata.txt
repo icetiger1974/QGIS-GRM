@@ -8,7 +8,7 @@
 
 [general]
 name=GRM
-qgisMinimumVersion=2.18.15
+qgisMinimumVersion=2.18
 description=GRM Plugin
 version=0.1.3
 author=Hermesys
