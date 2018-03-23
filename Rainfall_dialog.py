@@ -266,10 +266,11 @@ class RainFallDialog(QtGui.QDialog, FORM_CLASS):
                 self.SettingListWidget(filelsit)
 
     def search(self,dirname):
-        filenames = os.listdir(dirname)
         fileList=[]
-        for filename in filenames:
-            fileList.append(filename)
+        if dirname!="" and dirname is not None:
+            filenames = os.listdir(dirname)
+            for filename in filenames:
+                fileList.append(filename)
         return fileList
 
 

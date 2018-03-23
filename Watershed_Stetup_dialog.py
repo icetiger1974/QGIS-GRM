@@ -232,7 +232,7 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
         if result==0:
             _util.MessageboxShowError("GRM","Simulation completed")
         else:
-            _util.MessageboxShowError("GRM", "Simulation is stoped")
+            _util.MessageboxShowError("GRM", " Simulation was stopped.")
 
     #def Click_Stop_simulation(self):
     #    self.p.kill()
@@ -1646,8 +1646,8 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
            self.txtCoefUnsatruatedk.setText("6.4")
            self.txtCoefUnsatruatedk.setEnabled(True)
         else :
-            self.txtCoefUnsatruatedk.setText("0")
-            self.txtCoefUnsatruatedk.setEnabled(False)
+            self.txtCoefUnsatruatedk.setText("0.1")
+            self.txtCoefUnsatruatedk.setEnabled(True)
 
     def UserSet_remove(self):
         id = self.cb_selectws.currentText()
@@ -1804,7 +1804,8 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
             elif GRM._SubWatershedCount>1:
                 i = 0
                 for watershed in GRM._xmltodict['GRMProject']['SubWatershedSettings']:
-                    self.ID.append(watershed['ID'])
+                    idvalue = str(watershed['ID'])
+                    self.ID.append(str(watershed['ID']))
                     self.IniSaturation.append(watershed['IniSaturation'])
                     self.MinSlopeOF.append(watershed['MinSlopeOF'])
                     self.MinSlopeChBed.append(watershed['MinSlopeChBed'])
@@ -1848,9 +1849,10 @@ class Watershed_StetupDialog(QtGui.QDialog, FORM_CLASS):
                     cal_MinChBaseWidth = intAll / 10
                 else:
                     cal_MinChBaseWidth=0
-                _wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(int(_StreamWSID),1,0.001,"Linear",0.2,0.001,float(cal_MinChBaseWidth),0.045,0,1,1,1,1,1,0)
+                _wsinfo.SetOneSWSParametersAndUpdateAllSWSUsingNetwork(int(_StreamWSID),1,0.0001,"Linear",0.2,0.0001,float(cal_MinChBaseWidth),0.045,0,1,1,1,1,1,0)
         except Exception as esd:
             _util.MessageboxShowError("error",str(esd))
+            pass
 
 
     # 콤보박스 선택시 하류 유역과 상류 유역의 콤보박스에 값 셋팅
@@ -3405,6 +3407,15 @@ class CanvasTool(QgsMapTool):
 
     def create_vertex(self,x,y):
 
+        marker = QgsVertexMarker(self.canvas)
+        marker.setCenter(QgsPoint(x, y))
+        marker.setColor(QColor(255, 0, 0))
+        width_Map = self.canvas.extent().xMaximum() - self.canvas.extent().xMinimum()
+        Size_Marker = (_xsize / 200.0) * 100000 / width_Map
+        marker.setIconSize(Size_Marker)
+        marker.setIconType(QgsVertexMarker.ICON_BOX)
+        marker.setPenWidth(1)
+
         #2018-0313 박:
         # r1 = QgsRubberBand(self.canvas, True)
         # r2 = QgsRubberBand(self.canvas, True)
@@ -3427,14 +3438,18 @@ class CanvasTool(QgsMapTool):
         # r4.setWidth(1)
              
 
-        marker = QgsVertexMarker(self.canvas)
-        marker.setCenter(QgsPoint(x,y))
-        marker.setColor(QColor(255,0,0))
-        scale = self.canvas.scale()
-        size = 750000.0 / scale
-        marker.setIconSize(size)
-        marker.setIconType(QgsVertexMarker.ICON_BOX)
-        marker.setPenWidth(1)
+        # marker = QgsVertexMarker(self.canvas)
+        # marker.setCenter(QgsPoint(x,y))
+        # marker.setColor(QColor(255,0,0))
+        # scale = self.canvas.scale()
+        # size = 750000.0 / scale
+        # marker.setIconSize(size)
+        # marker.setIconType(QgsVertexMarker.ICON_BOX)
+        # marker.setPenWidth(1)
+
+
+
+
 
     def getCVID(self, Rt, Ct):
         cvid_v = 0

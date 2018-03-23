@@ -100,6 +100,8 @@ class xmls:
                     Datavalue = "false"
             ET.SubElement(ProjectSettings, self.XML_element[i]).text = Datavalue
 
+
+        GRM._SubWatershedCount = 0
         for element in root.findall('{http://tempuri.org/GRMProject.xsd}SubWatershedSettings'):
             SubWatershedSettings = ET.SubElement(GRMProject, "SubWatershedSettings")
             for i in range(0, len(self.XML_element_SubWatershed)):
@@ -136,7 +138,7 @@ class xmls:
                     Datavalue = "false"
                 ET.SubElement(SubWatershedSettings, self.XML_element_SubWatershed[i]).text = Datavalue
             GRM._SubWatershedCount =GRM._SubWatershedCount +1
-
+        GRM._WatchPointCount=0
         for element in root.findall('{http://tempuri.org/GRMProject.xsd}WatchPoints'):
             WatchPoints = ET.SubElement(GRMProject, "WatchPoints")
             for i in range(0, len(self.XML_element_WatchPoints)):
@@ -150,6 +152,7 @@ class xmls:
                 ET.SubElement(WatchPoints, self.XML_element_WatchPoints[i]).text = Datavalue
             GRM._WatchPointCount = GRM._WatchPointCount+1
 
+        GRM._FlowControlCount=0
         for element in root.findall('{http://tempuri.org/GRMProject.xsd}FlowControlGrid'):
             FlowControlGrid = ET.SubElement(GRMProject, "FlowControlGrid")
             for i in range(0, len(self.XML_element_FlowControlGrid)):
@@ -181,6 +184,7 @@ class xmls:
                 ET.SubElement(FlowControlGrid, self.XML_element_FlowControlGrid[i]).text = Datavalue
             GRM._FlowControlCount = GRM._FlowControlCount + 1
 
+        GRM._GreenAmptCount=0
         for element in root.findall('{http://tempuri.org/GRMProject.xsd}GreenAmptParameter'):
             GreenAmptParameter = ET.SubElement(GRMProject, "GreenAmptParameter")
             for i in range(0, len(self.XML_element_GreenAmptParameter)):
@@ -206,6 +210,7 @@ class xmls:
                 ET.SubElement(GreenAmptParameter, self.XML_element_GreenAmptParameter[i]).text = Datavalue
             GRM._GreenAmptCount = GRM._GreenAmptCount + 1
 
+        GRM._SoilDepthCount=0
         for element in root.findall('{http://tempuri.org/GRMProject.xsd}SoilDepth'):
             SoilDepth = ET.SubElement(GRMProject, "SoilDepth")
             for i in range(0, len(self.XML_element_SoilDepth)):
@@ -230,6 +235,7 @@ class xmls:
                 ET.SubElement(SoilDepth, self.XML_element_SoilDepth[i]).text = Datavalue
             GRM._SoilDepthCount = GRM._SoilDepthCount + 1
 
+        GRM._LandCoverCount=0
         for element in root.findall('{http://tempuri.org/GRMProject.xsd}LandCover'):
             LandCover = ET.SubElement(GRMProject, "LandCover")
             for i in range(0, len(self.XML_element_LandCover)):
