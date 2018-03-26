@@ -32,11 +32,19 @@ def get_flow_layer(fd_layer,canvas,stream_layer):
 
     point_layer.startEditing()  # if omitted , setAttributes has no effect.
 
-    if is_TauDEM_FD(ascii_grid_fd):
-        MyDirections = {3: 0, 2: 45, 1: 90, 8: 135, 7: 180, 6: 225, 5: 270, 4: 315}  # TauDEM
+    strFDType='a'    #Reference : GRM Manual page 25 . 2018.3
+    
+    if strFDType == 'a':
+        MyDirections = {1: 0, 2: 45, 4: 90, 8: 135, 16: 180, 32: 225, 64: 270, 128: 315}
+    elif strFDType == 'b':
+        MyDirections = {128: 0, 1: 45, 2: 90, 4: 135, 8: 180, 16: 225, 32: 270, 64: 315} 	#HyGIS(O)
+    elif strFDType == 'c':
+        MyDirections = {64: 0, 128: 45, 1: 90, 2: 135, 4: 180, 8: 225, 16: 270, 32: 315} 	#HyGIS(x). TOPAZ
+    elif strFDType == 'd':
+        MyDirections = {3: 0, 2: 45, 1: 90, 8: 135, 7: 180, 6: 225, 5: 270, 4: 315}	#TauDEM        
     else:
-        # MyDirections = {64: 0, 128: 45, 1: 90, 2: 135, 4: 180, 8: 225, 16: 270, 32: 315} 	#HyGIS(x). TOPAZ
-        MyDirections = {128: 0, 1: 45, 2: 90, 4: 135, 8: 180, 16: 225, 32: 270, 64: 315}  # HyGIS(O)
+        print "FD Code is Wrong!"
+        return 
 
     # strStylePath = "C:\GRM\sample\data\FD_Style_Template_v3.qml"  # We Will change the path to relative path
     strStylePath = os.path.dirname(os.path.realpath(__file__))
@@ -48,16 +56,15 @@ def get_flow_layer(fd_layer,canvas,stream_layer):
 
     for i in range(int(cols)):
         for j in range(int(rows)):
-            ptCellCenter = QgsPoint(xmin + i * gridWidth + gridWidth / 2.0, ymin + j * gridHeight + gridHeight / 2.0)
-
-            feat = QgsFeature()
-            feat.setGeometry(QgsGeometry().fromPoint(ptCellCenter))
-            direction = get_direction(i, rows - j - 1, ascii_grid_fd,MyDirections)
-            streamTag = 0
-            if ascii_grid_st[rows - j - 1, i] > 0:
-                streamTag = 1
-            feat.setAttributes([direction,streamTag])
-            point_provider.addFeatures([feat])
+            direction = get_direction(i, rows-j-1 , ascii_grid_fd,MyDirections)
+            if not direction==None :
+					ptCellCenter = QgsPoint(xmin+ i *gridWidth+gridWidth/2.0,ymin + j*gridHeight+gridHeight/2.0)
+					feat = QgsFeature()
+					feat.setGeometry(QgsGeometry().fromPoint(ptCellCenter))
+					streamTag=0
+					if ascii_grid_st[rows-j-1,i]>0 : streamTag=1
+					feat.setAttributes([direction,streamTag])
+					point_provider.addFeatures([feat])
 
     point_layer.commitChanges()
 
@@ -83,11 +90,3 @@ def get_direction(x, y, ascii_grid,directions):
         return "Intentional except"
 
 
-def is_TauDEM_FD(ascii_grid):
-    # 20127.11.2 Ice : if all cell values are 1,2,4,8 , then this check is not good.
-    myMax = max(ascii_grid.flatten())
-    print "MAX CELL ", myMax
-    if max(ascii_grid.flatten()) < 9:
-        return True
-    else:
-        return False
