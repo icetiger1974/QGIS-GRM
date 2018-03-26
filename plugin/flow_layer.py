@@ -32,7 +32,7 @@ def get_flow_layer(fd_layer,canvas,stream_layer):
 
     point_layer.startEditing()  # if omitted , setAttributes has no effect.
 
-    strFDType='a'    #Reference : GRM Manual page 25 . 2018.3
+    strFDType='b'    #Reference : GRM Manual page 25 . 2018.3
     
     if strFDType == 'a':
         MyDirections = {1: 0, 2: 45, 4: 90, 8: 135, 16: 180, 32: 225, 64: 270, 128: 315}
